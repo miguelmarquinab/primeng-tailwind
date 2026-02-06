@@ -1,0 +1,194 @@
+@if (peopleForm) {
+  <form [formGroup]="peopleForm" (ngSubmit)="onSubmitHandler()">
+    <div class="flex flex-col gap-4">
+
+      <div class="grid lg:grid-cols-2 gap-4 min-w-0">
+        <div class="flex flex-col gap-2 min-w-0">
+          <label for="documentType">{{documentTypeLabel}}</label>
+
+          <p-select
+            [options]="documentTypes"
+            optionValue="value"
+            optionLabel="label"
+            placeholder="Elige tu tipo de documento"
+            class="w-full min-w-0"
+            formControlName="documentType"
+            name="documentType"
+            [ngClass]="
+            {
+                'ng-invalid': peopleForm.get('documentType')?.invalid
+            }"
+            appendTo="body"
+          />
+        </div>
+        <div class="flex flex-col gap-2">
+          <label for="documentNumber">Número de documento</label>
+          <input
+            pInputText
+            id="documentNumber"
+            placeholder="Escribe tu número de documento"
+            formControlName="documentNumber"
+            [maxlength]="currentDocumentType.maxLength"
+            [ngClass]="
+            {
+              'ng-invalid': peopleForm.get('documentNumber')?.invalid
+            }"
+            appRestrictChars
+            [regexPatternAllowed]="currentDocumentType.documentNumberPattern"
+            [readOnly]="personIsLoading"
+          />
+          <app-input-error-message
+            errorText="No ingresaste un número válido."
+            [control]="peopleForm.get('documentNumber')"
+          ></app-input-error-message>
+
+        </div>
+
+        @if (!personExist) {
+          <div class="lg:col-span-2 flex flex-col gap-2">
+            <p-message severity="secondary" icon="pi pi-info-circle" styleClass="mb-2">
+              El {{ currentDocumentType.shortLabel ?? '' }} no se ha encontrado, los
+              datos ingresados a continuación se añadirán a nuestra base de datos.
+            </p-message>
+          </div>
+        }
+
+        @if (currentDocumentType.value === AppConstant.DOCUMENT_TYPE_RUC) {
+          <div class="flex flex-col gap-2 lg:col-span-2">
+            <label for="companyName">
+              Razón Social
+            </label>
+            <input
+              pInputText
+              id="companyName"
+              formControlName="firstName"
+              maxlength="50"
+              [placeholder]="personConfig.companyName?.placeholder"
+              [ngClass]="
+            {
+              'ng-invalid': peopleForm.get('firstName')?.invalid
+            }"
+              [appInputRegex]="AppConstant.COMPANY_REGEX_PATTERN"
+            />
+
+            <app-input-error-message
+              errorText="No ingresaste una razón social válida."
+              [control]="peopleForm.get('firstName')"
+            ></app-input-error-message>
+          </div>
+        }
+        @if (currentDocumentType.value !== AppConstant.DOCUMENT_TYPE_RUC) {
+
+          <div class="flex flex-col gap-2">
+            <label for="firstName"> Nombres </label>
+            <input
+              pInputText
+              id="firstName"
+              formControlName="firstName"
+              maxlength="50"
+              [placeholder]="personConfig.firstName.placeholder"
+              [ngClass]="
+            {
+              'ng-invalid': peopleForm.get('firstName')?.invalid
+            }"
+              [appInputRegex]="AppConstant.NAME_REGEX_PATTERN"
+            />
+
+            <app-input-error-message
+              errorText="No ingresaste un nombre válido."
+              [control]="peopleForm.get('firstName')"
+            ></app-input-error-message>
+
+          </div>
+
+
+          <div class="flex flex-col gap-2">
+            <label for="lastName">Apellidos</label>
+            <input
+              pInputText
+              id="lastName"
+              formControlName="lastName"
+              maxlength="50"
+              [placeholder]="personConfig.lastName?.placeholder"
+              [ngClass]="
+              {
+                'ng-invalid': peopleForm.get('lastName')?.invalid,
+                 'blur-heavy': enableBlur && personExist
+
+              }"
+              [appInputRegex]="AppConstant.NAME_REGEX_PATTERN"
+            />
+<!--            'blur-heavy': enableBlur && personExist-->
+            <app-input-error-message
+              errorText="No ingresaste un apellido válido."
+              [control]="peopleForm.get('lastName')"
+            ></app-input-error-message>
+          </div>
+        }
+
+        <div class="flex flex-col gap-2"
+             [ngClass]="
+            {
+              'lg:col-span-2': !enableEmailField
+            }
+            "
+        >
+          <label for="cellPhone">Celular</label>
+          <input
+            pInputText
+            id="cellPhone"
+            [placeholder]="personConfig.cellphone.placeholder"
+            maxlength="9"
+            formControlName="cellPhone"
+            [maxLength]="9"
+            [ngClass]="
+            {
+              'ng-invalid': peopleForm.get('cellPhone')?.invalid
+            }"
+            appInputOnlyNumber
+          />
+
+          <app-input-error-message
+            errorText="No ingresaste un número válido."
+            [control]="peopleForm.get('cellPhone')"
+          ></app-input-error-message>
+        </div>
+
+        @if (enableEmailField) {
+          <div class="flex flex-col gap-2">
+            <label for="emailAddress">Correo electrónico</label>
+            <input
+              pInputText
+              id="emailAddress"
+              [placeholder]="personConfig.email.placeholder"
+              type="text"
+              formControlName="emailAddress"
+              maxlength="100"
+              [ngClass]="{
+                'ng-invalid': peopleForm.get('emailAddress')?.invalid
+              }"
+              [regexPatternAllowed]="AppConstant.EMAIL_REGEX_PATTERN"
+              appRestrictChars
+            />
+
+            <app-input-error-message
+              errorText="No ingresaste un correo válido."
+              [control]="peopleForm.get('emailAddress')"
+            ></app-input-error-message>
+          </div>
+        }
+      </div>
+
+
+
+      <div class="grid w-full">
+
+        <p-button label="Siguiente" severity="primary" styleClass="w-full"
+                  [disabled]="!isFormReady || peopleForm.invalid || currentDocumentType.value === ''"
+                  (click)="onSubmitHandler()"
+                  (keydown.enter)="onSubmitHandler()"
+        />
+      </div>
+    </div>
+  </form>
+}

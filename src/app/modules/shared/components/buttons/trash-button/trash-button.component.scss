@@ -1,0 +1,16 @@
+.button-trash {
+  width: 26px;
+  height: 22px;
+  gap: 4px;
+  opacity: 1;
+  background-color: #FFE1DE;
+  border-radius: 3px;
+  padding: 2px 4px;
+
+  border: 1px solid #E8212B;
+  cursor: pointer;
+  &:hover{
+
+    background-color: #ffffff;
+  }
+}

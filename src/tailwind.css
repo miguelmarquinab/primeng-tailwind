@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import 'tailwindcss';
+@import 'tailwindcss-primeui';
+
+@theme {
+  --breakpoint-xs: 360px;
+  --color-highlight-focus-background: var(--theme-highlight-focus-background);
+  --color-primary-sutile: var(--theme-primary-sutile);
+  --color-theme-secondary: var(--theme-color-secondary);
+  --color-button-text-plain: var(--theme-text-color);
+  --color-theme-surface-400: #94A3B8;
+  --color-theme-surface-600: #475569;
+  --color-theme-green-400: #4ADE80;
+  --color-theme-light-gray: var(--p-inputtext-border-color);
+  --color-theme-ultramarine: var(--theme-ultramarine-color);
+  --font-montserrat: "Montserrat", sans-serif;
+  --font-inter: "Inter", sans-serif;
+
+  /* Definimos que el tamaño base sea 14px (0.875rem) */
+  --font-size-base: 0.875rem;
+
+  /* Si quieres que TODO el texto por defecto sea 14px */
+  --default-font-size: 0.875rem;
+}
+
+
+:root {
+  /* Aseguramos que el HTML tenga la base correcta para rems */
+  font-size: 16px;
+}
+
+body {
+  font-size: 0.875rem; /* 14px */
+}

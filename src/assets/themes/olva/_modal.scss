@@ -1,0 +1,12 @@
+.p-dialog {
+  .p-dialog-header {
+    padding-bottom: 0 !important;
+    padding-top: 24px !important;
+
+    .p-button.p-button-secondary {
+      border-color: transparent !important;
+      padding: 0 !important;
+      height: 24px !important;
+    }
+  }
+}

@@ -1,0 +1,28 @@
+<div class="flex flex-col gap-6">
+  <div class="text-lg text-center text-button-text-plain lg:text-left">Paso 1 <span class="lg:hidden">de 3</span>: Datos de origen</div>
+  <div class="flex flex-col gap-4 overflow-y-scroll lg:overflow-y-auto flex-1">
+    <p-accordion [value]="currentAccordionIndex" (onOpen)="onAccordionChange($event)">
+      <p-accordion-panel [value]="0">
+        <p-accordion-header>¿Quién envía? (Remitente)</p-accordion-header>
+        <p-accordion-content>
+          <app-person-form
+            [personConfig]="PersonConstant.DEFAULT_CONFIG"
+            [enableSetPersonData]="false"
+            (submitWhoSenderForm)="submitWhoSenderForm($event)"
+            (documentNumberChanged)="personDocumentChanged($event)"
+          ></app-person-form>
+        </p-accordion-content>
+      </p-accordion-panel>
+
+      <p-accordion-panel [value]="1" [disabled]="panelsDisabled[1]">
+        <p-accordion-header>¿Desde donde envía? (Origen)</p-accordion-header>
+        <p-accordion-content>
+          <app-shipment-record-origin-form
+            [headquarters]="headquarters"
+            (submitOrigin)="handleSubmitOriginForm($event)"></app-shipment-record-origin-form>
+        </p-accordion-content>
+      </p-accordion-panel>
+    </p-accordion>
+  </div>
+
+</div>

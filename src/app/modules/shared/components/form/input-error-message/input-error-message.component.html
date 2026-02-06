@@ -1,0 +1,5 @@
+@if (control?.invalid  && (control?.touched || control?.dirty) && getControlName()) {
+  <span class="error-label text-xs font-normal w-full"
+        id="error-label-{{ getControlName() }}"
+  >{{ errorText }}</span>
+}

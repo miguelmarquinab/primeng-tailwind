@@ -1,0 +1,19 @@
+@use 'variables';
+@use 'utils';
+@use 'layout';
+@use 'input';
+@use 'label';
+@use 'accordion';
+@use 'button';
+@use 'fonts';
+@use 'modal';
+@use "select";
+@use "message";
+@use "tabs";
+@use "checkbox";
+@use "inputnumber";
+@use "map-modal";
+
+body {
+  font-family: 'Lato', sans-serif !important;
+}

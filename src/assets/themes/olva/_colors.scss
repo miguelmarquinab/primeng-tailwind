@@ -1,0 +1,66 @@
+:root {
+  --theme-orange-color: #f9b52f;
+  --theme-ultramarine-color: #2546bb;
+  --theme-gray-color: #64748b;
+  --theme-slate-color: #e3e8f0;
+  --theme-surface-200: #e2e8f0;
+  --theme-text-color: #334155;
+  --theme-text-secondary-color: #3657a2;
+  --theme-accordion-header-font-color: var(--theme-text-color);
+  --theme-accordion-container-bg-color: #f8fafc;
+  --theme-accordion-container-border-color: #e3e9f7;
+  --theme-form-label-color: var(--theme-text-color);
+  --theme-text-error-color: #E8212B;
+  --theme-disable-color: #F5F5F5;
+  --theme-color-secondary: #3657A2;
+  --theme-focus-border-color: #FCB414;
+  --theme-border-color-secondary: var(--theme-color-secondary);
+  --theme-color-secondary-subtile: #E3E9F7;
+  --theme-color-text-secondary: #707070;
+  --theme-text-color-main: #494949;
+  --theme-highlight-focus-background: #FCB414;
+  --theme-primary-sutile: #FFF6E5;
+  --theme-radiobutton-border-color-checked: #FCB414;
+
+  /**  override primeui */
+  /**  Accordions */
+  --p-accordion-content-padding: 20px !important;
+
+  /**  InputText */
+
+  --p-inputtext-border-color: #cbd5e1 !important;
+  --p-form-field-placeholder-color: var(--theme-text-color) !important;
+
+  /**  Buttons */
+  --button-primary-bg-color: var(--theme-ultramarine-color);
+  --button-primary-hover-bg-color: var(--theme-ultramarine-color);
+  --button-primary-pressed-bg-color: #d1d5db;
+
+  --button-secondary-bg-color: var(--theme-border-color-secondary);
+  --button-secondary-border-color: var(--theme-border-color-secondary);
+
+
+  /** Labels */
+
+  --label-text-color: var(--theme-text-error-color);
+
+  /** Messages */
+
+  --message-secondary-bg-color: #F1F5F9;
+
+  /** Radio Button */
+
+  --p-radiobutton-checked-background: var(--theme-radiobutton-border-color-checked) !important;
+  --p-radiobutton-checked-border-color: var(--theme-radiobutton-border-color-checked) !important;
+  --p-radiobutton-checked-hover-border-color: var(--theme-radiobutton-border-color-checked) !important;
+  --p-radiobutton-hover-border-color: var(--theme-radiobutton-border-color-checked) !important;
+
+  /** Toggle Switch */
+  --p-toggleswitch-checked-background: var(--theme-radiobutton-border-color-checked) !important;
+  --p-toggleswitch-checked-border-color: var(--theme-radiobutton-border-color-checked) !important;
+  --p-toggleswitch-checked-hover-background: var(--theme-radiobutton-border-color-checked) !important;
+  --p-toggleswitch-checked-hover-border-color: var(--theme-radiobutton-border-color-checked) !important;
+  --p-toggleswitch-handle-checked-background: var(--theme-primary-sutile) !important;
+  --p-toggleswitch-handle-checked-hover-background: var(--theme-primary-sutile) !important;
+
+}

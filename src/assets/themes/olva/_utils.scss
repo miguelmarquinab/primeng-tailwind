@@ -1,0 +1,49 @@
+@use "utils_borders";
+
+.bg-orange {
+  background-color: var(--theme-orange-color);
+}
+
+.bg-slate {
+  background-color: var(--theme-slate-color);
+}
+
+.bg-surface-100 {
+  background-color: #F1F5F9;
+}
+
+
+.bg-highlight-focus-background {
+  background-color: var(--theme-highlight-focus-background);
+}
+
+.text-color-ultramarine {
+  color: var(--theme-ultramarine-color) !important;
+}
+
+.text-color-secondary {
+  color: var(--theme-color-secondary);
+}
+
+.text-gray-secondary {
+  color: var(--theme-color-text-secondary);
+}
+
+.text-color-main {
+  color: var(--theme-text-color-main)
+}
+
+.blur-light {
+  filter: blur(1px);
+  pointer-events: none;
+}
+
+.blur-medium {
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+.blur-heavy {
+  filter: blur(4px);
+  pointer-events: none;
+}

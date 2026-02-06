@@ -1,0 +1,343 @@
+<form [formGroup]="whatSendForm">
+  <div class="flex flex-col gap-4">
+
+    <p-tabs [value]="currentTab" class="tab-border-square">
+      <p-tablist>
+        <p-tab [value]="0" (click)="changeTab(0)"
+               (keydown.enter)="changeTab(0)"
+        >
+          <div class="flex items-center justify-center gap-2">
+            <span class="pi pi-box"></span>
+            <span class="text-xs md:text-base">Medidas estándar</span>
+          </div>
+        </p-tab>
+        <p-tab [value]="1" (click)="changeTab(1)"
+               (keydown.enter)="changeTab(1)"
+        >
+          <div class="flex items-center justify-center gap-2 ">
+            <span class="pi pi-box"></span>
+            <span class="text-xs md:text-base">Medida personalizada</span>
+          </div>
+        </p-tab>
+
+      </p-tablist>
+      <p-tabpanels>
+        <p-tabpanel [value]="0">
+
+          <div class="flex flex-col gap-4">
+            <div class="hidden md:flex items-center justify-center gap-4">
+
+              @for (item of standardSizes; track item.value) {
+                <div
+                  class="flex flex-col items-center justify-center gap-2 border border-gray-300 rounded-md p-3 cursor-pointer hover:shadow-lg hover:border-highlight-focus-background w-32"
+                  [ngClass]="
+                  {
+                    'shadow-lg bg-primary-sutile border-highlight-focus-background': currentSize === item.value
+                  }"
+                  (click)="selectStandardSize(item.value)"
+                  (keydown.enter)="selectStandardSize(item.value)"
+                >
+
+                  <img [src]="item.imgSrc" alt="{{item.label}}" class="w-max-24 object-contain" />
+                  <span class="m-0 text-center text-[14px]">{{ item.label }}</span>
+
+                  <div class="flex justify-between text-[10px] gap-2">
+                    @if (item.dimensions) {
+                      <div class="flex flex-col justify-start">
+                        <span>Hasta</span>
+                        <span>{{ item.dimensions }}</span>
+                      </div>
+                    }
+                    <div class="flex flex-col items-center justify-end">
+                      <span>Hasta</span>
+                      <span class="text-right">{{ item.maxWeight }}</span>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+            <div class="flex md:hidden items-center justify-center gap-4">
+              <div class="flex flex-col gap-2 w-full">
+                <label for="standardSize">Elige la medida de tu envío</label>
+                <p-select
+                  [options]="standardSizes"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Haz clic aquí para seleccionar la medida"
+                  class="w-full"
+                  appendTo="body"
+                  id="standardSize"
+                  formControlName="standardSize"
+
+                >
+                  <ng-template #selectedItem let-selectedOption>
+
+                    <ng-container [ngTemplateOutlet]="itemTemplate"
+                                  [ngTemplateOutletContext]="{
+                                 showBorder:false,
+                                 $implicit: selectedOption,
+                                 item:selectedOption
+                                 }"
+                    ></ng-container>
+                  </ng-template>
+
+                  <ng-template let-item #item>
+                    <ng-container [ngTemplateOutlet]="itemTemplate"
+                                  [ngTemplateOutletContext]="{ $implicit: item,showBorder:true }"
+                    ></ng-container>
+                  </ng-template>
+                </p-select>
+              </div>
+            </div>
+
+            <div class="flex md:hidden">
+              <ng-container
+                *ngTemplateOutlet="articleCategoryTpl; context: { whatSendForm: whatSendForm }"
+              ></ng-container>
+            </div>
+
+
+            <div class="flex md:hidden">
+              <ng-container
+                *ngTemplateOutlet="confidentialInfoTpl"
+              ></ng-container>
+            </div>
+            <div class="flex md:hidden">
+
+              <ng-container
+                [ngTemplateOutlet]="nextButtonTpl"
+              ></ng-container>
+
+            </div>
+          </div>
+        </p-tabpanel>
+        <p-tabpanel [value]="1">
+
+          <div class="flex flex-col gap-4">
+            <div class="flex items-center justify-center gap-4">
+              <div class="grid lg:grid-cols-4 gap-4 min-w-0 w-full">
+
+                <div class="flex flex-col gap-2">
+                  <label for="large"
+                         [pTooltip]="'Mide el lado más largo de tu paquete. (Generalmente, es la medida mayor)'"
+                         tooltipPosition="right" placeholder="Right">Largo (cm)</label>
+                  <p-inputnumber
+                    inputId="large"
+                    placeholder="cm"
+                    [max]="110"
+                    [maxlength]="3"
+                    formControlName="large"
+                    [ngClass]="
+                    {
+                      'ng-invalid': whatSendForm.get('large')?.invalid
+                    }"
+                    appValidation
+                    appValidationShowValidationOn="blur"
+                    appValidationErrorMessage="Ingresa un largo válido entre 1 y 110 cm."
+                  ></p-inputnumber>
+
+
+                </div>
+                <div class="flex flex-col gap-2">
+                  <label for="width" [pTooltip]="'Mide el lado más corto de la base. (Debe ser menor o igual al Largo)'"
+                         tooltipPosition="right" placeholder="Right"
+                  >Ancho (cm)</label>
+                  <p-inputnumber
+                    inputId="width"
+                    placeholder="cm"
+                    [max]="1000"
+                    [maxlength]="3"
+                    formControlName="width"
+                    [ngClass]="
+                    {
+                      'ng-invalid': whatSendForm.get('width')?.invalid
+                    }"
+                    appValidation
+                    appValidationShowValidationOn="blur"
+                    appValidationErrorMessage="Ingresa un ancho válido entre 1 y 110 cm."
+                  ></p-inputnumber>
+
+
+                </div>
+                <div class="flex flex-col gap-2">
+                  <label for="height"
+                         [pTooltip]="'Mide la distancia de la base a la tapa (la altura total del paquete)'"
+                         tooltipPosition="right" placeholder="Right"
+                  >Alto (cm)</label>
+                  <p-inputnumber
+                    inputId="height"
+                    placeholder="cm"
+                    [max]="1000"
+                    [maxlength]="3"
+                    formControlName="height"
+                    [ngClass]="
+                    {
+                      'ng-invalid': whatSendForm.get('height')?.invalid
+                    }"
+                    appValidation
+                    appValidationShowValidationOn="blur"
+                    appValidationErrorMessage="Ingresa un Alto válido entre 1 y 110 cm."
+                  ></p-inputnumber>
+
+
+                </div>
+                <div class="flex flex-col gap-2">
+                  <label for="weight">Peso (kg)</label>
+                  <p-inputnumber
+                    inputId="weight"
+                    placeholder="kg"
+                    [max]="1000"
+                    [maxlength]="3"
+                    formControlName="weight"
+                    [ngClass]="
+                    {
+                      'ng-invalid': whatSendForm.get('weight')?.invalid
+                    }"
+                    appValidation
+                    appValidationShowValidationOn="blur"
+                    appValidationErrorMessage="El peso debe ser entre 0.1 y 25 kg."
+                  ></p-inputnumber>
+
+
+                </div>
+              </div>
+            </div>
+
+
+            <p-message severity="secondary" icon="pi pi-info-circle" styleClass="mb-2">
+              Si el peso o medidas ingresadas no coinciden con tu paquete, <span class="font-bold text-theme-secondary">se podría requerir que pagues un ajuste a la tarifa</span>.
+            </p-message>
+
+          </div>
+
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+
+    <div class="hidden md:flex border border-gray-300 rounded-2xl p-4 gap-4 bg-white">
+
+      <ng-container
+        *ngTemplateOutlet="articleCategoryTpl; context: { whatSendForm: whatSendForm }"
+      ></ng-container>
+
+    </div>
+
+    <div class="hidden md:flex">
+      <ng-container
+        *ngTemplateOutlet="confidentialInfoTpl"
+      ></ng-container>
+    </div>
+    <div class="hidden md:flex">
+      <ng-container
+        [ngTemplateOutlet]="nextButtonTpl"
+      ></ng-container>
+    </div>
+  </div>
+
+
+</form>
+
+<ng-template #itemTemplate let-item let-showBorder="showBorder">
+  <div class="flex items-center gap-2  w-full justify-between"
+       [ngClass]="
+        {
+          'px-6 py-2 border rounded-lg border-theme-light-gray': showBorder
+        }"
+  >
+    <div class="flex gap-3 items-center">
+      <span class="pi pi-box"></span>
+      <div class="flex gap-2 text-sm font-bold">
+        {{ item.label }}
+      </div>
+    </div>
+    <div class="flex gap-3 items-center">
+      @if (item.dimensions) {
+        <div class="flex flex-col text-[10px]">
+          <span>Hasta</span>
+          <span class="font-bold">{{ item.dimensions }}</span>
+        </div>
+
+      }
+      <div class="flex flex-col text-[10px]">
+        <span>Hasta</span>
+        <span class="font-bold">{{ item.maxWeight }}</span>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #articleCategoryTpl let-whatSendForm="whatSendForm">
+  <div class="grid lg:grid-cols-2 gap-4 min-w-0 w-full" [formGroup]="whatSendForm">
+    <div class="flex flex-col gap-2 min-w-0">
+      <label for="category">Categoría</label>
+
+      <p-select
+        [ngClass]="
+            {
+                'ng-invalid': whatSendForm.get('category')?.invalid
+            }"
+        [options]="articleCategories"
+        appendTo="body"
+        class="w-full min-w-0"
+        formControlName="category"
+        name="category"
+        optionLabel="name"
+        optionValue="id"
+        placeholder="Elige la categoría"
+        appValidation
+        appValidationShowValidationOn="blur"
+        appValidationErrorMessage="Seleccione una categoría."
+      />
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label for="articleValue">¿Cuál es el valor de tu artículo?</label>
+      <p-inputnumber
+        inputId="articleValue"
+        mode="currency"
+        currency="PEN"
+        locale="es-PE"
+        placeholder="S/ 00.00"
+        formControlName="articleValue"
+        [ngClass]="
+            {
+              'ng-invalid': whatSendForm.get('articleValue')?.invalid
+            }"
+      ></p-inputnumber>
+      <small class="text-xs text-gray-secondary ">Necesario para el seguro de tu envío en caso de pérdida</small>
+      <app-input-error-message
+        errorText="No ingresaste un número válido."
+        [control]="whatSendForm.get('articleValue')"
+      ></app-input-error-message>
+
+    </div>
+
+    <div class="flex items-center">
+      <p-checkbox inputId="isFragile" name="isFragile" [binary]="true" formControlName="isFragile"
+                  [trueValue]="1"
+                  [falseValue]="0"
+      />
+      <label for="isFragile" class="font-normal ml-2"> Producto frágil </label>
+    </div>
+
+  </div>
+</ng-template>
+
+<ng-template #confidentialInfoTpl>
+  <p-message severity="secondary" icon="pi pi-info-circle" [ngClass]="'mb-2 w-full'">
+    <div class="text-[10px] md:text-sm  w-full">
+      Esta información es confidencial y se utilizará únicamente como respaldo en caso de que surja algún inconveniente
+      con tu envío.
+    </div>
+  </p-message>
+</ng-template>
+
+<ng-template #nextButtonTpl>
+  <div class="grid w-full">
+    <p-button label="Siguiente" severity="primary" styleClass="w-full"
+              (click)="handleSubmitSender()"
+              (keydown.enter)="handleSubmitSender()"
+              [disabled]="whatSendForm.invalid"
+    />
+  </div>
+</ng-template>

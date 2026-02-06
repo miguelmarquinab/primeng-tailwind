@@ -1,0 +1,8 @@
+.p-inputtext {
+    font-family: 'Lato', sans-serif !important;
+    font-size: var(--default-font-size) !important;
+
+  &.ng-invalid.ng-dirty {
+    border-color: var(--p-inputtext-invalid-border-color);
+  }
+}

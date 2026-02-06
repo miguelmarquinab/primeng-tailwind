@@ -1,0 +1,48 @@
+<div class="flex flex-col gap-3">
+  <app-shipping-summary-step-header caption="Origen"></app-shipping-summary-step-header>
+  <div class="flex gap-2">
+    <app-shipping-summary-step-timeline-marker>
+    </app-shipping-summary-step-timeline-marker>
+
+    <div class="border border-surface-300 rounded-2xl bg-surface-100 pl-5 pt-3 pb-3 pr-5 flex flex-col gap-2 w-full">
+
+      @if (whoSend) {
+        <div class="flex flex-col gap-1 items-start">
+
+          <div class="flex gap-1 items-center">
+            <img src="shared/images/user.svg" class="w-5" alt="" />
+            <span
+              class="text-sm text-color-ultramarine font-bold">{{ whoSend.first_names | titlecase}} {{ whoSend.last_name  | titlecase}}</span>
+          </div>
+          <div class="flex gap-1 items-center">
+            <img src="shared/images/wallet.svg" class="w-5" alt="" />
+            <div class="flex flex-1 flex-row w-full text-color-secondary">
+              <span class="text-sm text-color-ultramarine font-bold">{{ currentDocumentTypeLabel }}: <span class="text-sm text-gray-secondary"> {{ whoSend.document_number }}</span></span>
+            </div>
+
+          </div>
+
+        </div>
+
+        <p-divider style="margin-top: 0; margin-bottom: 0"></p-divider>
+      }
+      <div class="flex gap-2 items-center">
+        @if (!origin) {
+          <img src="shared/images/shop.svg" class="w-5" alt="" />
+          <span class="text-sm text-color-ultramarine font-bold">Aún no has seleccionado un origen.</span>
+        } @else {
+          <img src="shared/images/store-04.svg" class="w-5" alt="" />
+          <div class="flex flex-col w-full text-color-secondary">
+            {{ origin.headquarter_name  | titlecase }}
+          </div>
+        }
+      </div>
+      @if (origin) {
+        <div class="text-sm text-gray-secondary">
+          En {{ origin.headquarter_name | titlecase }}, puedes dejar tu paquete en cualquier tienda o agente de Olva.
+        </div>
+      }
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,49 @@
+.p-accordion {
+  border-color: var(--theme-surface-200) !important;
+  border-width: 1px !important;
+  border-radius: 12px;
+  //font-size: 14px;
+
+  .p-accordionheader {
+    padding: 16px !important;
+    //height: 45px;
+  }
+
+  .p-accordionpanel:first-child > .p-accordionheader {
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    //height: 45px;
+  }
+
+  .p-accordionpanel-active {
+    .p-accordionheader {
+      background-color: var(--theme-surface-200) !important;
+      color: var(--theme-accordion-header-font-color) !important;
+
+    }
+  }
+
+
+  .p-accordioncontent-content {
+    background-color: var(--theme-accordion-container-bg-color) !important;
+    border-color: var(--theme-surface-200) !important;
+    border-width: 0px !important;
+  }
+}
+
+@media (max-width: theme('screens.md')) {
+  .p-accordion {
+    .p-accordioncontent-content {
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+  }
+
+  .accordioncontent-without-padding {
+    .p-accordioncontent-content {
+      padding: 0 !important;
+    }
+  }
+
+}
+

@@ -1,0 +1,73 @@
+@if (loading()) {
+  <app-loading></app-loading>
+}
+@if (!tokenIsLoading) {
+
+  <div class="flex flex-col h-full">
+    <app-shipment-record-steps (stepChanged)="setCurrentStep($event)"
+                               [stepNumber]="stepNumber"
+    ></app-shipment-record-steps>
+
+    <div class="bg-slate flex-1 flex flex-col items-center">
+
+      <div class="flex flex-col lg:flex-row w-full h-full gap-4 lg:p-6">
+        <div class="flex flex-col content-center  w-full lg:flex-1 h-full  ">
+          <div class="bg-white lg:rounded-4xl h-12/12  p-3 md:p-6 shadow-lg">
+
+            <div class="text-2xl font-montserrat font-bold text-center lg:text-left text-button-text-plain ">Registra tu
+              envío
+            </div>
+
+            @if (stepNumber === 1) {
+              <app-shipment-record-step1></app-shipment-record-step1>
+            }
+
+            @if (stepNumber === 2) {
+              <app-shipment-record-step2></app-shipment-record-step2>
+            }
+            @if (stepNumber === 3) {
+              <app-shipment-record-step3></app-shipment-record-step3>
+            }
+
+
+          </div>
+          <div class="flex  lg:hidden w-full sticky bottom-0 bg-white p-6 z-1000">
+            <p-button styleClass="lg:hidden w-full"
+                      class="w-full"
+                      [rounded]="true"
+                      variant="outlined"
+                      icon="pi pi-box"
+                      label="Ver resumen de envío"
+                      severity="secondary"
+                      (click)="showSummary()"
+                      (keydown.enter)="showSummary()"
+            >
+            </p-button>
+
+          </div>
+        </div>
+        <div class="hidden lg:flex flex-col w-full lg:w-[380px] h-12/12 flex-shrink-0">
+          <div class="bg-white rounded-4xl h-12/12 p-6 shadow-lg">
+            @if (!isMobile()) {
+              <app-shipping-summary></app-shipping-summary>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p-drawer [(visible)]="openSummaryDrawer" position="bottom" [style]="{height: 'auto'}"
+            styleClass="rounded-t-3xl"
+  >
+    <ng-template #closeicon>
+      <div class="flex justify-center items-center w-full h-full">
+        <i class="pi pi-minus text-xl"></i>
+      </div>
+    </ng-template>
+    @if (openSummaryDrawer) {
+      <app-shipping-summary></app-shipping-summary>
+    }
+  </p-drawer>
+}
+

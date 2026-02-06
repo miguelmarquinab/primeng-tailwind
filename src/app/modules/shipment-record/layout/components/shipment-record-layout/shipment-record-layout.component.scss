@@ -1,0 +1,14 @@
+.p-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: center !important;
+  flex-shrink: 0;
+  padding: var(--p-drawer-header-padding);
+  height: 10px;
+}
+
+.p-drawer {
+  .p-button.p-button-secondary {
+    border-color: transparent !important;
+  }
+}

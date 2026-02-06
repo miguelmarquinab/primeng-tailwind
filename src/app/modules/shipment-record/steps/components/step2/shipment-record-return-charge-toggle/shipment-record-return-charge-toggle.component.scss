@@ -1,0 +1,13 @@
+.return-charge-folios {
+  width: 140px;
+  min-width: 140px;
+}
+
+:host ::ng-deep .return-charge-folios {
+  max-width: 100%;
+}
+
+:host ::ng-deep .return-charge-folios .p-inputnumber,
+:host ::ng-deep .return-charge-folios .p-inputnumber-input {
+  width: 100%;
+}

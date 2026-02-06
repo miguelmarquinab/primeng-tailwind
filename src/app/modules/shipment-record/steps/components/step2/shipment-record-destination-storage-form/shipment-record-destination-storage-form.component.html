@@ -1,0 +1,174 @@
+<div class="flex flex-col gap-4">
+  <div class="relative">
+    <div class="md:absolute top-2 left-2 z-1000 w-full md:w-108 max-w-full">
+
+      @if (storeDestinationForm) {
+        <form [formGroup]="storeDestinationForm">
+          <ng-container
+            *ngTemplateOutlet="addressSearchTpl; context: {form: storeDestinationForm }"
+          ></ng-container>
+
+        </form>
+
+      }
+    </div>
+    @if (!isMobile()) {
+      <app-shipment-record-destination-storage-map
+        [destinationStore]="currentDestination"
+      ></app-shipment-record-destination-storage-map>
+    }
+
+
+    @if (isMobile()) {
+      @if (modalVisible) {
+
+        <div class="modal-under-resume" role="dialog" aria-modal="true">
+          <button class="modal-close absolute top-4 right-4 z-1000 bg-transparent hover:bg-gray-100  "
+                  (click)="modalVisible=false"
+                  aria-label="Cerrar">
+            <img src="shared/images/close-modal.svg" alt="Close Icon" class="w-3 h-3" />
+          </button>
+
+          <div class="modal-content">
+
+            <app-shipment-record-destination-storage-map
+              [destinationStore]="currentDestination"
+            ></app-shipment-record-destination-storage-map>
+
+            <div class="absolute bottom-32 p-4 z-1100 w-full max-w-full">
+              <ng-container
+                *ngTemplateOutlet="addressSearchTpl; context: {form: storeDestinationForm }"
+              ></ng-container>
+            </div>
+          </div>
+        </div>
+
+      }
+    }
+  </div>
+
+  <ng-content select="[returnChargeToggle]"></ng-content>
+</div>
+
+
+<ng-template #destinationsContainer>
+  <div class="flex flex-col overflow-y-auto gap-2 h-32 md:h-80">
+    @for (storeDestination of storeDestinationFiltered; track storeDestination) {
+      <app-shipment-record-destination-card
+        [destination]="storeDestination"
+        (click)="selectDestination(storeDestination)"
+        (keydown.enter)="selectDestination(storeDestination)"
+        [selected]="currentDestination.ubigeo_id === storeDestination.ubigeo_id"
+      ></app-shipment-record-destination-card>
+    }
+  </div>
+</ng-template>
+
+
+<ng-template #addressSearchTpl let-form="form">
+
+  <div class="flex flex-col gap-2" [formGroup]="form">
+    <div class="flex flex-col gap-1">
+
+      <input
+        pInputText
+        id="destination"
+        placeholder="Busca un distrito o departamento"
+        class="w-full"
+        formControlName="destination"
+        [ngClass]="
+              {
+                  'ng-invalid': form.get('destination')?.invalid
+              }"
+        (focus)="showModal()"
+      />
+    </div>
+
+    @if (storeDestinationFiltered.length === 0) {
+      <ng-container
+        [ngTemplateOutlet]="searchEmptyTpl"
+      ></ng-container>
+    } @else {
+      @if (storeDestinationsData) {
+        <div class="flex flex-col gap-2 h-48">
+          @if(!isMobile() ) {
+            <ng-container
+              [ngTemplateOutlet]="addressTabsContainerTpl"
+            ></ng-container>
+
+          }
+          @if(isMobile() && modalVisible) {
+
+            <ng-container
+              [ngTemplateOutlet]="addressTabsContainerTpl"
+            ></ng-container>
+
+            <div class="w-full">
+              <p-button severity="primary" label="Confirmar dirección" styleClass="w-full" (click)="modalVisible=false"></p-button>
+            </div>
+          }
+        </div>
+      }
+    }
+
+
+
+  </div>
+</ng-template>
+
+<ng-template #addressTabsContainerTpl>
+  <p-tabs [value]="currentTab">
+    <p-tablist>
+      <p-tab [value]="0"
+             (click)="changeTab(0)"
+             (keydown.enter)="changeTab(0)"
+      >
+        <div class="flex items-center justify-center gap-2">
+          <span class="pi pi-home"></span>
+          <span>Todo</span>
+        </div>
+      </p-tab>
+      <p-tab [value]="1"
+             (click)="changeTab(1)"
+             (keydown.enter)="changeTab(1)"
+      >
+        <div class="flex items-center justify-center gap-2 ">
+          <span class="pi pi-shop"></span>
+          <span>Tienda</span>
+        </div>
+      </p-tab>
+      <p-tab [value]="2"
+             (click)="changeTab(2)"
+             (keydown.enter)="changeTab(2)"
+      >
+        <div class="flex items-center justify-center gap-2 ">
+          <span class="pi pi-shop"></span>
+          <span>Agente</span>
+        </div>
+      </p-tab>
+    </p-tablist>
+    <p-tabpanels style="padding: 8px;">
+      <p-tabpanel [value]="0">
+        <ng-container *ngTemplateOutlet="destinationsContainer"></ng-container>
+      </p-tabpanel>
+      <p-tabpanel [value]="1">
+        <ng-container *ngTemplateOutlet="destinationsContainer"></ng-container>
+      </p-tabpanel>
+      <p-tabpanel [value]="2">
+        <ng-container *ngTemplateOutlet="destinationsContainer"></ng-container>
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
+</ng-template>
+
+<ng-template #searchEmptyTpl>
+  <div class="flex flex-col gap-2 border border-theme-surface-400 rounded-xl px-8 py-3 bg-white ">
+    <div class="flex gap-2 items-center">
+      <span class="pi pi-search"></span>
+      <span class="font-bold text-sm">Busca un departamento, distrito o localidad</span>
+    </div>
+    <div class="text-sm  font-medium text-center">
+      Aquí te mostraremos las tiendas/agentes recomendados
+    </div>
+  </div>
+</ng-template>

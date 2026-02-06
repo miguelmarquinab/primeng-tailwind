@@ -1,0 +1,139 @@
+name: CI/CD Registro de Envios Frontend
+
+on:
+  workflow_call:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Which environment to deploy to"
+        required: true
+        default: "dev"
+        type: choice
+        options: ["dev", "prod"]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ inputs.environment || 'dev' }}
+  cancel-in-progress: false
+
+run-name: ${{ github.event_name == 'workflow_dispatch' && format('Deploy Registro de Envios Frontend - ENV:{0} - Branch:{1}', inputs.environment, github.ref_name) || '' }}
+
+env:
+  NODE_VERSION: "24"
+  BUILD_DIR: dist/app
+
+jobs:
+  build-dev:
+    if: ${{ inputs.environment == 'dev' }}
+    name: Build DEV
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Build application (DEV)
+        run: npm run build:dev
+
+      - name: Archive build output
+        run: tar -czf build.tar.gz -C "${{ env.BUILD_DIR }}" .
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: registro-envios-frontend-dev
+          path: build.tar.gz
+          if-no-files-found: error
+
+  deploy-dev:
+    if: ${{ inputs.environment == 'dev' }}
+    needs: build-dev
+    name: Deploy DEV
+    environment: DEV
+    runs-on: [services-dev]
+    env:
+      SSH_HOST: ${{ vars.DEV_163 }}
+      SSH_PORT: ${{ vars.DEV_PORT }}
+      SSH_USER: ${{ vars.DEV_USERNAME_163 }}
+      DEPLOY_PATH: ${{ vars.DEV_REGISTRO_ENVIOS_FRONTEND_PATH }}
+      KEY_PATH_DEV: ${{ vars.DEV_CICD_KEY_PATH }}
+      TMP_PATH: /tmp/registro-envios-frontend
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: registro-envios-frontend-dev
+
+      - name: Verificar artifact
+        run: ls -lh
+
+      - name: Subir build al servidor final via SCP (desde self-hosted)
+        shell: bash
+        env:
+          SSH_HOST: ${{ env.SSH_HOST }}
+          SSH_PORT: ${{ env.SSH_PORT }}
+          SSH_USER: ${{ env.SSH_USER }}
+          KEY_PATH_DEV: ${{ env.KEY_PATH_DEV }}
+          TMP_PATH: ${{ env.TMP_PATH }}
+        run: |
+          set -euo pipefail
+
+          if [ ! -f "build.tar.gz" ]; then
+            echo "build.tar.gz no encontrado en el runner" >&2
+            exit 1
+          fi
+
+          echo "Subiendo build.tar.gz a ${SSH_USER}@${SSH_HOST}:${TMP_PATH}"
+
+          ssh -i "${KEY_PATH_DEV}" -p "${SSH_PORT}" -o StrictHostKeyChecking=no \
+            "${SSH_USER}@${SSH_HOST}" "mkdir -p '${TMP_PATH}'"
+
+          scp -i "${KEY_PATH_DEV}" -P "${SSH_PORT}" -o StrictHostKeyChecking=no \
+            build.tar.gz "${SSH_USER}@${SSH_HOST}:${TMP_PATH}/build.tar.gz"
+
+      - name: Desplegar build en el servidor final (DEV)
+        shell: bash
+        env:
+          SSH_HOST: ${{ env.SSH_HOST }}
+          SSH_PORT: ${{ env.SSH_PORT }}
+          SSH_USER: ${{ env.SSH_USER }}
+          KEY_PATH_DEV: ${{ env.KEY_PATH_DEV }}
+          DEPLOY_PATH: ${{ env.DEPLOY_PATH }}
+          TMP_PATH: ${{ env.TMP_PATH }}
+        run: |
+          set -euo pipefail
+
+          echo "Deploy en ${SSH_USER}@${SSH_HOST}, ruta ${DEPLOY_PATH}"
+
+          ssh -i "${KEY_PATH_DEV}" -p "${SSH_PORT}" -o StrictHostKeyChecking=no \
+            "${SSH_USER}@${SSH_HOST}" "
+              set -euo pipefail
+
+              DEPLOY_PATH=\"${DEPLOY_PATH}\"
+              TMP_PATH=\"${TMP_PATH}\"
+
+              if [ -z \"\$DEPLOY_PATH\" ]; then
+                echo 'DEPLOY_PATH está vacío' >&2
+                exit 1
+              fi
+
+              echo \"Usando DEPLOY_PATH=\$DEPLOY_PATH\"
+              echo \"Usando TMP_PATH=\$TMP_PATH\"
+
+              mkdir -p \"\$DEPLOY_PATH\" \"\$TMP_PATH\"
+              rm -rf \"\${DEPLOY_PATH:?}/\"*
+              tar -xzf \"\$TMP_PATH/build.tar.gz\" -C \"\$DEPLOY_PATH\"
+              rm -f \"\$TMP_PATH/build.tar.gz\"
+
+              echo \"Deploy finished for dev at \$DEPLOY_PATH\"
+            "

@@ -1,0 +1,23 @@
+.p-step-title {
+  color: var(--theme-gray-color) !important;
+}
+
+.p-step-active {
+  .p-step-number {
+    background-color: var(--theme-color-secondary) !important;
+    color: var(--theme-orange-color) !important;
+    border: 2px solid var(--theme-color-secondary) !important;
+
+  }
+
+  .p-step-title {
+    color: var(--theme-color-secondary) !important;
+  }
+}
+
+.p-step-number {
+  font-weight: 700 !important;
+  height: 40px !important;
+  width: 40px !important;
+  font-family: Inter, serif !important;
+}

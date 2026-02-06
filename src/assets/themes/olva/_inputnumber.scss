@@ -1,0 +1,20 @@
+.p-inputnumber-increment-button {
+  background-color: var(--theme-ultramarine-color) !important;
+  color: white;
+}
+
+.p-inputnumber-decrement-button {
+  background-color: var(--theme-gray-color) !important;
+  color: white;
+}
+
+@media (max-width: theme('screens.md')) {
+  .p-inputnumber-increment-button {
+    background-color: var(--theme-ultramarine-color) !important;
+    color: white;
+  }
+  .p-inputnumber-decrement-button {
+    background-color: var(--theme-ultramarine-color) !important;
+    color: white;
+  }
+}

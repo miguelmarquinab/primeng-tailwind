@@ -1,0 +1,20 @@
+@use 'colors';
+
+:root {
+  --p-stepper-step-title-color: var(--theme-ultramarine-color) !important;
+  --p-select-option-selected-focus-color: #1E293B !important;
+  --p-select-focus-border-color: var(--theme-focus-border-color) !important;
+  --p-inputtext-focus-border-color: var(--theme-focus-border-color) !important;
+  --p-button-primary-border-color: var(--button-primary-bg-color) !important;
+  --p-message-secondary-background: var(--message-secondary-bg-color) !important;
+  --p-message-secondary-color: #334155 !important;
+  --p-checkbox-checked-border-color: var(--theme-color-secondary) !important;
+  --p-checkbox-checked-background: var(--theme-color-secondary) !important;
+  --p-checkbox-checked-hover-background: var(--theme-color-secondary) !important;
+  --p-checkbox-checked-hover-border-color: var(--theme-color-secondary) !important;
+  --p-tabs-active-bar-height: 0px !important;
+
+  --p-stepper-separator-active-background:  var(--theme-color-secondary) !important;
+
+}
+

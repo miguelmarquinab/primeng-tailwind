@@ -1,0 +1,31 @@
+.p-button {
+  height: 38px !important;
+  border-radius: 28px !important;
+  padding: 8px 16px !important;
+
+  &.p-button-primary {
+    background-color: var(--button-primary-bg-color) !important;
+    border-color: var(--button-primary-bg-color) !important;
+
+    &:hover {
+      background-color: var(--button-primary-hover-bg-color) !important;
+      border-color: var(--button-primary-hover-bg-color) !important;
+    }
+
+    &:disabled {
+      border-color: var(--color-surface-300) !important;
+      background-color: var(--theme-disable-color) !important;
+      cursor: not-allowed;
+      color: var(--color-surface-400) !important;
+    }
+
+  }
+
+  &.p-button-secondary {
+    background-color: var(--color-surface-0) !important;
+    border-color: var(--theme-border-color-secondary) !important;
+    color: var(--theme-border-color-secondary) !important;
+    font-weight: 500;
+
+  }
+}

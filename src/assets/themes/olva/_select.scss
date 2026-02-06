@@ -1,0 +1,18 @@
+.p-select-option {
+  &.p-select-option-selected {
+    background: #F1F5F9 !important;
+    color: #1E293B !important;
+
+    &.p-focus {
+      background: #F1F5F9 !important;
+      color: #1E293B !important;
+    }
+  }
+
+}
+
+.p-select{
+  .p-select-label{
+    font-size: var(--font-size-base) !important;
+  }
+}

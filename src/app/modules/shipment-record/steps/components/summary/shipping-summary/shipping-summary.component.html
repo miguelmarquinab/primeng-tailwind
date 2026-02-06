@@ -1,0 +1,31 @@
+<div class="flex flex-col h-full">
+  <div class="hidden lg:block text-center text-lg text-color-ultramarine font-bold">Resumen de envío</div>
+  <div class="hidden lg:block">
+    <p-divider />
+  </div>
+
+  <div class="flex flex-col flex-1 gap-4">
+    <div class="flex flex-col gap-4">
+      <app-shipping-summary-step-origin
+        [whoSend]="whoSend"
+        [origin]="origin"
+      >
+      </app-shipping-summary-step-origin>
+
+      <app-shipping-summary-step-destinations>
+      </app-shipping-summary-step-destinations>
+
+    </div>
+
+    <div class="flex flex-col border border-color-gray-sutile bg-surface-100 rounded-xl p-4 gap-2 mt-auto">
+      <div class="flex justify-between">
+        <div class="text-color-main">Cantidad de paquetes</div>
+        <div class="text-color-main">0</div>
+      </div>
+      <div class="flex justify-between">
+        <div class="text-color-main">Subtotal</div>
+        <div class="text-color-secondary font-bold">S/. 00.00</div>
+      </div>
+    </div>
+  </div>
+</div>

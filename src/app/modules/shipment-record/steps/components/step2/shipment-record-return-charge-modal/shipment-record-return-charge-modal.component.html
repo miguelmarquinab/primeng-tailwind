@@ -1,0 +1,71 @@
+<div class="flex flex-col gap-4">
+  <div class="flex flex-col gap-1 text-center">
+    <div class="text-lg font-bold text-color-secondary">
+      {{ 'shipmentRecord.returnCharge.modalTitle' | translate }}
+    </div>
+    <div class="text-sm text-theme-text-800">
+      {{ 'shipmentRecord.returnCharge.modalDescription' | translate }}
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-3">
+    <p-tabs [value]="currentTab">
+      <p-tablist>
+        <p-tab [value]="0" (click)="changeTab(0)"
+               (keydown.enter)="changeTab(0)"
+
+        >
+          <div class="flex items-center justify-center gap-2">
+            <span class="pi pi-home"></span>
+            <span>{{ 'shipmentRecord.returnCharge.homeOption' | translate }}</span>
+          </div>
+        </p-tab>
+        <p-tab [value]="1" (click)="changeTab(1)"
+               (keydown.enter)="changeTab(1)"
+        >
+          <div class="flex items-center justify-center gap-2">
+            <span class="pi pi-shop"></span>
+            <span>{{ 'shipmentRecord.returnCharge.storeOption' | translate }}</span>
+          </div>
+        </p-tab>
+      </p-tablist>
+      <p-tabpanels>
+        <p-tabpanel [value]="0">
+          @if (currentTab === 0) {
+            <app-shipment-record-destination-address-form
+              #homeReturnForm
+              [homeDestinations]="homeDestinationsData"
+              (formChanged)="onHomeAddressChanged($event)"
+            ></app-shipment-record-destination-address-form>
+          }
+        </p-tabpanel>
+        <p-tabpanel [value]="1">
+          @if (currentTab === 1) {
+            <app-shipment-record-destination-storage-form
+              #storeReturnForm
+              [storeDestinationsData]="storeDestinationsData"
+              (formChanged)="onStoreDestinationChanged($event)"
+            ></app-shipment-record-destination-storage-form>
+          }
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <p-button
+      [label]="'shipmentRecord.returnCharge.confirm' | translate"
+      severity="primary"
+      styleClass="w-full"
+      [disabled]="!canConfirm"
+      (click)="confirmReturnCharge()"
+      (keydown.enter)="confirmReturnCharge()"
+    />
+    <button type="button" class="text-sm text-color-ultramarine underline" (click)="cancel()"
+
+            (keydown.enter)="cancel()"
+    >
+      {{ 'shipmentRecord.returnCharge.cancel' | translate }}
+    </button>
+  </div>
+</div>

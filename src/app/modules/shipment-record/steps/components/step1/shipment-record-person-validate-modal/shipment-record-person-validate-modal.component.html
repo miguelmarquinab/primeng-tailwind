@@ -1,0 +1,43 @@
+<div class="flex flex-col gap-2">
+  <span class="text-lg text-center font-bold text-color-secondary">Validación del primer apellido</span>
+  @if (personForm) {
+    <form [formGroup]="personForm" (ngSubmit)="onSubmitHandler()">
+      <div class="flex flex-col gap-2">
+        <div class="text-lg text-center">Ingresa tu primer apellido tal como aparece en tu DNI.</div>
+
+        <div class="flex flex-col gap-2">
+          <label for="firstName">Primer apellido</label>
+          <input
+            pInputText
+            id="firstName"
+            placeholder="Ingresa tu primer apellido"
+            formControlName="firstName"
+            [maxlength]="50"
+            [ngClass]="
+          {
+              'ng-dirty ng-invalid': personForm.get('firstName')?.invalid || isValidationFailed
+          }"
+            appRestrictChars
+            [regexPatternAllowed]="AppConstant.NAME_REGEX_PATTERN"
+          />
+
+          @if (isValidationFailed) {
+            <span class="error-label text-xs font-normal w-full">No pudimos validar el apellido con tu DNI.<br> Verifícalo e inténtalo otra vez.</span>
+          }
+
+        </div>
+        <div class="grid w-full mt-3">
+          <p-button label="Siguiente" severity="primary"
+                    styleClass="w-full"
+                    [disabled]="personForm.invalid"
+                    (click)="onSubmitHandler()"
+                    (keydown.enter)="onSubmitHandler()"
+          />
+        </div>
+
+      </div>
+    </form>
+  }
+
+
+</div>

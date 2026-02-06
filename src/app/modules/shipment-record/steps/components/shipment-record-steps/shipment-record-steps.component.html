@@ -1,0 +1,20 @@
+<div class="w-full hidden lg:flex justify-center min-h-16 items-center">
+  <div class="w-1/2">
+    <p-stepper [value]="stepNumber">
+      <p-step-list>
+        <p-step [value]="1"
+                (click)="stepChangeHandler(1)"
+                (keydown.enter)="stepChangeHandler(1)"
+                [disabled]="stepsDisabled[0]">Datos de origen</p-step>
+        <p-step [value]="2"
+                (click)="stepChangeHandler(2)"
+                (keydown.enter)="stepChangeHandler(2)"
+                [disabled]="stepsDisabled[1]">Datos de envío</p-step>
+        <p-step [value]="3"
+                (click)="stepChangeHandler(3)"
+                (keydown.enter)="stepChangeHandler(3)"
+                [disabled]="stepsDisabled[2]">Confirmación y Pago</p-step>
+      </p-step-list>
+    </p-stepper>
+  </div>
+</div>

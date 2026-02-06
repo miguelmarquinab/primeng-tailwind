@@ -1,0 +1,19 @@
+<div class="flex flex-col gap-3">
+  <app-shipping-summary-step-header caption="Destino(s)"></app-shipping-summary-step-header>
+  @for (destination of destinations; track destination){
+    <div class="flex flex-col gap-3">
+      <div class="flex gap-2">
+        <app-shipping-summary-step-timeline-marker>
+        </app-shipping-summary-step-timeline-marker>
+        <div class="border border-surface-300 rounded-2xl bg-surface-100 pl-5 pt-3 pb-3 pr-5 flex flex-row gap-2 w-full">
+          <img src="shared/images/shop.svg" class="w-5" alt="" />
+          <span class="text-sm text-color-ultramarine font-bold">Aún no has registrado un envío.</span>
+        </div>
+      </div>
+
+    </div>
+
+  }
+
+
+</div>

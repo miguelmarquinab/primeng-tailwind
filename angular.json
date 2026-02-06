@@ -1,0 +1,201 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "olva-archetype-angular-frontend": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss",
+          "type": "component"
+        },
+        "@schematics/angular:service": {
+          "type": "service"
+        },
+        "@schematics/angular:directive": {
+          "type": "directive"
+        },
+        "@schematics/angular:guard": {
+          "typeSeparator": "."
+        },
+        "@schematics/angular:interceptor": {
+          "typeSeparator": "."
+        },
+        "@schematics/angular:module": {
+          "typeSeparator": "."
+        },
+        "@schematics/angular:pipe": {
+          "typeSeparator": "."
+        },
+        "@schematics/angular:resolver": {
+          "typeSeparator": "."
+        }
+      },
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": "dist/app",
+            "browser": "src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "public"
+              }
+            ],
+            "styles": [
+              "src/styles.scss",
+              "node_modules/leaflet/dist/leaflet.css"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": true
+                },
+                "fonts": {
+                  "inline": false
+                }
+              },
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ]
+            },
+            "qa": {
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": true
+                },
+                "fonts": {
+                  "inline": false
+                }
+              },
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.qa.ts"
+                }
+              ]
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.dev.ts"
+                }
+              ]
+            },
+            "localhost": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "localhost"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "olva-archetype-angular-frontend:build:production"
+            },
+            "development": {
+              "buildTarget": "olva-archetype-angular-frontend:build:development"
+            },
+            "qa": {
+              "buildTarget": "olva-archetype-angular-frontend:build:qa"
+            },
+            "localhost": {
+              "buildTarget": "olva-archetype-angular-frontend:build:localhost"
+            }
+          },
+          "defaultConfiguration": "localhost"
+        },
+        "extract-i18n": {
+          "builder": "@angular/build:extract-i18n"
+        },
+        "test": {
+          "builder": "@angular/build:karma",
+          "options": {
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
+            "tsConfig": "tsconfig.spec.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "public"
+              }
+            ],
+            "styles": [
+              "src/styles.scss"
+            ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "schematicCollections": [
+      "angular-eslint"
+    ],
+    "analytics": "dfbf1ba1-2ece-4f32-9914-5dd4213aa5d0"
+  }
+}

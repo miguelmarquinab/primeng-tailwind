@@ -1,0 +1,11 @@
+label {
+    color: var(--theme-form-label-color) !important;
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
+    font-style: Bold;
+}
+
+
+.error-label {
+    color: var(--theme-text-error-color) !important;
+}
