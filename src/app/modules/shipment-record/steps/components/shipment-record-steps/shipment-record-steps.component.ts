@@ -1,17 +1,19 @@
-import { Component, inject, Input, OnChanges, OnInit, output, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, output, SimpleChanges, ViewEncapsulation } from '@angular/core';
 import { Step, StepList, Stepper } from 'primeng/stepper';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CartSessionStorageService } from '@shipment-record/services/cart-session-storage.service';
+import { Button } from 'primeng/button';
 
 @Component({
     selector: 'app-shipment-record-steps',
-    imports: [Stepper, StepList, Step],
+    imports: [Stepper, StepList, Step, Button],
     templateUrl: './shipment-record-steps.component.html',
     styleUrl: './shipment-record-steps.component.scss',
     encapsulation: ViewEncapsulation.None
 })
 export class ShipmentRecordStepsComponent implements OnInit, OnChanges {
     @Input() stepNumber!: number;
+    @Output() resetFlow = new EventEmitter<void>();
     stepChanged = output<number>();
     stepsDisabled = [false, true, true];
     private readonly route = inject(ActivatedRoute);
@@ -27,7 +29,7 @@ export class ShipmentRecordStepsComponent implements OnInit, OnChanges {
     }
     ngOnInit() {
         let currentStep = this.cartSessionService.getCurrentStep();
-        if(!currentStep){
+        if (!currentStep) {
             currentStep = this.stepNumber;
         }
 
