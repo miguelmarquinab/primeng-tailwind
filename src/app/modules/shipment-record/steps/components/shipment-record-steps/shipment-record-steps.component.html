@@ -1,6 +1,6 @@
 <div class="w-full bg-white">
   <div class="w-full flex items-center gap-4 px-4 py-3">
-    <p-button
+    <!-- <p-button
       type="button"
       icon="pi pi-arrow-left"
       label="Borrar datos y volver al inicio"
@@ -9,7 +9,17 @@
       [rounded]="true"
       styleClass="olva-reset-btn"
       (click)="resetFlow.emit()"
-    ></p-button>
+    ></p-button> -->
+
+      <button pButton
+        severity="secondary"
+        styleClass="olva-reset-btn"
+        (click)="resetFlow.emit()">
+        <img src="shared/images/reset.svg" style="width:40px">
+        <span pButtonLabel>Borrar datos y volver al inicio</span>
+      </button>
+      
+
     <div class="hidden lg:flex flex-1 justify-center min-h-16 items-center">
       <div class="w-1/2">
         <p-stepper [value]="stepNumber">

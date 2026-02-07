@@ -2,11 +2,12 @@ import { Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, outp
 import { Step, StepList, Stepper } from 'primeng/stepper';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CartSessionStorageService } from '@shipment-record/services/cart-session-storage.service';
-import { Button } from 'primeng/button';
+
+import { ButtonModule } from 'primeng/button';
 
 @Component({
     selector: 'app-shipment-record-steps',
-    imports: [Stepper, StepList, Step, Button],
+    imports: [Stepper, StepList, Step, ButtonModule],
     templateUrl: './shipment-record-steps.component.html',
     styleUrl: './shipment-record-steps.component.scss',
     encapsulation: ViewEncapsulation.None

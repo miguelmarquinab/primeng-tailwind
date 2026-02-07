@@ -21,3 +21,26 @@
   width: 40px !important;
   font-family: Inter, serif !important;
 }
+.olva-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+border: 1px solid #395aa3!important;
+    border-radius: 25px;
+    color: #395aa3!important;
+  border-radius: 9999px; /* ← reemplaza [rounded]="true" */
+
+  padding: 1rem 2rem;
+  background: transparent;
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+.olva-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+.olva-reset-icon {
+  width: 28px;
+  height: 28px;
+}
