@@ -19,12 +19,15 @@ import { Button } from 'primeng/button';
 import { ReturnChargePayload } from '@shipment-record/models/return-charge.model';
 import { CartService } from '@shipment-record/services/cart.service';
 import { ReactiveFormsModule } from '@angular/forms';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { ShipmentRecordConfirmationModalComponent } from '../shipment-record-confirmation-modal/shipment-record-confirmation-modal.component.component';
 
 @Component({
     selector: 'app-shipment-record-destination',
     imports: [Tab, TabList, TabPanel, TabPanels, Tabs, ShipmentRecordDestinationAddressFormComponent, ShipmentRecordDestinationStorageFormComponent, ShipmentRecordReturnChargeToggleComponent, Button, ReactiveFormsModule],
     templateUrl: './shipment-record-destination.component.html',
-    styleUrl: './shipment-record-destination.component.scss'
+    styleUrl: './shipment-record-destination.component.scss',
+    providers: [DialogService]
 })
 export class ShipmentRecordDestinationComponent implements OnInit {
     currentTab = 0;
@@ -36,8 +39,10 @@ export class ShipmentRecordDestinationComponent implements OnInit {
     private readonly localStorageService: LocalStorageService = inject(LocalStorageService);
     private readonly cartSessionService = inject(CartSessionStorageService);
     private readonly cartService = inject(CartService);
+    private readonly dialogService = inject(DialogService);
     private homeDestinationReady = false;
     private storeDestinationReady = false;
+    ref: DynamicDialogRef<any> | null = null;
 
     ngOnInit(): void {
         this.changeTab(this.currentTab);
@@ -123,6 +128,17 @@ export class ShipmentRecordDestinationComponent implements OnInit {
         if (!sessionUuid) {
             return;
         }
+        // modal confirmation
+        this.ref = this.dialogService.open(ShipmentRecordConfirmationModalComponent, {
+            height: 'auto',
+            width: '340px',
+            modal: true,
+            closable: true,
+            breakpoints: {
+                '960px': '75vw',
+                '640px': '90vw'
+            },
+        });
         const payload = this.cartSessionService.buildCartPayload();
         this.cartService.update(sessionUuid, payload).subscribe({
             next: () => {

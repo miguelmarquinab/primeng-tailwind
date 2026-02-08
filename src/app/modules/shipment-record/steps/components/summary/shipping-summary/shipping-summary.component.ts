@@ -1,16 +1,17 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { Divider } from 'primeng/divider';
+import { Button } from 'primeng/button';
 import { ShippingSummaryStepOriginComponent } from '@shipment-record/steps/components/summary/shipping-summary-step-origin/shipping-summary-step-origin.component';
 import { ShippingSummaryStepDestinationsComponent } from '@shipment-record/steps/components/summary/shipping-summary-step-destinations/shipping-summary-step-destinations.component';
 import { CartService } from '@shipment-record/services/cart.service';
 import { distinctUntilChanged, filter, shareReplay, skip, Subject, Subscription, takeUntil } from 'rxjs';
 import { CartOriginEntityResponse, CartPersonEntityResponse, CartState } from '@shipment-record/models/cart.model';
 import { CartSessionStorageService } from '@shipment-record/services/cart-session-storage.service';
-import { SessionStorageService } from '@shared/services/storage/session-storage.service';
+import { SessionStorageService } from '@shared/services/storage/session-storage.service'
 
 @Component({
     selector: 'app-shipping-summary',
-    imports: [Divider, ShippingSummaryStepOriginComponent, ShippingSummaryStepDestinationsComponent],
+    imports: [Divider, ShippingSummaryStepOriginComponent, ShippingSummaryStepDestinationsComponent, Button],
     templateUrl: './shipping-summary.component.html',
     standalone: true,
     styleUrl: './shipping-summary.component.scss'
@@ -26,6 +27,8 @@ export class ShippingSummaryComponent implements OnInit, OnDestroy {
     private readonly sessionStorageService = inject(SessionStorageService);
     private cartSubscription: Subscription | null = null;
     private readonly CART_DATA_KEY = 'cartData';
+
+    @Input() stepNumber!: number;
 
     ngOnInit(): void {
         this.suscribeToCart();

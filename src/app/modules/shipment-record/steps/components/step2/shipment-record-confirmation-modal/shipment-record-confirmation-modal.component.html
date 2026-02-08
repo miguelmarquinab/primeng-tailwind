@@ -1,0 +1,24 @@
+<div class="flex flex-col gap-4">
+  <div class="flex flex-col gap-1 text-center">
+    <div class="text-lg font-bold text-color-secondary">
+      Confirmación
+    </div>
+    <div class="text-sm text-theme-text-800">
+      <i class="pi pi-exclamation-triangle mr-3" style="font-size: 1rem"></i>
+      ¿Estás seguro que quieres continuar?
+    </div>
+  </div>
+
+  <div class="flex flex-col sm:flex-row gap-2 justify-end">
+    <button type="button" class="text-sm text-color-ultramarine underline cursor-pointer" (click)="onCancel()"
+    >
+        Cancelar
+    </button>
+    <p-button
+      [label]="'Ok'"
+      severity="primary"
+      styleClass="w-full"
+      (click)="onConfirm()"
+    />
+  </div>
+</div>
