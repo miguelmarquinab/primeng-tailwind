@@ -1,34 +1,36 @@
-<div class="w-full bg-white">
-  <div class="w-full flex items-center gap-4 px-4 py-3">
+<div class="w-full hidden md:flex justify-start min-h-16 items-center px-6">
 
+  <div class="w-1/4">
+
+    @if(stepNumber>1){
       <button pButton
-        severity="secondary"
-        styleClass="olva-reset-btn"
-        (click)="resetFlow.emit()">
-        <img src="shared/images/reset.svg" style="width:22px">
+              severity="secondary"
+              styleClass="olva-reset-btn"
+              (click)="resetProcess($event)"
+      >
+        <img src="shared/images/reset.svg" class="w-5.5" alt="reset">
         <span pButtonLabel>Borrar datos y volver al inicio</span>
       </button>
-      
 
-    <div class="hidden lg:flex flex-1 justify-center min-h-16 items-center">
-      <div class="w-1/2">
-        <p-stepper [value]="stepNumber">
-          <p-step-list>
-            <p-step [value]="1"
-                    (click)="stepChangeHandler(1)"
-                    (keydown.enter)="stepChangeHandler(1)"
-                    [disabled]="stepsDisabled[0]">Datos de origen</p-step>
-            <p-step [value]="2"
-                    (click)="stepChangeHandler(2)"
-                    (keydown.enter)="stepChangeHandler(2)"
-                    [disabled]="stepsDisabled[1]">Datos de envío</p-step>
-            <p-step [value]="3"
-                    (click)="stepChangeHandler(3)"
-                    (keydown.enter)="stepChangeHandler(3)"
-                    [disabled]="stepsDisabled[2]">Confirmación y Pago</p-step>
-          </p-step-list>
-        </p-stepper>
-      </div>
-    </div>
+    }
+  </div>
+
+  <div class="w-1/2">
+    <p-stepper [value]="stepNumber">
+      <p-step-list>
+        <p-step [value]="1"
+                (click)="stepChangeHandler(1)"
+                (keydown.enter)="stepChangeHandler(1)"
+                [disabled]="stepsDisabled[0]">Datos de origen</p-step>
+        <p-step [value]="2"
+                (click)="stepChangeHandler(2)"
+                (keydown.enter)="stepChangeHandler(2)"
+                [disabled]="stepsDisabled[1]">Datos de envío</p-step>
+        <p-step [value]="3"
+                (click)="stepChangeHandler(3)"
+                (keydown.enter)="stepChangeHandler(3)"
+                [disabled]="stepsDisabled[2]">Confirmación y Pago</p-step>
+      </p-step-list>
+    </p-stepper>
   </div>
 </div>

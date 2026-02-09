@@ -25,6 +25,11 @@ export class CartService {
         return this.http.patch<any>(endpoint, payload);
     }
 
+    delete(sessionUuid: string): Observable<any> {
+        const endpoint = `${this.baseUrl}/v1/cart/${sessionUuid}`;
+        return this.http.delete<any>(endpoint);
+    }
+
     updateOrigin(person: PersonPayload, origin: HeadquartersEntityResponse) {
         this.cartStore.next({
             person: person,
@@ -45,7 +50,7 @@ export class CartService {
         return this.http.get<CartEntityResponse>(endpoint);
     }
 
-    updateCart(){
+    updateCart() {
         this.cartStore.next(this.cartStore.getValue());
     }
 
@@ -53,6 +58,14 @@ export class CartService {
         this.cartStore.next({
             person: null,
             origin: null
+        });
+    }
+
+    reset(event: any) {
+        console.log('reset', event);
+        this.cartStore.next({
+            reset: true,
+            event
         });
     }
 }

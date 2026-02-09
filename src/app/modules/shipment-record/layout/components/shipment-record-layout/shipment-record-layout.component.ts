@@ -19,13 +19,16 @@ import { Subject, takeUntil } from 'rxjs';
 import { BreakpointService } from '@shared/services/breakpoint/breakpoint.service';
 import { HeadquartersService } from '@shipment-record/services/headquarters.service';
 import { HeadquartersEntityResponse } from '@shipment-record/models/headquarters.model';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService } from 'primeng/api';
 
 @Component({
     selector: 'app-shipment-record-layout',
-    imports: [ShipmentRecordStepsComponent, ShipmentRecordStep1Component, ShipmentRecordStep2Component, ShipmentRecordStep3Component, ShippingSummaryComponent, Button, Drawer, LoadingComponent],
+    imports: [ShipmentRecordStepsComponent, ShipmentRecordStep1Component, ShipmentRecordStep2Component, ShipmentRecordStep3Component, ShippingSummaryComponent, Button, Drawer, LoadingComponent, ConfirmDialogModule],
     templateUrl: './shipment-record-layout.component.html',
     styleUrl: './shipment-record-layout.component.scss',
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    providers: [ConfirmationService]
 })
 export class ShipmentRecordLayoutComponent implements OnInit, OnDestroy {
     stepNumber = 1;
@@ -43,6 +46,9 @@ export class ShipmentRecordLayoutComponent implements OnInit, OnDestroy {
     isMobile = this.breakpointService.isMobile;
     private readonly cartService: CartService = inject(CartService);
     private readonly headquartersService = inject(HeadquartersService);
+    private confirmationService = inject(ConfirmationService);
+
+    stepLabel = 'Datos de origen';
 
     constructor() {
         const raw = this.route.snapshot.paramMap.get('stepNumber');
@@ -57,6 +63,12 @@ export class ShipmentRecordLayoutComponent implements OnInit, OnDestroy {
     setCurrentStep(stepNumber: number) {
         this.stepNumber = stepNumber;
         this.cartSessionStorageService.setCurrentStep(stepNumber);
+        if (this.stepNumber === 1) {
+            this.stepLabel = 'Datos de origen';
+        }
+        if (this.stepNumber === 2) {
+            this.stepLabel = 'Datos de envío';
+        }
     }
 
     getToken() {
@@ -95,8 +107,14 @@ export class ShipmentRecordLayoutComponent implements OnInit, OnDestroy {
 
     subscribeToCart() {
         this.cartService.cartStore$.pipe(takeUntil(this.destroy$)).subscribe((cart) => {
+            console.log('subscribeToCart', cart);
             if (cart?.stepNumber) {
                 this.setCurrentStep(cart.stepNumber);
+                return;
+            }
+            if (cart?.reset) {
+                this.resetProcess(cart?.event);
+                return;
             }
         });
     }
@@ -114,6 +132,43 @@ export class ShipmentRecordLayoutComponent implements OnInit, OnDestroy {
         });
     }
 
+    resetProcess(event: any) {
+        this.confirmationService.confirm({
+            target: event.target as EventTarget,
+            message: '<span class="font-montserrat">Perderás toda la información ingresada hasta ahora. <span class=" font-bold">Esta acción es definitiva.</span></span>',
+            header: '¿Quieres borrar los datos e iniciar de nuevo?',
+            icon: 'pi pi-exclamation-triangle',
+
+            rejectButtonProps: {
+                label: 'Siguiente',
+                severity: 'secondary',
+                outlined: true
+            },
+            acceptButtonProps: {
+                label: 'Continuar',
+                severity: 'primary'
+            },
+
+            accept: () => {
+                const cartUuid = this.cartSessionStorageService.getCardId() ?? '';
+                this.cartService.delete(cartUuid).subscribe({
+                    next: (result) => {
+                        console.log(result);
+                        this.setCurrentStep(1);
+                        this.cartSessionStorageService.clear();
+                    }
+                });
+            },
+            reject: () => {
+                // this.messageService.add({ severity: 'error', summary: 'Rejected', detail: 'You have rejected' });
+            }
+        });
+    }
+
+    reset(event:any){
+
+        this.cartService.reset(event);
+    }
     ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();

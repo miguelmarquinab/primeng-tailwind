@@ -7,7 +7,7 @@ import { CartService } from '@shipment-record/services/cart.service';
 import { distinctUntilChanged, filter, shareReplay, skip, Subject, Subscription, takeUntil } from 'rxjs';
 import { CartOriginEntityResponse, CartPersonEntityResponse, CartState } from '@shipment-record/models/cart.model';
 import { CartSessionStorageService } from '@shipment-record/services/cart-session-storage.service';
-import { SessionStorageService } from '@shared/services/storage/session-storage.service'
+import { SessionStorageService } from '@shared/services/storage/session-storage.service';
 
 @Component({
     selector: 'app-shipping-summary',
@@ -50,7 +50,7 @@ export class ShippingSummaryComponent implements OnInit, OnDestroy {
             )
             .subscribe((cart: CartState) => {
                 console.log(cart);
-                if (cart) {
+                if (cart && !cart.reset) {
                     this.getLatestCart();
                 }
             });

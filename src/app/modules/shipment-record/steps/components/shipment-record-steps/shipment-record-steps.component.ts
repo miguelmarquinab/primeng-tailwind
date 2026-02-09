@@ -4,10 +4,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CartSessionStorageService } from '@shipment-record/services/cart-session-storage.service';
 
 import { ButtonModule } from 'primeng/button';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { CartService } from '@shipment-record/services/cart.service';
 
 @Component({
     selector: 'app-shipment-record-steps',
-    imports: [Stepper, StepList, Step, ButtonModule],
+    imports: [Stepper, StepList, Step, ButtonModule, ConfirmDialogModule],
     templateUrl: './shipment-record-steps.component.html',
     styleUrl: './shipment-record-steps.component.scss',
     encapsulation: ViewEncapsulation.None
@@ -20,6 +23,8 @@ export class ShipmentRecordStepsComponent implements OnInit, OnChanges {
     private readonly route = inject(ActivatedRoute);
     private readonly router = inject(Router);
     private readonly cartSessionService = inject(CartSessionStorageService);
+    private readonly cartService: CartService = inject(CartService);
+
     constructor() {
         const raw = this.route.snapshot.paramMap.get('stepNumber');
         this.stepNumber = Number(raw);
@@ -61,5 +66,9 @@ export class ShipmentRecordStepsComponent implements OnInit, OnChanges {
         console.log('Enabling step:', step);
         this.stepsDisabled = this.stepsDisabled.map(() => true);
         this.stepsDisabled[step - 1] = false;
+    }
+
+    resetProcess(event: any) {
+        this.cartService.reset(event);
     }
 }

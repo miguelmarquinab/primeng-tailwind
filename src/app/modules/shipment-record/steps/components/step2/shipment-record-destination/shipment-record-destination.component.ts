@@ -1,14 +1,8 @@
 import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
-import {
-    ShipmentRecordDestinationAddressFormComponent
-} from '@shipment-record/steps/components/step2/shipment-record-destination-address-form/shipment-record-destination-address-form.component';
-import {
-    ShipmentRecordDestinationStorageFormComponent
-} from '@shipment-record/steps/components/step2/shipment-record-destination-storage-form/shipment-record-destination-storage-form.component';
-import {
-    ShipmentRecordReturnChargeToggleComponent
-} from '@shipment-record/steps/components/step2/shipment-record-return-charge-toggle/shipment-record-return-charge-toggle.component';
+import { ShipmentRecordDestinationAddressFormComponent } from '@shipment-record/steps/components/step2/shipment-record-destination-address-form/shipment-record-destination-address-form.component';
+import { ShipmentRecordDestinationStorageFormComponent } from '@shipment-record/steps/components/step2/shipment-record-destination-storage-form/shipment-record-destination-storage-form.component';
+import { ShipmentRecordReturnChargeToggleComponent } from '@shipment-record/steps/components/step2/shipment-record-return-charge-toggle/shipment-record-return-charge-toggle.component';
 import { DestinationsService } from '@shipment-record/services/destinations.service';
 import { DestinationEntityResponse } from '@shipment-record/models/destination.model';
 import { LocalStorageService } from '@shared/services/storage/local-storage.service';
@@ -128,23 +122,22 @@ export class ShipmentRecordDestinationComponent implements OnInit {
         if (!sessionUuid) {
             return;
         }
-        // modal confirmation
-        this.ref = this.dialogService.open(ShipmentRecordConfirmationModalComponent, {
-            height: 'auto',
-            width: '340px',
-            modal: true,
-            closable: true,
-            breakpoints: {
-                '960px': '75vw',
-                '640px': '90vw'
-            },
-        });
-        const payload = this.cartSessionService.buildCartPayload();
-        this.cartService.update(sessionUuid, payload).subscribe({
-            next: () => {
-                this.submitDestination.emit();
-            }
-        });
+        // this.ref = this.dialogService.open(ShipmentRecordConfirmationModalComponent, {
+        //     height: 'auto',
+        //     width: '340px',
+        //     modal: true,
+        //     closable: true,
+        //     breakpoints: {
+        //         '960px': '75vw',
+        //         '640px': '90vw'
+        //     }
+        // });
+        // const payload = this.cartSessionService.buildCartPayload();
+        // this.cartService.update(sessionUuid, payload).subscribe({
+        //     next: () => {
+        this.submitDestination.emit();
+        //     }
+        // });
     }
 
     private isHomeDestinationReady(payload: DestinationAddressFormState): boolean {

@@ -14,6 +14,7 @@ import { CartSessionStorageService } from '@shipment-record/services/cart-sessio
 import { WhoSenderFormData } from '@shipment-record/models/who-sender-form.model';
 import { CartItemWhatSendPayload, PersonPayload } from '@shipment-record/models/cart.model';
 import { NgClass } from '@angular/common';
+import { CartService } from '@shipment-record/services/cart.service';
 
 @Component({
     selector: 'app-shipment-record-step2',
@@ -38,6 +39,7 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
     protected readonly AppConstant = AppConstant;
     private readonly articleCategoriesService: ArticleCategoriesService = inject(ArticleCategoriesService);
     private readonly cartSessionService = inject(CartSessionStorageService);
+    private readonly cartService = inject(CartService);
     private readonly destroy$ = new Subject<void>();
     @ViewChild('accordionScrollContainer', { static: false }) accordionScrollContainer?: ElementRef<HTMLElement>;
 
@@ -80,9 +82,11 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
     }
 
     submitDestinationForm() {
-        this.currentAccordionIndex = 3;
-        this.enablePanel(3);
-        this.scrollAccordionToTop(3);
+        // this.currentAccordionIndex = 3;
+        // this.enablePanel(3);
+        // this.scrollAccordionToTop(3);
+        this.cartService.setStepNumber(3);
+
     }
 
     onReturnChargeChanged(payload: ReturnChargePayload) {

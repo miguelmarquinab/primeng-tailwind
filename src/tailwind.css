@@ -7,6 +7,7 @@
   --breakpoint-xs: 360px;
   --color-highlight-focus-background: var(--theme-highlight-focus-background);
   --color-primary-sutile: var(--theme-primary-sutile);
+  --color-secondary-sutile: #E3E9F7;
   --color-theme-secondary: var(--theme-color-secondary);
   --color-button-text-plain: var(--theme-text-color);
   --color-theme-surface-400: #94A3B8;

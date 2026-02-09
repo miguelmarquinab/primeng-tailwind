@@ -1,0 +1,73 @@
+.p-confirmdialog {
+  gap: 32px;
+  padding: 32px;
+  width: 457px;
+  border-radius: 26px;
+
+  .p-dialog-header {
+    padding: 0 !important;
+    align-items: flex-start;
+
+    .p-dialog-title {
+      font-family: Montserrat, serif;
+      font-size: 24px !important;
+      font-weight: 700 !important;
+    }
+
+    .p-dialog-close-button {
+      color: #1E1E1E !important;
+    }
+  }
+
+  .p-dialog-content {
+    padding: 0;
+
+    .p-confirmdialog-icon {
+
+      font-size: 50px;
+      height: 50px;
+      width: 50px;
+
+    }
+  }
+
+  .p-dialog-footer {
+    padding: 0 !important;
+    gap: 12px !important;
+  }
+}
+
+
+@media (max-width: theme('screens.md')) {
+
+  .p-confirmdialog {
+
+    width: 333px;
+
+    .p-dialog-header {
+      padding: 0 !important;
+
+      flex-direction: column-reverse;
+      display: flex;
+      align-items: flex-end;
+
+      .p-dialog-title {
+
+        text-align: center;
+      }
+
+      .p-dialog-close-button {
+        color: #1E1E1E !important;
+      }
+    }
+
+    .p-dialog-footer {
+      display: flex;
+      flex-direction: column;
+
+      .p-button {
+        width: 100% !important;
+      }
+    }
+  }
+}

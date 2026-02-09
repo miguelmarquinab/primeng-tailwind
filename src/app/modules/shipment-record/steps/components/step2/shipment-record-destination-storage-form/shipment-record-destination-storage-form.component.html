@@ -20,6 +20,14 @@
 
 
     @if (isMobile()) {
+      @if (!modalVisible) {
+        @if(currentDestination){
+          <app-shipment-record-destination-card
+            [destination]="currentDestination"
+            [selected]="currentDestination.ubigeo_id === currentDestination.ubigeo_id"
+          ></app-shipment-record-destination-card>
+        }
+      }
       @if (modalVisible) {
 
         <div class="modal-under-resume" role="dialog" aria-modal="true">

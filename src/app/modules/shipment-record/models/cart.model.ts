@@ -32,6 +32,7 @@ export interface PersonPayload {
 
 export interface CartState {
     // sessionUuid?: string;
+    reset?: boolean;
     person: PersonEntityResponse | null;
     origin: HeadquartersEntityResponse | null;
     items?: CartItemDraft[];
