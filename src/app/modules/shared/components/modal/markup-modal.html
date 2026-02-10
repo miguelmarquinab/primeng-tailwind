@@ -1,8 +1,7 @@
 <form [formGroup]="form">
     <div class="flex flex-col gap-4 items-center">
-        <span class="font-bold text-base">Ingresa una clave de 4 digitos</span>
-        <div class="text-center"
-        >
+        <span class="font-bold text-base">Ingresa una clave de 4 dígitos</span>
+        <div class="text-center">
             La necesitas para autorizar el recojo en tienda. Evita usar patrones simples o números consecutivos.
             <span class="font-bold">Compártela con quien retirará el envío.</span>
         </div>
@@ -10,7 +9,7 @@
             <p-inputOtp formControlName="pin" />
         </div>
         <div class="w-full">
-            <p-button label="Continuar" styleClass="w-full" (click)="next()"></p-button>
+            <p-button label="Continuar" styleClass="w-full" severity="primary" (click)="next()"></p-button>
         </div>
     </div>
 </form>

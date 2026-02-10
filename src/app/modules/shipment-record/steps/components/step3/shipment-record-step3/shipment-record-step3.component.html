@@ -1,60 +1,13 @@
-<div class="p-4 flex flex-col gap-3 border bg-surface-50 border-secondary-sutile rounded-xl w-full md:w-1/2">
-  <div class="flex flex-col gap-3 flex-1 overflow-y-auto h-10/12">
-    <ng-container
-      [ngTemplateOutlet]="itemTpl"
-    ></ng-container>
-    <ng-container
-      [ngTemplateOutlet]="itemTpl"
-    ></ng-container>
-    <ng-container
-      [ngTemplateOutlet]="itemTpl"
-    ></ng-container>
-    <ng-container
-      [ngTemplateOutlet]="itemTpl"
-    ></ng-container>
-    <ng-container
-      [ngTemplateOutlet]="itemTpl"
-    ></ng-container>
-  </div>
-  <div>
-    <p-button [outlined]="true" severity="secondary" (click)="openModal()">Agrega envío nacional</p-button>
-  </div>
+<div class="p-4 flex flex-col gap-3 border bg-surface-50 border-secondary-sutile rounded-xl w-full max-h-[calc(100vh-220px)]">
+    <div class="flex flex-col gap-3 flex-1 overflow-y-auto">
+        @for (item of shipments; track item.id; let i = $index) {
+            <app-shipment-summary-item [index]="i + 1" [city]="item.city" [customer]="item.customer" [description]="item.description" [address]="item.address" [total]="item.total" />
+        }
+    </div>
+    <div class="w-full">
+        <p-button class="w-full" styleClass="w-full" outlined severity="secondary" (click)="openModal()">
+            <i class="pi pi-plus"></i>
+            Agrega envío nacional
+        </p-button>
+    </div>
 </div>
-
-<ng-template #itemTpl>
-  <div class="flex flex-row justify-between gap-4 bg-white border border-secondary-sutile rounded-2xl p-4">
-    <div class="flex gap-2">
-      <div class="flex flex-col gap-2 border-r border-r-secondary-sutile pr-3 justify-center w-10 items-center">
-        <div class="font-bold">#1</div>
-        <img src="icons/box.svg" alt="Item Image" class="w-5" />
-      </div>
-      <div class="flex flex-col gap-2">
-        <div class="font-bold text-base text-secondary">Chiclayo</div>
-        <div class="text-sm text-secondary-700">Angel Esquen</div>
-      </div>
-    </div>
-    <div class="flex gap-4">
-      <div class="hidden md:flex flex-col gap-2">
-        <div class="flex gap-2 items-center">
-          <img src="icons/box.svg" alt="Item Image" class="w-4" />
-          <div class="flex gap-2">
-            <span class="text-gray-500 font-bold">Descripción</span>
-            <span class="text-gray-500 ">Ropa y accesorios</span>
-          </div>
-        </div>
-        <div class="flex gap-2 items-center">
-          <img src="icons/marker.svg" alt="Item Image" class="w-4" />
-          <div class="flex gap-2">
-            <span class="text-gray-500 font-bold">Dirección</span>
-            <span class="text-gray-500 ">Av. Comandante Espinar</span>
-          </div>
-        </div>
-      </div>
-      <div class="flex flex-col gap-2 items-center">
-        <div class="text-gray-400">Total</div>
-        <div class="text-secondary font-bold">S/.17.50</div>
-      </div>
-    </div>
-  </div>
-
-</ng-template>
