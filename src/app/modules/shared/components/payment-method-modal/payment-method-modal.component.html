@@ -1,0 +1,89 @@
+@if (!error) {
+    <!-- Payment Method Selection View -->
+    <div class="flex flex-col gap-6 p-4 lg:p-6 bg-white rounded-lg">
+        <!-- Title -->
+        <h2 class="text-lg lg:text-xl font-bold text-center text-color-ultramarine">Elige tu medio de pago preferido</h2>
+
+        <!-- Payment Methods -->
+        <div class="flex flex-col gap-4">
+            <!-- Niubiz Option -->
+            <div class="flex items-start gap-3 lg:gap-4 p-3 lg:p-4 bg-white rounded-lg border-2 cursor-pointer transition-all">
+                <div class="shrink-0">
+                    <img src="shared/images/niubiz.png" alt="niubiz logo" />
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="font-bold text-sm lg:text-base mb-1">Niubiz</div>
+                    <div class="text-xs lg:text-sm text-gray-600 mb-2 lg:mb-3">Tarjeta de crédito/débito/billetera digital.</div>
+                    <div class="flex gap-1.5 lg:gap-2 flex-wrap">
+                        <!-- Mastercard -->
+                        <div class="w-7 h-7 lg:w-8 lg:h-8 flex items-center justify-center">
+                            <img src="shared/images/mastercard.png" alt="mastercard" />
+                        </div>
+                        <!-- Yape -->
+                        <div class="w-7 h-7 lg:w-8 lg:h-8 flex items-center justify-center">
+                            <img src="shared/images/yape.png" alt="yape" />
+                        </div>
+                        <!-- Plin -->
+                        <div class="w-7 h-7 lg:w-8 lg:h-8 flex items-center justify-center">
+                            <img src="shared/images/plin.png" alt="plin" />
+                        </div>
+                        <!-- VISA -->
+                        <div class="w-7 h-7 lg:w-8 lg:h-8 flex items-center justify-center">
+                            <img src="shared/images/visa.png" alt="visa" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagoefectivo Option -->
+            <div class="flex items-start gap-3 lg:gap-4 p-3 lg:p-4 bg-white rounded-lg border-2 cursor-pointer transition-all">
+                <div class="shrink-0">
+                    <img src="shared/images/pago-efectivo.png" alt="niubiz logo" />
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="font-bold text-sm lg:text-base mb-1">Pagoefectivo</div>
+                    <div class="text-xs lg:text-sm text-gray-600 mb-2 lg:mb-3">Pago en bancos, agentes, billeteras digitales y online.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Terms and Conditions -->
+        <div class="flex items-start gap-3">
+            <p-toggleSwitch [(ngModel)]="termsAccepted" class="mt-0.5"></p-toggleSwitch>
+            <span class="text-xs lg:text-sm text-gray-700 leading-relaxed">
+                He leído y acepto los
+                <span class="text-color-ultramarine font-semibold underline">
+                    <a href="#">términos de uso</a>
+                    y
+                    <a href="#">política de privacidad</a>.
+                </span>
+            </span>
+        </div>
+
+        <!-- Pay Button -->
+        <p-button [label]="'Pagar ' + paymentAmount" icon="pi pi-credit-card" [disabled]="!termsAccepted" severity="primary" styleClass="w-full" (click)="onPay()"></p-button>
+    </div>
+} @else {
+    <!-- Error View -->
+    <div class="flex flex-col items-center gap-4 lg:gap-6 p-4 lg:p-6 bg-white rounded-lg">
+        <!-- Error Icon -->
+        <div class="w-14 h-14 lg:w-16 lg:h-16 rounded-full bg-red-100 flex items-center justify-center">
+            <i class="pi pi-exclamation-triangle text-2xl lg:text-3xl text-red-600"></i>
+        </div>
+
+        <!-- Error Title -->
+        <h2 class="text-lg lg:text-xl font-bold text-center text-blue-600">No pudimos procesar tu pago</h2>
+
+        <!-- Error Reason -->
+        <div class="w-full bg-gray-100 rounded-lg p-3 lg:p-4">
+            <div class="text-xs lg:text-sm text-gray-700 mb-1 lg:mb-2">Tu banco rechazó la operación:</div>
+            <div class="font-bold text-sm lg:text-base text-gray-900">{{ error.reason }}</div>
+        </div>
+
+        <!-- Error Message -->
+        <p class="text-xs lg:text-sm text-gray-600 text-center leading-relaxed">Por seguridad, tu banco no aprobó el pago. Te recomendamos contactarlo para revisar el motivo.</p>
+
+        <!-- Retry Button -->
+        <p-button label="Intentar nuevamente" [icon]="'pi pi-refresh'" styleClass="w-full bg-blue-700 hover:bg-blue-800 text-white border-none" (click)="onRetry()"></p-button>
+    </div>
+}

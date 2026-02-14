@@ -1,6 +1,8 @@
 import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { Divider } from 'primeng/divider';
 import { Button } from 'primeng/button';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+
 import { ShippingSummaryStepOriginComponent } from '@shipment-record/steps/components/summary/shipping-summary-step-origin/shipping-summary-step-origin.component';
 import { ShippingSummaryStepDestinationsComponent } from '@shipment-record/steps/components/summary/shipping-summary-step-destinations/shipping-summary-step-destinations.component';
 import { CartService } from '@shipment-record/services/cart.service';
@@ -8,13 +10,16 @@ import { distinctUntilChanged, filter, shareReplay, skip, Subject, Subscription,
 import { CartOriginEntityResponse, CartPersonEntityResponse, CartState } from '@shipment-record/models/cart.model';
 import { CartSessionStorageService } from '@shipment-record/services/cart-session-storage.service';
 import { SessionStorageService } from '@shared/services/storage/session-storage.service';
+import { PaymentMethodModalComponent } from '@/modules/shared/components/payment-method-modal/payment-method-modal.component';
+import { RegistrationSuccessModalComponent } from '@/modules/shared/components/registration-success-modal/registration-success-modal.component';
 
 @Component({
     selector: 'app-shipping-summary',
     imports: [Divider, ShippingSummaryStepOriginComponent, ShippingSummaryStepDestinationsComponent, Button],
     templateUrl: './shipping-summary.component.html',
     standalone: true,
-    styleUrl: './shipping-summary.component.scss'
+    styleUrl: './shipping-summary.component.scss',
+    providers: [DialogService]
 })
 export class ShippingSummaryComponent implements OnInit, OnDestroy {
     origin: CartOriginEntityResponse | null = null;
@@ -27,6 +32,8 @@ export class ShippingSummaryComponent implements OnInit, OnDestroy {
     private readonly sessionStorageService = inject(SessionStorageService);
     private cartSubscription: Subscription | null = null;
     private readonly CART_DATA_KEY = 'cartData';
+    dialog = inject(DialogService);
+    ref: DynamicDialogRef | null = null;
 
     @Input() stepNumber!: number;
 
@@ -97,5 +104,34 @@ export class ShippingSummaryComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();
+    }
+
+    openPaymentMethodModal(): void {
+        this.ref = this.dialog.open(PaymentMethodModalComponent, {
+            width: '571px',
+            contentStyle: { 'max-height': '600px', overflow: 'auto' },
+            closable: true,
+            data: {
+                selectedPaymentMethod: 'niubiz',
+                paymentAmount: 'S/78.33',
+                error: null // o { reason: 'Fondos insuficientes', message: '...' }
+            }
+        });
+    }
+
+    openRegistrationSuccessModal(): void {
+        this.ref = this.dialog.open(RegistrationSuccessModalComponent, {
+            width: '371px',
+            contentStyle: { 'max-height': '500px', overflow: 'auto' },
+            closable: true,
+            data: {
+                registrationNumber: '202408118705',
+                dateTime: '24/09/25 - 12:49:24',
+                transaction: '#12345678',
+                card: '447411******2240 (visa)',
+                amountPaid: 'S/15.56',
+                amountToPay: 'S/15.56' // opcional, muestra recordatorio si está presente
+            }
+        });
     }
 }
