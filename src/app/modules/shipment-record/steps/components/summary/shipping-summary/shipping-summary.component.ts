@@ -114,15 +114,16 @@ export class ShippingSummaryComponent implements OnInit, OnDestroy {
             data: {
                 selectedPaymentMethod: 'niubiz',
                 paymentAmount: 'S/78.33',
-                error: null // o { reason: 'Fondos insuficientes', message: '...' }
+                // error: null // o { reason: 'Fondos insuficientes', message: '...' }
+                error: { reason: 'Fondos insuficientes', message: '...' }
             }
         });
     }
 
     openRegistrationSuccessModal(): void {
         this.ref = this.dialog.open(RegistrationSuccessModalComponent, {
-            width: '371px',
-            contentStyle: { 'max-height': '500px', overflow: 'auto' },
+            width: '660px',
+            contentStyle: { 'max-height': '600px', overflow: 'auto' },
             closable: true,
             data: {
                 registrationNumber: '202408118705',
