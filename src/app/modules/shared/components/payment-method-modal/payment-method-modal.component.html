@@ -7,42 +7,66 @@
         <!-- Payment Methods -->
         <div class="flex flex-col gap-4">
             <!-- Niubiz Option -->
-            <div class="flex items-start gap-3 lg:gap-4 p-3 lg:p-4 bg-white rounded-lg border-2 cursor-pointer transition-all">
+            <div class="payment-method-card flex flex-row items-start gap-3 lg:gap-4 p-3 lg:p-4 bg-white rounded-lg border border-gray-200 cursor-pointer transition-all">
+                <!-- Logo section - always on left -->
                 <div class="shrink-0">
-                    <img src="shared/images/niubiz.png" alt="niubiz logo" />
+                    <img src="shared/images/niubiz.png" alt="niubiz logo" class="w-auto h-auto" />
                 </div>
-                <div class="flex-1 min-w-0">
+                <!-- Content section -->
+                <div class="flex-1 min-w-0 flex flex-col">
+                    <!-- Name row - in mobile appears next to logo, in desktop below -->
                     <div class="font-bold text-sm lg:text-base mb-1">Niubiz</div>
-                    <div class="text-xs lg:text-sm text-gray-600 mb-2 lg:mb-3">Tarjeta de crédito/débito/billetera digital.</div>
+                    <div class="text-xs lg:text-sm text-gray-600 mb-2 lg:mb-3 wrap-break-word max-w-45 lg:max-w-none">Tarjeta de crédito/débito/billetera digital.</div>
                     <div class="flex gap-1.5 lg:gap-2 flex-wrap">
                         <!-- Mastercard -->
                         <div class="w-7 h-7 lg:w-8 lg:h-8 flex items-center justify-center">
-                            <img src="shared/images/mastercard.png" alt="mastercard" />
+                            <img src="shared/images/mastercard.png" alt="mastercard" class="w-full h-full object-contain" />
                         </div>
                         <!-- Yape -->
                         <div class="w-7 h-7 lg:w-8 lg:h-8 flex items-center justify-center">
-                            <img src="shared/images/yape.png" alt="yape" />
+                            <img src="shared/images/yape.png" alt="yape" class="w-full h-full object-contain" />
                         </div>
                         <!-- Plin -->
                         <div class="w-7 h-7 lg:w-8 lg:h-8 flex items-center justify-center">
-                            <img src="shared/images/plin.png" alt="plin" />
+                            <img src="shared/images/plin.png" alt="plin" class="w-full h-full object-contain" />
                         </div>
                         <!-- VISA -->
                         <div class="w-7 h-7 lg:w-8 lg:h-8 flex items-center justify-center">
-                            <img src="shared/images/visa.png" alt="visa" />
+                            <img src="shared/images/visa.png" alt="visa" class="w-full h-full object-contain" />
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Pagoefectivo Option -->
-            <div class="flex items-start gap-3 lg:gap-4 p-3 lg:p-4 bg-white rounded-lg border-2 cursor-pointer transition-all">
+            <div class="payment-method-card flex flex-row items-start gap-3 lg:gap-4 p-3 lg:p-4 bg-white rounded-lg border border-gray-200 cursor-pointer transition-all">
+                <!-- Logo section - always on left -->
                 <div class="shrink-0">
-                    <img src="shared/images/pago-efectivo.png" alt="niubiz logo" />
+                    <img src="shared/images/pago-efectivo.png" alt="pago efectivo logo" class="w-auto h-auto" />
                 </div>
-                <div class="flex-1 min-w-0">
+                <!-- Content section -->
+                <div class="flex-1 min-w-0 flex flex-col">
+                    <!-- Name row - in mobile appears next to logo, in desktop below -->
                     <div class="font-bold text-sm lg:text-base mb-1">Pagoefectivo</div>
-                    <div class="text-xs lg:text-sm text-gray-600 mb-2 lg:mb-3">Pago en bancos, agentes, billeteras digitales y online.</div>
+                    <div class="text-xs lg:text-sm text-gray-600 mb-2 lg:mb-3 wrap-break-word max-w-45 lg:max-w-none">Pago en bancos, agentes, billeteras digitales y online.</div>
+                    <div class="flex gap-1.5 lg:gap-2 flex-wrap">
+                        <!-- Mastercard -->
+                        <div class="w-7 h-7 lg:w-8 lg:h-8 flex items-center justify-center">
+                            <img src="shared/images/mastercard.png" alt="mastercard" class="w-full h-full object-contain" />
+                        </div>
+                        <!-- Yape -->
+                        <div class="w-7 h-7 lg:w-8 lg:h-8 flex items-center justify-center">
+                            <img src="shared/images/yape.png" alt="yape" class="w-full h-full object-contain" />
+                        </div>
+                        <!-- Plin -->
+                        <div class="w-7 h-7 lg:w-8 lg:h-8 flex items-center justify-center">
+                            <img src="shared/images/plin.png" alt="plin" class="w-full h-full object-contain" />
+                        </div>
+                        <!-- VISA -->
+                        <div class="w-7 h-7 lg:w-8 lg:h-8 flex items-center justify-center">
+                            <img src="shared/images/visa.png" alt="visa" class="w-full h-full object-contain" />
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
