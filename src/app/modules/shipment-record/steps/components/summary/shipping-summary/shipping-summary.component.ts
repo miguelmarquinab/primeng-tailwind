@@ -114,8 +114,8 @@ export class ShippingSummaryComponent implements OnInit, OnDestroy {
             data: {
                 selectedPaymentMethod: 'niubiz',
                 paymentAmount: 'S/78.33',
-                // error: null // o { reason: 'Fondos insuficientes', message: '...' }
-                error: { reason: 'Fondos insuficientes', message: '...' }
+                error: null
+                // error: { reason: 'Fondos insuficientes', message: '...' }
             }
         });
     }

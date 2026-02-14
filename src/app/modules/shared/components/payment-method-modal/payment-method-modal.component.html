@@ -73,23 +73,26 @@
     <!-- Error View -->
     <div class="flex flex-col items-center gap-4 lg:gap-6 p-4 lg:p-6 bg-white rounded-lg">
         <!-- Error Icon -->
-        <div class="w-14 h-14 lg:w-16 lg:h-16 rounded-full bg-red-100 flex items-center justify-center">
-            <i class="pi pi-exclamation-triangle text-2xl lg:text-3xl text-red-600"></i>
+        <div class="w-14 h-14 lg:w-16 lg:h-16 flex items-center justify-center">
+            <img src="shared/images/alert.png" alt="icono de alerta" />
         </div>
 
         <!-- Error Title -->
-        <h2 class="text-lg lg:text-xl font-bold text-center text-blue-600">No pudimos procesar tu pago</h2>
+        <h2 class="text-lg lg:text-xl font-bold text-center text-color-ultramarine">No pudimos procesar tu pago</h2>
 
         <!-- Error Reason -->
-        <div class="w-full bg-gray-100 rounded-lg p-3 lg:p-4">
-            <div class="text-xs lg:text-sm text-gray-700 mb-1 lg:mb-2">Tu banco rechazó la operación:</div>
-            <div class="font-bold text-sm lg:text-base text-gray-900">{{ error.reason }}</div>
+        <div class="w-full flex flex-col items-center bg-[#F8FAFC] border border-[#E3E9F7] rounded-2xl px-4 py-3 lg:px-6 lg:py-4">
+            <span class="text-xs lg:text-sm text-gray-700 text-center"> Tu banco rechazó la operación: </span>
+
+            <span class="mt-1 font-bold text-sm lg:text-base text-gray-900 text-center">
+                {{ error.reason }}
+            </span>
         </div>
 
         <!-- Error Message -->
         <p class="text-xs lg:text-sm text-gray-600 text-center leading-relaxed">Por seguridad, tu banco no aprobó el pago. Te recomendamos contactarlo para revisar el motivo.</p>
 
         <!-- Retry Button -->
-        <p-button label="Intentar nuevamente" [icon]="'pi pi-refresh'" styleClass="w-full bg-blue-700 hover:bg-blue-800 text-white border-none" (click)="onRetry()"></p-button>
+        <p-button label="Intentar nuevamente" icon="pi pi-refresh" severity="primary" class="full-w" styleClass="w-full bg-blue-700 hover:bg-blue-800 text-white border-none" (click)="onRetry()"></p-button>
     </div>
 }
