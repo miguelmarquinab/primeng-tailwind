@@ -23,6 +23,8 @@
 
   /* Si quieres que TODO el texto por defecto sea 14px */
   --default-font-size: 0.875rem;
+
+  --shadow-theme-who-pay-card: 0px 1px 3px 0px #0000001A;
 }
 
 

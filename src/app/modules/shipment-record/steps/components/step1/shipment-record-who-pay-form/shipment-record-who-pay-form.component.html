@@ -1,0 +1,51 @@
+@if (whoPayForm) {
+  <form [formGroup]="whoPayForm">
+    <div class="flex flex-col gap-5">
+      <div class="flex flex-col gap-3">
+
+        @for(whoPayOption of whoPayTypeEnabled; track whoPayOption){
+          <div
+            class="flex items-center gap-8 py-2 px-7 bg-gray-50 border  rounded-xl w-full shadow-theme-who-pay-card cursor-pointer"
+            [ngClass]="{
+              'bg-primary-sutile border-highlight-focus-background': whoPayForm.get('paymentType')?.value === whoPayOption.code,
+              'border-theme-light-gray': whoPayForm.get('paymentType')?.value !== whoPayOption.code,
+            }"
+          >
+            <p-radiobutton name="paymentType"
+                           [value]="whoPayOption.code"
+                           [inputId]="'paymentType'+whoPayOption.code"
+                           formControlName="paymentType"
+            />
+            <label [for]="'paymentType'+whoPayOption.code" class="w-full cursor-pointer">
+              <div class="flex gap-4 justify-between items-center">
+
+                <div class="flex flex-col font-inter">
+                  <span class="text-sm ">{{whoPayOption.title}}</span>
+                  <span class="text-sm font-normal">{{whoPayOption.description}}</span>
+                </div>
+
+                <img [src]="whoPayOption.icon_name" alt="Online" class="w-6 h-6 ml-2" />
+              </div>
+            </label>
+          </div>
+        }
+
+      </div>
+
+      <p-message severity="secondary" icon="pi pi-info-circle" styleClass="mb-2">
+        El destino solicitado sólo puede ser pagado en tienda.
+      </p-message>
+
+      <div class="grid w-full">
+        <p-button label="Siguiente" severity="primary" styleClass="w-full"
+                  (click)="handleSubmit()"
+                  (keydown.enter)="handleSubmit()"
+
+                  [disabled]="whoPayForm.invalid"
+        />
+      </div>
+    </div>
+  </form>
+
+
+}

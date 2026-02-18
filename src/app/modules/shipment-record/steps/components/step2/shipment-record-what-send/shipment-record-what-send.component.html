@@ -90,25 +90,28 @@
               </div>
             </div>
 
-            <div class="flex md:hidden">
-              <ng-container
-                *ngTemplateOutlet="articleCategoryTpl; context: { whatSendForm: whatSendForm }"
-              ></ng-container>
-            </div>
+            @if (isMobile()) {
+              <div class="flex md:hidden">
+                <ng-container
+                  *ngTemplateOutlet="articleCategoryTpl; context: { whatSendForm: whatSendForm }"
+                ></ng-container>
+              </div>
 
 
-            <div class="flex md:hidden">
-              <ng-container
-                *ngTemplateOutlet="confidentialInfoTpl"
-              ></ng-container>
-            </div>
-            <div class="flex md:hidden">
+              <div class="flex md:hidden">
+                <ng-container
+                  *ngTemplateOutlet="confidentialInfoTpl"
+                ></ng-container>
+              </div>
+              <div class="flex md:hidden">
 
-              <ng-container
-                [ngTemplateOutlet]="nextButtonTpl"
-              ></ng-container>
+                <ng-container
+                  [ngTemplateOutlet]="nextButtonTpl"
+                ></ng-container>
 
-            </div>
+              </div>
+
+            }
           </div>
         </p-tabpanel>
         <p-tabpanel [value]="1">
@@ -145,7 +148,7 @@
                   <p-inputnumber
                     inputId="width"
                     placeholder="cm"
-                    [max]="1000"
+                    [max]="110"
                     [maxlength]="3"
                     formControlName="width"
                     [ngClass]="
@@ -167,7 +170,7 @@
                   <p-inputnumber
                     inputId="height"
                     placeholder="cm"
-                    [max]="1000"
+                    [max]="110"
                     [maxlength]="3"
                     formControlName="height"
                     [ngClass]="
@@ -186,9 +189,13 @@
                   <p-inputnumber
                     inputId="weight"
                     placeholder="kg"
-                    [max]="1000"
-                    [maxlength]="3"
+                    [max]="25"
+                    [maxlength]="5"
                     formControlName="weight"
+                    mode="decimal"
+                    [minFractionDigits]="0"
+                    [maxFractionDigits]="2"
+                    [min]="0.1"
                     [ngClass]="
                     {
                       'ng-invalid': whatSendForm.get('weight')?.invalid
@@ -197,7 +204,6 @@
                     appValidationShowValidationOn="blur"
                     appValidationErrorMessage="El peso debe ser entre 0.1 y 25 kg."
                   ></p-inputnumber>
-
 
                 </div>
               </div>
@@ -214,24 +220,26 @@
       </p-tabpanels>
     </p-tabs>
 
-    <div class="hidden md:flex border border-gray-300 rounded-2xl p-4 gap-4 bg-white">
+    @if (!isMobile()) {
+      <div class="hidden md:flex border border-gray-300 rounded-2xl p-4 gap-4 bg-white">
 
-      <ng-container
-        *ngTemplateOutlet="articleCategoryTpl; context: { whatSendForm: whatSendForm }"
-      ></ng-container>
+        <ng-container
+          *ngTemplateOutlet="articleCategoryTpl; context: { whatSendForm: whatSendForm }"
+        ></ng-container>
 
-    </div>
+      </div>
 
-    <div class="hidden md:flex">
-      <ng-container
-        *ngTemplateOutlet="confidentialInfoTpl"
-      ></ng-container>
-    </div>
-    <div class="hidden md:flex">
-      <ng-container
-        [ngTemplateOutlet]="nextButtonTpl"
-      ></ng-container>
-    </div>
+      <div class="hidden md:flex">
+        <ng-container
+          *ngTemplateOutlet="confidentialInfoTpl"
+        ></ng-container>
+      </div>
+      <div class="hidden md:flex">
+        <ng-container
+          [ngTemplateOutlet]="nextButtonTpl"
+        ></ng-container>
+      </div>
+    }
   </div>
 
 

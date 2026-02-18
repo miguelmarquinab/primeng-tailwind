@@ -37,4 +37,14 @@ export class GeoService {
             params
         });
     }
+
+    reverse(latitude: number, longitude: number): Observable<any> {
+        const endpoint = `${this.baseUrl}/v1/geo/reverse`;
+        return this.http.get<any>(endpoint, {
+            params: {
+                latitude,
+                longitude
+            }
+        });
+    }
 }

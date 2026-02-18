@@ -1,4 +1,5 @@
 import { ShipmentRecordLayoutComponent } from '@shipment-record/layout/components/shipment-record-layout/shipment-record-layout.component';
+import { ShippingFinishComponent } from '@shipment-record/steps/components/finish/shipping-finish/shipping-finish.component';
 
 export default [
     {
@@ -8,5 +9,13 @@ export default [
     {
         path: 'step/:stepNumber',
         component: ShipmentRecordLayoutComponent
+    },
+    {
+        path: 'step/:stepNumber/item/:itemUuid',
+        component: ShipmentRecordLayoutComponent
+    },
+    {
+        path: 'finish',
+        component: ShippingFinishComponent
     }
 ];

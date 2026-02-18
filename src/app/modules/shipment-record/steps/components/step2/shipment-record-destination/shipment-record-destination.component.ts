@@ -125,7 +125,7 @@ export class ShipmentRecordDestinationComponent implements OnInit {
         // this.ref = this.dialogService.open(ShipmentRecordConfirmationModalComponent, {
         //     height: 'auto',
         //     width: '340px',
-        //     modal: true,
+        //     shipment-record-pin-modal: true,
         //     closable: true,
         //     breakpoints: {
         //         '960px': '75vw',

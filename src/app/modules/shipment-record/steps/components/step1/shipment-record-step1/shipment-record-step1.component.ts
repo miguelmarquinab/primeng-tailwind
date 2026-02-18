@@ -3,8 +3,12 @@ import { AccordionModule } from 'primeng/accordion';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
-import { PersonFormComponent } from '@shipment-record/steps/components/step1/shipment-record-who-sender-form/person-form.component';
-import { ShipmentRecordOriginFormComponent } from '@shipment-record/steps/components/step1/shipment-record-origin-form/shipment-record-origin-form.component';
+import {
+    PersonFormComponent
+} from '@shipment-record/steps/components/step1/shipment-record-who-sender-form/person-form.component';
+import {
+    ShipmentRecordOriginFormComponent
+} from '@shipment-record/steps/components/step1/shipment-record-origin-form/shipment-record-origin-form.component';
 import { WhoSenderFormData } from '@shipment-record/models/who-sender-form.model';
 import { CartSessionStorageService } from '@shipment-record/services/cart-session-storage.service';
 import { CartService } from '@shipment-record/services/cart.service';
@@ -13,16 +17,28 @@ import { HeadquartersService } from '@shipment-record/services/headquarters.serv
 import { OriginPayload, PersonPayload } from '@shipment-record/models/cart.model';
 import { PersonConstant } from '@shipment-record/contansts/person.constant';
 import { Subject, takeUntil } from 'rxjs';
+import {
+    ShipmentRecordWhoPayFormComponent
+} from '@shipment-record/steps/components/step1/shipment-record-who-pay-form/shipment-record-who-pay-form.component';
 
 @Component({
     selector: 'app-shipment-record-step1',
-    imports: [AccordionModule, InputTextModule, SelectModule, ButtonModule, PersonFormComponent, ShipmentRecordOriginFormComponent],
+    imports: [AccordionModule, InputTextModule, SelectModule, ButtonModule, PersonFormComponent, ShipmentRecordOriginFormComponent, ShipmentRecordWhoPayFormComponent],
     templateUrl: './shipment-record-step1.component.html',
     styleUrl: './shipment-record-step1.component.scss'
 })
 export class ShipmentRecordStep1Component implements OnInit {
+    /**
+     * Only for dev
+     */
+    // currentAccordionIndex = 1;
+    // panelsDisabled: boolean[] = [false, false, false]; /** panel 0 habilitado, panel 1 deshabilitado */
+
+    /**
+     * Config for Normal Flow
+     */
     currentAccordionIndex = 0;
-    panelsDisabled: boolean[] = [false, true]; /** panel 0 habilitado, panel 1 deshabilitado */
+    panelsDisabled: boolean[] = [false, true, true]; /** panel 0 habilitado, panel 1 deshabilitado */
     cartData!: any;
     headquarters: HeadquartersEntityResponse[] = [];
     person!: PersonPayload;
@@ -71,7 +87,7 @@ export class ShipmentRecordStep1Component implements OnInit {
             ubigeo_id: this.currentHeadquarter.ubigeo_id,
             headquarter_name: this.currentHeadquarter.headquarter_name,
             address: this.currentHeadquarter.address,
-            ubigeo: this.currentHeadquarter.ubigeo_concatenated,
+            ubigeo: this.currentHeadquarter.ubigeo_concatenated
         };
     }
 
@@ -88,11 +104,11 @@ export class ShipmentRecordStep1Component implements OnInit {
             }
             const payload = this.cartSessionService.buildCartPayload();
 
-
             this.cartService.update(sessionUuid, payload).subscribe({
                 next: (response) => {
-
-                    this.cartService.setStepNumber(2);
+                    this.currentAccordionIndex = 2;
+                    this.panelsDisabled[2] = false;
+                    // this.cartService.setStepNumber(2);
                 }
             });
         }

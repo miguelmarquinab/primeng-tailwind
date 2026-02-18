@@ -16,6 +16,7 @@ export interface HeadquartersEntityResponse {
     department?: string;
     province?: string;
     district?: string;
+    payment_modalities?: PaymentModalities[];
 }
 
 export interface HeadquartersCoordinatesEntityResponse {
@@ -29,4 +30,20 @@ export interface HeadquartersOfficeDataEntityResponse {
     code?: string;
     type?: number;
     name?: string;
+}
+
+export interface PaymentModalities {
+    code?: string;
+    title?: string;
+    description?: string;
+    icon_name?: string;
+    sort_order?: number;
+    requires_payment_method?: boolean;
+    payment_methods?: PaymentMethod[];
+}
+
+export interface PaymentMethod {
+    code?: string;
+    title?: string;
+    id_method?: number;
 }

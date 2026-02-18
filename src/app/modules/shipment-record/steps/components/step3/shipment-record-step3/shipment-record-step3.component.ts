@@ -1,19 +1,21 @@
 import { Component, inject } from '@angular/core';
 import { Button } from 'primeng/button';
-
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { MarkupModal } from '@shared/components/modal/markup-modal';
-import { ShipmentSummaryItemComponent } from './components/shipment-summary-item/shipment-summary-item.component';
+import { PinModal } from '@shipment-record/steps/components/step3/shipment-record-pin-modal/pin-modal.component';
+import { ShipmentListComponent} from '@shipment-record/steps/components/step3/shipment-list/shipment-list.component';
+import { CartService } from '@shipment-record/services/cart.service';
 
 @Component({
     selector: 'app-shipment-record-step3',
-    imports: [Button, ShipmentSummaryItemComponent],
+    imports: [Button, ShipmentListComponent],
     templateUrl: './shipment-record-step3.component.html',
     styleUrl: './shipment-record-step3.component.scss',
     providers: [DialogService]
 })
 export class ShipmentRecordStep3Component {
     dialog = inject(DialogService);
+
+    private readonly cartService = inject(CartService);
 
     shipments = [
         {
@@ -84,17 +86,22 @@ export class ShipmentRecordStep3Component {
 
     ref: DynamicDialogRef | null = null;
     openModal() {
-        this.ref = this.dialog.open(MarkupModal, {
-            width: '371px',
-            contentStyle: { 'max-height': '500px', overflow: 'auto' },
-            // baseZIndex: 10000,
-            closable: true
-        });
 
-        this.ref?.onClose.subscribe({
-            next: (data) => {
-                console.log('Modal closed with data:', data);
-            }
-        });
+
+        this.cartService.setStepNumber(2);
+
+        // this.ref = this.dialog.open(MarkupModal, {
+        //     header: '',
+        //     width: '371px',
+        //     contentStyle: { 'max-height': '500px', overflow: 'auto' },
+        //     // baseZIndex: 10000,
+        //     closable: true
+        // });
+        //
+        // this.ref?.onClose.subscribe({
+        //     next: (data) => {
+        //         console.log('Modal closed with data:', data);
+        //     }
+        // });
     }
 }

@@ -13,6 +13,7 @@ import { Button } from 'primeng/button';
 import { CartItemWhatSendPayload } from '@shipment-record/models/cart.model';
 import { Tooltip } from 'primeng/tooltip';
 import { ValidationDirective } from '@shared/directives/validation.directive';
+import { BreakpointService } from '@shared/services/breakpoint/breakpoint.service';
 
 @Component({
     selector: 'app-shipment-record-what-send',
@@ -37,6 +38,8 @@ export class ShipmentRecordWhatSendComponent implements OnInit {
     currentSizeModal: any = null;
     protected readonly AppConstant = AppConstant;
     private readonly formBuilder: FormBuilder = inject(FormBuilder);
+    private readonly breakpointService = inject(BreakpointService);
+    isMobile = this.breakpointService.isMobile;
 
     ngOnInit() {
         this.initForm();
@@ -66,7 +69,7 @@ export class ShipmentRecordWhatSendComponent implements OnInit {
     initForm() {
         this.whatSendForm = this.formBuilder.group({
             category: [0, [Validators.required, Validators.min(1)]],
-            articleValue: [null, [Validators.required, Validators.min(0.1)]],
+            articleValue: [null, [Validators.required, Validators.min(0.0101), Validators.max(10000)]],
             large: [null, [Validators.min(1), Validators.max(110)]],
             width: [null, [Validators.min(1), Validators.max(110)]],
             height: [null, [Validators.min(1), Validators.max(110)]],
