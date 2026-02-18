@@ -4,6 +4,10 @@
     text-align: center;
 }
 
-:host ::ng-deep .markup-dialog {
-    background-color: red !important;
+:host ::ng-deep .markup-dialog .p-dialog-content {
+    background-color: red;
+}
+
+:host ::ng-deep .markup-dialog .p-dialog-header {
+    background-color: red;
 }
