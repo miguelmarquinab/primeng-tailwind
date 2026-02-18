@@ -12,7 +12,11 @@
                 role="button"
                 tabindex="0"
                 (keydown.enter)="goToFinish()"
-                class="payment-method-card flex items-start gap-3 p-4 bg-white rounded-xl border border-surface-200 shadow-sm hover:shadow-md transition-all w-full cursor-pointer"
+                class="payment-method-card flex items-start gap-3 p-4 bg-white rounded-xl border border-surface-200 shadow-sm transition-all w-full cursor-pointer hover:bg-primary-sutile hover:border-highlight-focus-background hover:shadow-md"
+                [ngClass]="{
+                    'bg-primary-sutile border-highlight-focus-background shadow-md': selectedPaymentMethod === 'niubiz',
+                    'border-theme-light-gray': selectedPaymentMethod !== 'niubiz'
+                }"
             >
                 <!-- Logo section - always on left -->
                 <div class="shrink-0">
@@ -45,7 +49,15 @@
             </a>
 
             <!-- Pagoefectivo Option -->
-            <div class="payment-method-card flex items-start gap-3 p-4 bg-white rounded-xl border border-surface-200 shadow-sm hover:shadow-md transition-all w-full">
+            <a
+                role="button"
+                tabindex="0"
+                class="payment-method-card flex items-start gap-3 p-4 bg-white rounded-xl border border-surface-200 cursor-pointer shadow-sm transition-all w-full hover:bg-primary-sutile hover:border-highlight-focus-background hover:shadow-md"
+                [ngClass]="{
+                    'bg-primary-sutile border-highlight-focus-background shadow-md': selectedPaymentMethod === 'pagoefectivo',
+                    'border-theme-light-gray': selectedPaymentMethod !== 'pagoefectivo'
+                }"
+            >
                 <!-- Logo section - always on left -->
                 <div class="shrink-0">
                     <img src="shared/images/pago-efectivo.png" alt="pago efectivo logo" class="w-16 lg:w-20 h-auto object-contain" />
@@ -56,7 +68,7 @@
                     <div class="font-bold text-sm lg:text-base mb-1 max-w-45 md:max-w-none">Pagoefectivo</div>
                     <div class="text-xs lg:text-sm text-gray-600 mb-2 max-w-45 md:max-w-none leading-snug">Pago en bancos, agentes, billeteras digitales y online.</div>
                 </div>
-            </div>
+            </a>
         </div>
 
         <!-- Terms and Conditions -->
