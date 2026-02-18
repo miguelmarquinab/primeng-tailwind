@@ -87,6 +87,7 @@ export class ShipmentRecordStep3Component {
         this.ref = this.dialog.open(MarkupModal, {
             width: '371px',
             contentStyle: { 'max-height': '500px', overflow: 'auto' },
+            styleClass: 'markup-dialog',
             // baseZIndex: 10000,
             closable: true
         });
