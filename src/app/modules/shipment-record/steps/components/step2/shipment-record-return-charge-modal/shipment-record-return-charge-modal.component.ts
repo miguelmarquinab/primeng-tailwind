@@ -23,7 +23,7 @@ interface ReturnChargeModalData {
 }
 
 @Component({
-    selector: 'app-shipment-record-return-charge-modal',
+    selector: 'app-shipment-record-return-charge-shipment-record-pin-modal',
     imports: [
         Button,
         Tabs,

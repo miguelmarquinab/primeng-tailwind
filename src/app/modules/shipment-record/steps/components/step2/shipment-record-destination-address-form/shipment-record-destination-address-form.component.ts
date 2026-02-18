@@ -12,12 +12,13 @@ import { SearchAddressEntityResponse, SearchAddressQueryParams } from '@/modules
 import { DestinationEntityResponse } from '@shipment-record/models/destination.model';
 import { DestinationAddressFormState, DestinationAddressFormValues } from '@shipment-record/models/destination-form.model';
 import { BreakpointService } from '@shared/services/breakpoint/breakpoint.service';
-import { NgTemplateOutlet } from '@angular/common';
+import { JsonPipe, NgTemplateOutlet } from '@angular/common';
 import { Button } from 'primeng/button';
+import { LeafletMouseEvent } from 'leaflet';
 
 @Component({
     selector: 'app-shipment-record-destination-address-form',
-    imports: [InputText, TrashButtonComponent, ShipmentRecordDestinationMapComponent, ReactiveFormsModule, AutoComplete, NgTemplateOutlet, Button],
+    imports: [InputText, TrashButtonComponent, ShipmentRecordDestinationMapComponent, ReactiveFormsModule, AutoComplete, NgTemplateOutlet, Button, JsonPipe],
     templateUrl: './shipment-record-destination-address-form.component.html',
     styleUrl: './shipment-record-destination-address-form.component.scss',
     encapsulation: ViewEncapsulation.None
@@ -33,6 +34,8 @@ export class ShipmentRecordDestinationAddressFormComponent implements OnInit, On
     homeDestinationsFiltered: DestinationEntityResponse[] = [];
     currentUbigeoDestination: DestinationEntityResponse | null = null;
     showMarker: boolean = true;
+
+    currentAutocompletePrediction!: AutocompletePredictionEntityResponse;
     @Output() formChanged = new EventEmitter<DestinationAddressFormState>();
     private readonly geoService = inject(GeoService);
     private readonly destroy$ = new Subject<void>();
@@ -102,10 +105,11 @@ export class ShipmentRecordDestinationAddressFormComponent implements OnInit, On
     search(event: AutoCompleteCompleteEvent) {
         let debounceTimeMs = 3000;
         console.log('searching for', event.query);
-        if (!this.currentUbigeoDestination?.district) {
-            return;
-        }
-        const query = `${event.query.toLowerCase()}, ${this.currentUbigeoDestination.district} `;
+        // if (!this.currentUbigeoDestination?.district) {
+        //     return;
+        // }
+        // const query = `${event.query.toLowerCase()}, ${this.currentUbigeoDestination.district} `;
+        const query = `${event.query.toLowerCase()}`;
         this.geoService
             .autocompleteAddress(query)
             .pipe(
@@ -127,7 +131,7 @@ export class ShipmentRecordDestinationAddressFormComponent implements OnInit, On
 
     selectAddress(event: AutoCompleteSelectEvent) {
         console.log('Address selected:', event);
-
+this.currentAutocompletePrediction = event.value;
         const queryParams: SearchAddressQueryParams = {
             place_id: event.value.place_id
         };
@@ -135,11 +139,23 @@ export class ShipmentRecordDestinationAddressFormComponent implements OnInit, On
             next: (response) => {
                 console.log('Full address details:', response);
                 this.currentSearchAddress = response.data ?? {};
+                const currentHomeDestination = this.getHomeDestinationByUbigeo(this.currentSearchAddress.ubigeo ?? '');
+                console.log('currentHomeDestination', currentHomeDestination);
+
+                if (currentHomeDestination.length > 0) {
+                    this.storeDestinationForm.get('ubigeo')?.setValue(currentHomeDestination[0]);
+                }
                 this.currentPlaceId = event.value.place_id ?? null;
                 this.showMarker = true;
                 this.formChanged.emit(this.buildResponse());
+
+                console.log(this.storeDestinationForm.value);
             }
         });
+    }
+
+    getHomeDestinationByUbigeo(ubigeo: string) {
+        return this.homeDestinations.filter((dest) => dest.ubigeo_code === ubigeo);
     }
     removeAddress(event: any) {
         console.log('Address removed');
@@ -172,6 +188,28 @@ export class ShipmentRecordDestinationAddressFormComponent implements OnInit, On
             this.modalVisible = true;
         }
     }
+
+    mapClick(event: LeafletMouseEvent) {
+        console.log('Map clicked:', event);
+
+        const lat = event.latlng.lat;
+        const lng = event.latlng.lng;
+        this.geoService.reverse(lat, lng).subscribe({
+            next: (response) => {
+                console.log('Reverse geocoding response:', response);
+                if (response && response.data) {
+                    // this.currentSearchAddress = response.data;
+                    // this.currentPlaceId = response.data.place_id || null;
+                    this.showMarker = true;
+                    // this.storeDestinationForm.patchValue({
+                    //     street: response.data.address || ''
+                    // });
+                    // this.formChanged.emit(this.buildResponse());
+                }
+            }
+        });
+    }
+
     ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();

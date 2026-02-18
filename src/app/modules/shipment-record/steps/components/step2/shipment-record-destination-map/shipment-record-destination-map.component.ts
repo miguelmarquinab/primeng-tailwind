@@ -1,6 +1,7 @@
-import { AfterViewInit, Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import * as L from 'leaflet';
 import { SearchAddressEntityResponse } from '@/modules/geo/models/search-address.model';
+import { LeafletMouseEvent } from 'leaflet';
 
 @Component({
     selector: 'app-shipment-record-destination-map',
@@ -11,6 +12,7 @@ import { SearchAddressEntityResponse } from '@/modules/geo/models/search-address
 export class ShipmentRecordDestinationMapComponent implements AfterViewInit, OnChanges, OnDestroy, OnInit {
     @Input() currentSearchAddress!: SearchAddressEntityResponse | null;
     @Input() showMarker: boolean = true;
+    @Output() mapClick = new EventEmitter<LeafletMouseEvent>();
     @ViewChild('mapContainer') mapContainer?: ElementRef<HTMLDivElement>;
 
     olvaIcon!: any;
@@ -94,7 +96,7 @@ export class ShipmentRecordDestinationMapComponent implements AfterViewInit, OnC
             console.error('Map container not found! Make sure map container exists in the DOM.');
             return;
         }
-        const limaLocation:[number,number] = [-12.04318, -77.02824];
+        const limaLocation: [number, number] = [-12.04318, -77.02824];
 
         this.map = L.map(mapContainer, {
             zoomControl: false
@@ -107,6 +109,31 @@ export class ShipmentRecordDestinationMapComponent implements AfterViewInit, OnC
             .addTo(this.map);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {}).addTo(this.map);
+
+        this.map.on('click', async (e: LeafletMouseEvent) => {
+            const latlng = e.latlng;
+            const map: any = this.map;
+            // this.geoData = e.latlng;
+
+            console.log('Coordenadas clicadas:', latlng);
+
+            this.mapClick.emit(e);
+
+            // const { lat, lng } = e.latlng;
+            // const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`;
+            //
+            // try {
+            //     const response = await fetch(url);
+            //     const data = await response.json();
+            //
+            //     const m = L.marker([lat, lng]).addTo(map).bindPopup(data.display_name).openPopup();
+            //     // Guardar referencia para poder eliminarlo más tarde
+            //     this.geoData = data;
+            //     this.markers.push(m);
+            // } catch (error) {
+            //     console.error('Error en geocodificación inversa:', error);
+            // }
+        });
     }
 
     private setMarker(point: [number, number]): void {

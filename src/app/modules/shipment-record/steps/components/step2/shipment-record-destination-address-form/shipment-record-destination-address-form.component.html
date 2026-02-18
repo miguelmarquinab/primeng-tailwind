@@ -1,36 +1,5 @@
 @if (storeDestinationForm) {
 
-  <!--  @if (isMobile()) {-->
-    <!--    <div>-->
-    <!--      <form class="flex flex-col gap-2 w-full">-->
-    <!--        <div class="flex flex-col gap-1">-->
-    <!--          <p-iconfield iconPosition="left">-->
-    <!--            <p-inputicon styleClass="pi pi-search" />-->
-    <!--            <input-->
-    <!--              pInputText-->
-    <!--              id="references"-->
-    <!--              placeholder="Busca una dirección"-->
-    <!--              class="w-full"-->
-    <!--            />-->
-    <!--          </p-iconfield>-->
-    <!--        </div>-->
-    <!--        <div class="flex flex-col gap-1">-->
-    <!--          <input-->
-    <!--            pInputText-->
-    <!--            id="references"-->
-    <!--            placeholder="Ingresa referencias (calle, altura, oficina, dpto)"-->
-    <!--            class="w-full"-->
-    <!--          />-->
-
-    <!--        </div>-->
-
-    <!--      </form>-->
-    <!--    </div>-->
-    <!--  }-->
-
-    <!--  @if (!isMobile()) {-->
-
-    <!--  }-->
   <div class="flex flex-col gap-4">
     <div class="relative">
       <form [formGroup]="storeDestinationForm">
@@ -47,12 +16,13 @@
         <app-shipment-record-destination-map
           [currentSearchAddress]="currentSearchAddress"
           [showMarker]="showMarker"
+          (mapClick)="mapClick($event)"
         ></app-shipment-record-destination-map>
       }
       @if (isMobile()) {
         @if (modalVisible) {
 
-          <div class="modal-under-resume"  role="dialog" aria-modal="true">
+          <div class="modal-under-resume" role="dialog" aria-modal="true">
             <button class="modal-close absolute top-4 right-4 z-1000 bg-transparent hover:bg-gray-100  "
                     (click)="modalVisible=false"
                     aria-label="Cerrar">
@@ -64,6 +34,7 @@
               <app-shipment-record-destination-map
                 [currentSearchAddress]="currentSearchAddress"
                 [showMarker]="showMarker"
+                (mapClick)="mapClick($event)"
               ></app-shipment-record-destination-map>
 
               <div class="absolute bottom-30 p-4 z-1100 w-full max-w-full">
@@ -84,7 +55,7 @@
 
 }
 
-<ng-template #addressSearchTpl  let-form="form">
+<ng-template #addressSearchTpl let-form="form">
   <div class="flex flex-col gap-3" [formGroup]="form">
     <div class="flex flex-col gap-1">
 
@@ -137,14 +108,14 @@
       />
     </div>
 
-    @if (currentSearchAddress) {
+    @if (currentAutocompletePrediction) {
 
       <div class="flex flex-col gap-2">
         <div
           class="border rounded-md p-3 flex flex-row gap-2 items-center shadow-lg bg-primary-sutile border-highlight-focus-background">
           <img src="shared/images/marker.svg" alt="GPS Icon" class="w-6 " />
           <div class="flex flex-col flex-1">
-            <span class="text-sm text-button-text-plain">{{ currentSearchAddress.address }}</span>
+            <span class="text-sm text-button-text-plain">{{ currentAutocompletePrediction.description }}</span>
           </div>
           <div>
             <app-trash-button
@@ -157,9 +128,10 @@
       </div>
     }
 
-    @if(isMobile() && modalVisible) {
+    @if (isMobile() && modalVisible) {
       <div class="w-full">
-        <p-button severity="primary" label="Confirmar dirección" styleClass="w-full" (click)="modalVisible=false"></p-button>
+        <p-button severity="primary" label="Confirmar dirección" styleClass="w-full"
+                  (click)="modalVisible=false"></p-button>
       </div>
     }
   </div>

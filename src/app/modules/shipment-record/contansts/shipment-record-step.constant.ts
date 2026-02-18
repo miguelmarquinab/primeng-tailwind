@@ -39,4 +39,25 @@ export class ShipmentRecordStepsConstant {
             }
         }
     };
+
+    static readonly WHO_PAY_TYPE_ONLINE = {
+        value: 'online',
+        icon: 'shared/images/credit-card.svg',
+        title: 'Pago en linea',
+        description: 'Pago con tarjeta de débito/crédito o Pagoefectivo.'
+    };
+
+    static readonly WHO_PAY_TYPE_DESTINATION = {
+        value: 'destination',
+        icon: 'shared/images/safe-delivery-01.svg',
+        title: 'Pago en destino',
+        description: 'Pago del envío contra entrega.'
+    };
+
+    static readonly WHO_PAY_TYPE_STORE = {
+        value: 'store',
+        icon: 'shared/images/store-04-icon.svg',
+        title: 'Pago en tienda',
+        description: 'Pago al entregar en tienda.'
+    };
 }

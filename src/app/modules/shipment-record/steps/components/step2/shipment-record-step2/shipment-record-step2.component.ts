@@ -24,15 +24,15 @@ import { CartService } from '@shipment-record/services/cart.service';
     encapsulation: ViewEncapsulation.None
 })
 export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
-    // panelsDisabled: boolean[] = [false, false, true, true]; // panel 0 habilitado, panel 1 deshabilitado
-    // protected currentAccordionIndex = 0;
+    // default
+    panelsDisabled: boolean[] = [false, true, true, true]; // panel 0 habilitado, panel 1 deshabilitado
+    protected currentAccordionIndex = 0;
 
-    panelsDisabled: boolean[] = [false, false, false, false]; // panel 0 habilitado, panel 1 deshabilitado
-    protected currentAccordionIndex = 2;
+
+    // panelsDisabled: boolean[] = [false, false, false, false]; // panel 0 habilitado, panel 1 deshabilitado
+    // protected currentAccordionIndex = 2;
     articleCategories: ArticleCategoriesEntityResponse[] = [];
-    // panelsDisabled: boolean[] = [false, false, true, true]; // panel 0 habilitado, panel 1 deshabilitado
-    whoReceives: any = null;
-    whatSend: any = null;
+
     returnChargePayload: ReturnChargePayload | null = null;
     protected readonly PersonConstant = PersonConstant;
     protected readonly ShipmentRecordStepsConstant = ShipmentRecordStepsConstant;

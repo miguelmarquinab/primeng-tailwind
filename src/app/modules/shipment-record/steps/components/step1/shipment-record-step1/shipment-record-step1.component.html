@@ -22,6 +22,17 @@
             (submitOrigin)="handleSubmitOriginForm($event)"></app-shipment-record-origin-form>
         </p-accordion-content>
       </p-accordion-panel>
+
+      <p-accordion-panel [value]="2" [disabled]="panelsDisabled[2]">
+        <p-accordion-header>¿Quién paga?</p-accordion-header>
+        <p-accordion-content>
+
+          <app-shipment-record-who-pay-form
+            [currentHeadquarter]="currentHeadquarter"
+          >
+          </app-shipment-record-who-pay-form>
+        </p-accordion-content>
+      </p-accordion-panel>
     </p-accordion>
   </div>
 

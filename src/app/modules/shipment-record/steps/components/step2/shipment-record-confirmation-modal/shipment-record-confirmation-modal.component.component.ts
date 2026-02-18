@@ -4,7 +4,7 @@ import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Button } from 'primeng/button';
 
 @Component({
-    selector: 'app-shipment-record-confirmation-modal',
+    selector: 'app-shipment-record-confirmation-shipment-record-pin-modal',
     templateUrl: './shipment-record-confirmation-modal.component.html',
     standalone: true,
     imports: [

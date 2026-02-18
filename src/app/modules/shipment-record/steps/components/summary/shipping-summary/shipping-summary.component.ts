@@ -2,7 +2,6 @@ import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { Divider } from 'primeng/divider';
 import { Button } from 'primeng/button';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-
 import { ShippingSummaryStepOriginComponent } from '@shipment-record/steps/components/summary/shipping-summary-step-origin/shipping-summary-step-origin.component';
 import { ShippingSummaryStepDestinationsComponent } from '@shipment-record/steps/components/summary/shipping-summary-step-destinations/shipping-summary-step-destinations.component';
 import { CartService } from '@shipment-record/services/cart.service';
@@ -10,8 +9,10 @@ import { distinctUntilChanged, filter, shareReplay, skip, Subject, Subscription,
 import { CartOriginEntityResponse, CartPersonEntityResponse, CartState } from '@shipment-record/models/cart.model';
 import { CartSessionStorageService } from '@shipment-record/services/cart-session-storage.service';
 import { SessionStorageService } from '@shared/services/storage/session-storage.service';
-import { PaymentMethodModalComponent } from '@/modules/shared/components/payment-method-modal/payment-method-modal.component';
-import { RegistrationSuccessModalComponent } from '@/modules/shared/components/registration-success-modal/registration-success-modal.component';
+import { PaymentMethodModalComponent } from '@shared/payment-method-modal/payment-method-modal.component';
+import { RegistrationSuccessModalComponent } from '@shared/registration-success-modal/registration-success-modal.component';
+import { PinModal } from '@shipment-record/steps/components/step3/shipment-record-pin-modal/pin-modal.component';
+
 
 @Component({
     selector: 'app-shipping-summary',
@@ -101,9 +102,30 @@ export class ShippingSummaryComponent implements OnInit, OnDestroy {
             this.getCartByUuid(cartId);
         }
     }
+
     ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();
+    }
+
+    openPinModal() {
+
+
+        this.ref = this.dialog.open(PinModal, {
+            header: '',
+            width: '371px',
+            contentStyle: { 'max-height': '500px', overflow: 'auto' },
+            // baseZIndex: 10000,
+            closable: true
+        });
+
+        this.ref?.onClose.subscribe({
+            next: (data) => {
+                console.log('Modal closed with data:', data);
+
+                this.openPaymentMethodModal();
+            }
+        });
     }
 
     openPaymentMethodModal(): void {
@@ -113,9 +135,8 @@ export class ShippingSummaryComponent implements OnInit, OnDestroy {
             closable: true,
             data: {
                 selectedPaymentMethod: 'niubiz',
-                paymentAmount: 'S/78.33',
                 error: null
-                // error: { reason: 'Fondos insuficientes', message: '...' }
+                //error: { reason: 'Fondos insuficientes', message: '...' }
             }
         });
     }

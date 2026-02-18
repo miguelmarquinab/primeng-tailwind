@@ -11,6 +11,10 @@ export default [
         component: ShipmentRecordLayoutComponent
     },
     {
+        path: 'step/:stepNumber/item/:itemUuid',
+        component: ShipmentRecordLayoutComponent
+    },
+    {
         path: 'finish',
         component: ShippingFinishComponent
     }

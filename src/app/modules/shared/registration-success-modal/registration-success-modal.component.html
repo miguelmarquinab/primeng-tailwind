@@ -1,0 +1,81 @@
+<div class="w-full max-w-5xl mx-auto bg-white rounded-2xl p-4 lg:p-8">
+    <!-- MAIN CONTENT -->
+    <div class="flex flex-col lg:flex-row gap-8 items-center lg:items-stretch">
+        <!-- LEFT: SUCCESS + DETAILS -->
+        <div class="flex-1 flex flex-col gap-6 w-full lg:w-auto">
+            <!-- HEADER -->
+            <div class="flex flex-row justify-center lg:flex-col items-center lg:items-start gap-3 w-full">
+                <img src="shared/images/check-star.png" alt="check" class="w-8 h-8 lg:w-13 lg:h-13 lg:m-auto" />
+                <h2 class="text-xl lg:text-2xl font-bold text-color-ultramarine text-center lg:text-left w-full lg:w-auto">¡Registro exitoso!</h2>
+            </div>
+
+            <!-- DETAILS -->
+            <div class="flex flex-col gap-2 text-sm w-full">
+                <div class="flex justify-between gap-4 w-full">
+                    <span class="text-black">N° de registro</span>
+                    <span class="text-black">
+                        {{ registrationData.registrationNumber }}
+                    </span>
+                </div>
+
+                <div class="flex justify-between gap-4 w-full">
+                    <span class="text-black">Fecha y hora</span>
+                    <span class="text-black text-right">
+                        {{ registrationData.dateTime }}
+                    </span>
+                </div>
+
+                @if (registrationData.card) {
+                    <div class="flex justify-between gap-4 w-full">
+                        <span class="text-black">Tarjeta</span>
+                        <span class="text-black text-right">
+                            {{ registrationData.card }}
+                        </span>
+                    </div>
+                }
+
+                @if (registrationData.amountPaid) {
+                    <div class="flex justify-between gap-4 w-full">
+                        <span class="text-black">Importe pagado</span>
+                        <span class="font-bold text-black">
+                            {{ registrationData.amountPaid }}
+                        </span>
+                    </div>
+                }
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div class="flex flex-col gap-3 w-full">
+                <p-button label="Ver tiendas o agentes" icon="pi pi-shop" severity="secondary" [outlined]="true" styleClass="w-full h-11 rounded-full text-sm font-medium justify-center gap-2" (click)="onViewStores()"> </p-button>
+
+                <p-button label="Registrar nuevo envío" icon="pi pi-box" severity="secondary" [outlined]="true" styleClass="w-full h-11 rounded-full text-sm font-medium justify-center gap-2" (click)="onRegisterNewShipment()"> </p-button>
+            </div>
+        </div>
+
+        <!-- RIGHT: ILLUSTRATION + DOWNLOAD -->
+        <div class="flex-1 flex flex-col gap-4 mt-4 lg:mt-0 lg:border-l lg:border-gray-200 lg:pl-8 justify-center">
+            <!-- IMAGE + TEXT -->
+            <div class="flex flex-row items-center gap-3 lg:flex-col lg:gap-4">
+                <img src="shared/images/box-hand.png" alt="box" class="w-16 lg:w-35 shrink-0" />
+
+                <p class="text-color-ultramarine text-sm text-left lg:text-center max-w-xs">¡Recuerda <span class="font-semibold">rotular correctamente</span> tus envíos!</p>
+            </div>
+
+            <!-- BUTTON -->
+            <p-button class="w-full" label="Descargar rótulo" icon="pi pi-download" severity="primary" styleClass="w-full h-11 rounded-full text-sm font-semibold justify-center gap-2" (click)="onDownloadLabel()"> </p-button>
+        </div>
+    </div>
+
+    <div class="hidden lg:block text-color-ultramarine mt-4"><span class="font-semibold">Tu envío ya está registrado.</span> Acércate a una tienda Olva y deja tu paquete <span class="font-semibold">sin hacer colas</span>.</div>
+
+    <!-- FOOTER -->
+    <div class="mt-8 pt-4">
+        <div class="flex items-center justify-center gap-2 text-[10px] text-black whitespace-nowrap">
+            <span> Tienda autorizada por Visa y PagoEfectivo para realizar transacciones electrónicas. </span>
+
+            <img src="shared/images/niubiz.png" alt="niubiz logo" class="w-5 lg:w-6 h-auto object-contain" />
+
+            <img src="shared/images/pago-efectivo.png" alt="pago efectivo logo" class="w-5 lg:w-6 h-auto object-contain" />
+        </div>
+    </div>
+</div>

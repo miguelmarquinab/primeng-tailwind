@@ -1,3 +1,5 @@
+@use 'mixins' as *;
+
 .p-accordion {
   border-color: var(--theme-surface-200) !important;
   border-width: 1px !important;
@@ -10,9 +12,21 @@
   }
 
   .p-accordionpanel:first-child > .p-accordionheader {
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
-    //height: 45px;
+    @include rounded-bottom(12px);
+  }
+
+
+  .p-accordionpanel:last-child {
+    @include rounded-bottom(12px);
+
+    & .p-accordioncontent-content {
+      @include rounded-bottom(12px);
+    }
+
+    .p-accordionheader {
+      @include rounded-bottom(12px);
+    }
+
   }
 
   .p-accordionpanel-active {
@@ -46,4 +60,3 @@
   }
 
 }
-

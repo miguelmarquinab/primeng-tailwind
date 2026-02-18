@@ -11,7 +11,7 @@ import { AppConstant } from '@shared/contants/app.constant';
 import { Subject, takeUntil, tap } from 'rxjs';
 
 @Component({
-    selector: 'app-shipment-record-person-validate-modal',
+    selector: 'app-shipment-record-person-validate-shipment-record-pin-modal',
     imports: [ReactiveFormsModule, InputText, NgClass, Button, RestrictCharsDirective],
     templateUrl: './shipment-record-person-validate-modal.component.html',
     standalone: true,
