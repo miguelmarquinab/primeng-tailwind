@@ -18,7 +18,7 @@ import { LeafletMouseEvent } from 'leaflet';
 
 @Component({
     selector: 'app-shipment-record-destination-address-form',
-    imports: [InputText, TrashButtonComponent, ShipmentRecordDestinationMapComponent, ReactiveFormsModule, AutoComplete, NgTemplateOutlet, Button, JsonPipe],
+    imports: [InputText, TrashButtonComponent, ShipmentRecordDestinationMapComponent, ReactiveFormsModule, AutoComplete, NgTemplateOutlet, Button],
     templateUrl: './shipment-record-destination-address-form.component.html',
     styleUrl: './shipment-record-destination-address-form.component.scss',
     encapsulation: ViewEncapsulation.None
@@ -131,7 +131,7 @@ export class ShipmentRecordDestinationAddressFormComponent implements OnInit, On
 
     selectAddress(event: AutoCompleteSelectEvent) {
         console.log('Address selected:', event);
-this.currentAutocompletePrediction = event.value;
+        this.currentAutocompletePrediction = event.value;
         const queryParams: SearchAddressQueryParams = {
             place_id: event.value.place_id
         };

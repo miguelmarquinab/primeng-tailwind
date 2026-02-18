@@ -12,7 +12,7 @@ import { HeadquartersEntityResponse, PaymentModalities } from '@shipment-record/
 
 @Component({
     selector: 'app-shipment-record-who-pay-form',
-    imports: [Button, Message, RadioButton, ReactiveFormsModule, NgClass, JsonPipe],
+    imports: [Button, Message, RadioButton, ReactiveFormsModule, NgClass],
     templateUrl: './shipment-record-who-pay-form.component.html',
     styleUrl: './shipment-record-who-pay-form.component.scss'
 })
@@ -48,10 +48,9 @@ export class ShipmentRecordWhoPayFormComponent implements OnInit, OnChanges, OnD
     }
 
     orderPaymentModalities(paymentModalities: PaymentModalities[] = []): PaymentModalities[] {
-        return  paymentModalities.sort((a, b) => {
+        return paymentModalities.sort((a, b) => {
             return (a.sort_order ?? 0) - (b.sort_order ?? 0);
         });
-
     }
 
     buildWhoPayTypeEnabled(headquarter: HeadquartersEntityResponse) {

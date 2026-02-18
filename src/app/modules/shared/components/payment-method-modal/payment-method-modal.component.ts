@@ -6,6 +6,7 @@ import { Button } from 'primeng/button';
 import { ToggleSwitch } from 'primeng/toggleswitch';
 
 import { BreakpointService } from '@shared/services/breakpoint/breakpoint.service';
+import { RouterLink } from '@angular/router';
 
 type PaymentMethod = 'niubiz' | 'pagoefectivo';
 
@@ -22,7 +23,7 @@ export interface PaymentMethodModalData {
 
 @Component({
     selector: 'app-payment-method-modal',
-    imports: [Button, ToggleSwitch, FormsModule],
+    imports: [Button, ToggleSwitch, FormsModule, RouterLink],
     templateUrl: './payment-method-modal.component.html',
     styleUrl: './payment-method-modal.component.scss',
     standalone: true

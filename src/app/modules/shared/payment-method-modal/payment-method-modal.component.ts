@@ -6,6 +6,7 @@ import { Button } from 'primeng/button';
 import { ToggleSwitch } from 'primeng/toggleswitch';
 
 import { BreakpointService } from '@shared/services/breakpoint/breakpoint.service';
+import { Router } from '@angular/router';
 
 type PaymentMethod = 'niubiz' | 'pagoefectivo';
 
@@ -31,6 +32,7 @@ export class PaymentMethodModalComponent implements OnInit {
     private readonly dynamicDialogRef = inject(DynamicDialogRef);
     private readonly dynamicDialogConfig = inject(DynamicDialogConfig);
     private readonly breakpointService = inject(BreakpointService);
+    private readonly router = inject(Router);
 
     @Input() selectedPaymentMethod: PaymentMethod = 'niubiz';
     @Input() paymentAmount = 'S/78.33';
@@ -73,5 +75,10 @@ export class PaymentMethodModalComponent implements OnInit {
 
     close(): void {
         this.dynamicDialogRef.close();
+    }
+
+    goToFinish() {
+        this.dynamicDialogRef.close();
+        this.router.navigate(['/shipment-record/finish']);
     }
 }

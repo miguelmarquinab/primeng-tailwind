@@ -4,6 +4,6 @@
     text-align: center;
 }
 
-// :host ::ng-deep .markup-dialog {
-//     background-color: red !important;
-// }
+:host ::ng-deep .markup-dialog {
+    background-color: red !important;
+}
