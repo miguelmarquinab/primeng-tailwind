@@ -12,13 +12,15 @@ import { SearchAddressEntityResponse, SearchAddressQueryParams } from '@/modules
 import { DestinationEntityResponse } from '@shipment-record/models/destination.model';
 import { DestinationAddressFormState, DestinationAddressFormValues } from '@shipment-record/models/destination-form.model';
 import { BreakpointService } from '@shared/services/breakpoint/breakpoint.service';
-import { JsonPipe, NgTemplateOutlet } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import { Button } from 'primeng/button';
 import { LeafletMouseEvent } from 'leaflet';
+import { ShipmentRecordStepsConstant } from '@shipment-record/contansts/shipment-record-step.constant';
+import { OlvaErrorMessageComponent } from '@shared/components/message/olva-error-message/olva-error-message.component';
 
 @Component({
     selector: 'app-shipment-record-destination-address-form',
-    imports: [InputText, TrashButtonComponent, ShipmentRecordDestinationMapComponent, ReactiveFormsModule, AutoComplete, NgTemplateOutlet, Button],
+    imports: [InputText, TrashButtonComponent, ShipmentRecordDestinationMapComponent, ReactiveFormsModule, AutoComplete, NgTemplateOutlet, Button, OlvaErrorMessageComponent],
     templateUrl: './shipment-record-destination-address-form.component.html',
     styleUrl: './shipment-record-destination-address-form.component.scss',
     encapsulation: ViewEncapsulation.None
@@ -33,7 +35,7 @@ export class ShipmentRecordDestinationAddressFormComponent implements OnInit, On
     @Input() homeDestinations: DestinationEntityResponse[] = [];
     homeDestinationsFiltered: DestinationEntityResponse[] = [];
     currentUbigeoDestination: DestinationEntityResponse | null = null;
-    showMarker: boolean = true;
+    showMarker = true;
 
     currentAutocompletePrediction!: AutocompletePredictionEntityResponse;
     @Output() formChanged = new EventEmitter<DestinationAddressFormState>();
@@ -42,7 +44,8 @@ export class ShipmentRecordDestinationAddressFormComponent implements OnInit, On
 
     private readonly breakpointService = inject(BreakpointService);
     isMobile = this.breakpointService.isMobile;
-    modalVisible: boolean = false;
+    modalVisible = false;
+    autocompleteSearchStatus = '';
 
     ngOnInit(): void {
         this.initForm();
@@ -103,7 +106,7 @@ export class ShipmentRecordDestinationAddressFormComponent implements OnInit, On
     }
 
     search(event: AutoCompleteCompleteEvent) {
-        let debounceTimeMs = 3000;
+        const debounceTimeMs = 3000;
         console.log('searching for', event.query);
         // if (!this.currentUbigeoDestination?.district) {
         //     return;
@@ -112,18 +115,13 @@ export class ShipmentRecordDestinationAddressFormComponent implements OnInit, On
         const query = `${event.query.toLowerCase()}`;
         this.geoService
             .autocompleteAddress(query)
-            .pipe(
-                debounceTime(debounceTimeMs),
-                // switchMap((street: any) => {
-                //     return this.geoService.autocompleteAddress(event.query);
-                // }),
-                takeUntil(this.destroy$)
-            )
+            .pipe(debounceTime(debounceTimeMs), takeUntil(this.destroy$))
             .subscribe({
                 next: (response: AutocompleteCollectionResponse) => {
                     if (response) {
                         console.log(response);
                         this.autoCompletePredictions = response.data?.predictions || [];
+                        this.autocompleteSearchStatus = response.data?.status ?? '';
                     }
                 }
             });
@@ -198,12 +196,19 @@ export class ShipmentRecordDestinationAddressFormComponent implements OnInit, On
             next: (response) => {
                 console.log('Reverse geocoding response:', response);
                 if (response && response.data) {
-                    // this.currentSearchAddress = response.data;
-                    // this.currentPlaceId = response.data.place_id || null;
                     this.showMarker = true;
-                    // this.storeDestinationForm.patchValue({
-                    //     street: response.data.address || ''
-                    // });
+                    const currentHomeDestination = this.getHomeDestinationByUbigeo(response.data.ubigeo ?? '');
+                    console.log('currentHomeDestination', currentHomeDestination);
+
+                    if (currentHomeDestination.length > 0) {
+                        this.currentSearchAddress = {
+                            dangerous: response.data.dangerous
+                        };
+                        this.storeDestinationForm.get('ubigeo')?.setValue(currentHomeDestination[0]);
+                    }
+                    this.storeDestinationForm.patchValue({
+                        street: response.data.address || ''
+                    });
                     // this.formChanged.emit(this.buildResponse());
                 }
             }
@@ -214,4 +219,6 @@ export class ShipmentRecordDestinationAddressFormComponent implements OnInit, On
         this.destroy$.next();
         this.destroy$.complete();
     }
+
+    protected readonly ShipmentRecordStepsConstant = ShipmentRecordStepsConstant;
 }

@@ -1,24 +1,24 @@
 @use 'tailwind';
 @use 'assets/themes/olva/theme';
-@import 'primeicons/primeicons.css';
+@import "primeicons/primeicons.css";
 :root {
-    color-scheme: light !important;
+  color-scheme: light !important;
 }
 
 .markup-dialog .p-dialog {
-    background-color: #f5f5f5 !important;
+  background-color: #f5f5f5 !important;
 }
 
 .markup-dialog .p-dialog-close-button {
-    background-color: #f5f5f5 !important;
+  background-color: #f5f5f5 !important;
 }
 
 .markup-dialog .p-dialog-header,
 .markup-dialog .p-dialog-content {
-    background-color: #f5f5f5 !important;
+  background-color: #f5f5f5 !important;
 }
 
 .markup-dialog.p-dialog {
-    border-radius: 12px !important;
-    overflow: hidden;
+  border-radius: 12px !important;
+  overflow: hidden;
 }

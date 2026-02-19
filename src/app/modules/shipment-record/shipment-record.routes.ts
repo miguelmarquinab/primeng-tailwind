@@ -1,5 +1,5 @@
 import { ShipmentRecordLayoutComponent } from '@shipment-record/layout/components/shipment-record-layout/shipment-record-layout.component';
-import { ShippingFinishComponent } from './layout/components/shipping-finish/shipping-finishcomponent';
+import { ShippingFinishComponent } from '@shipment-record/steps/components/finish/shipping-finish/shipping-finish.component';
 
 export default [
     {

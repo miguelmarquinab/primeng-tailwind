@@ -60,4 +60,6 @@ export class ShipmentRecordStepsConstant {
         title: 'Pago en tienda',
         description: 'Pago al entregar en tienda.'
     };
+
+    static readonly ZERO_RESULTS = 'ZERO_RESULTS';
 }

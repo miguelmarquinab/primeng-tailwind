@@ -2,10 +2,11 @@ import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, O
 import * as L from 'leaflet';
 import { SearchAddressEntityResponse } from '@/modules/geo/models/search-address.model';
 import { LeafletMouseEvent } from 'leaflet';
+import { JsonPipe } from '@angular/common';
 
 @Component({
     selector: 'app-shipment-record-destination-map',
-    imports: [],
+    imports: [JsonPipe],
     templateUrl: './shipment-record-destination-map.component.html',
     styleUrl: './shipment-record-destination-map.component.scss'
 })

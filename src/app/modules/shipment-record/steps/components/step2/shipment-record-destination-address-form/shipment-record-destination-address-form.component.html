@@ -108,24 +108,56 @@
       />
     </div>
 
-    @if (currentAutocompletePrediction) {
+    @if (autocompleteSearchStatus === ShipmentRecordStepsConstant.ZERO_RESULTS) {
 
       <div class="flex flex-col gap-2">
-        <div
-          class="border rounded-md p-3 flex flex-row gap-2 items-center shadow-lg bg-primary-sutile border-highlight-focus-background">
-          <img src="shared/images/marker.svg" alt="GPS Icon" class="w-6 " />
-          <div class="flex flex-col flex-1">
-            <span class="text-sm text-button-text-plain">{{ currentAutocompletePrediction.description }}</span>
-          </div>
-          <div>
-            <app-trash-button
-              (click)="removeAddress($event)"
-              (keydown.enter)="removeAddress($event)"
-            ></app-trash-button>
+        <app-olva-error-message
+          [icon]="'shared/images/alert-square.svg'"
+          title="Dirección no disponible"
+          message="Elige otra dirección"
+        >
+
+        </app-olva-error-message>
+      </div>
+    }
+
+    @if(currentSearchAddress?.dangerous){
+      <div class="flex flex-col gap-2">
+        <app-olva-error-message
+          [icon]="'shared/images/alert-square.svg'"
+          title="Zona peligrosa"
+          message="Elige otra dirección"
+        >
+
+        </app-olva-error-message>
+      </div>
+    }
+
+    @if (currentAutocompletePrediction) {
+
+      @if(!currentSearchAddress?.dangerous){
+        <div class="flex flex-col gap-2">
+
+
+          <div
+            class="border rounded-md p-3 flex flex-row gap-2 items-center shadow-lg bg-primary-sutile border-highlight-focus-background">
+            <img src="shared/images/marker.svg" alt="GPS Icon" class="w-6 " />
+            <div class="flex flex-col flex-1">
+              <span class="text-sm text-button-text-plain">{{ currentAutocompletePrediction.description }}</span>
+            </div>
+            <div>
+              <app-trash-button
+                (click)="removeAddress($event)"
+                (keydown.enter)="removeAddress($event)"
+              ></app-trash-button>
+            </div>
+
           </div>
 
+
         </div>
-      </div>
+
+      }
     }
 
     @if (isMobile() && modalVisible) {
@@ -134,5 +166,19 @@
                   (click)="modalVisible=false"></p-button>
       </div>
     }
+  </div>
+</ng-template>
+
+
+<ng-template #searchEmptyTpl>
+  <div
+    class="flex flex-col gap-2 border border-theme-ligth-coral text-theme-ligth-coral rounded-xl px-8 py-3 bg-white items-center">
+    <div class="flex gap-2 items-center">
+      <img src="shared/images/alert-square.svg" alt="" class="w-5">
+      <span class="font-bold text-sm">Dirección no disponible</span>
+    </div>
+    <div class="text-sm  font-medium text-center">
+      Elige otra dirección
+    </div>
   </div>
 </ng-template>

@@ -7,7 +7,7 @@ import { CartSessionStorageService } from '@shipment-record/services/cart-sessio
 import { CartService } from '@shipment-record/services/cart.service';
 import { Subject } from 'rxjs';
 import { ShipmentRecordStepsConstant } from '@shipment-record/contansts/shipment-record-step.constant';
-import { JsonPipe, NgClass } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { HeadquartersEntityResponse, PaymentModalities } from '@shipment-record/models/headquarters.model';
 
 @Component({
