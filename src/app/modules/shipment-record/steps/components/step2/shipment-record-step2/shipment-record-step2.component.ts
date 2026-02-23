@@ -15,6 +15,7 @@ import { WhoSenderFormData } from '@shipment-record/models/who-sender-form.model
 import { CartItemWhatSendPayload, PersonPayload } from '@shipment-record/models/cart.model';
 import { NgClass } from '@angular/common';
 import { CartService } from '@shipment-record/services/cart.service';
+import { CartSessionStorage } from '@shipment-record/models/cart-session-storage.model';
 
 @Component({
     selector: 'app-shipment-record-step2',
@@ -25,11 +26,11 @@ import { CartService } from '@shipment-record/services/cart.service';
 })
 export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
     // default
-    // panelsDisabled: boolean[] = [false, true, true, true]; // panel 0 habilitado, panel 1 deshabilitado
-    // protected currentAccordionIndex = 0;
+    panelsDisabled: boolean[] = [false, true, true, true]; // panel 0 habilitado, panel 1 deshabilitado
+    protected currentAccordionIndex = 0;
 
-    panelsDisabled: boolean[] = [false, false, false, false]; // panel 0 habilitado, panel 1 deshabilitado
-    protected currentAccordionIndex = 2;
+    // panelsDisabled: boolean[] = [false, false, false, false]; // panel 0 habilitado, panel 1 deshabilitado
+    // protected currentAccordionIndex = 1;
 
     articleCategories: ArticleCategoriesEntityResponse[] = [];
 
@@ -43,12 +44,14 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
     private readonly destroy$ = new Subject<void>();
     @ViewChild('accordionScrollContainer', { static: false }) accordionScrollContainer?: ElementRef<HTMLElement>;
 
+    cartData!: CartSessionStorage;
     ngOnInit() {
         this.getArticleCategories();
+        this.cartData = this.cartSessionService.getCartData();
     }
 
     onAccordionChange(event: any) {
-        const index = event.index ??0;
+        const index = event.index ?? 0;
         this.scrollAccordionToTop(index);
     }
 
@@ -86,7 +89,6 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
         // this.enablePanel(3);
         // this.scrollAccordionToTop(3);
         this.cartService.setStepNumber(3);
-
     }
 
     onReturnChargeChanged(payload: ReturnChargePayload) {

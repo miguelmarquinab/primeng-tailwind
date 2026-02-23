@@ -3,16 +3,16 @@
 
     <p-tabs [value]="currentTab" class="tab-border-square">
       <p-tablist>
-        <p-tab [value]="0" (click)="changeTab(0)"
-               (keydown.enter)="changeTab(0)"
+        <p-tab [value]="WhatsSendTabIndex.STANDARD" (click)="changeTab(WhatsSendTabIndex.STANDARD)"
+               (keydown.enter)="changeTab(WhatsSendTabIndex.STANDARD)"
         >
           <div class="flex items-center justify-center gap-2">
             <span class="pi pi-box"></span>
             <span class="text-xs md:text-base">Medidas estándar</span>
           </div>
         </p-tab>
-        <p-tab [value]="1" (click)="changeTab(1)"
-               (keydown.enter)="changeTab(1)"
+        <p-tab [value]="WhatsSendTabIndex.CUSTOM" (click)="changeTab(WhatsSendTabIndex.CUSTOM)"
+               (keydown.enter)="changeTab(WhatsSendTabIndex.CUSTOM)"
         >
           <div class="flex items-center justify-center gap-2 ">
             <span class="pi pi-box"></span>
@@ -22,7 +22,7 @@
 
       </p-tablist>
       <p-tabpanels>
-        <p-tabpanel [value]="0">
+        <p-tabpanel [value]="WhatsSendTabIndex.STANDARD">
 
           <div class="flex flex-col gap-4">
             <div class="hidden md:flex items-center justify-center gap-4">
@@ -34,8 +34,8 @@
                   {
                     'shadow-lg bg-primary-sutile border-highlight-focus-background': currentSize === item.value
                   }"
-                  (click)="selectStandardSize(item.value)"
-                  (keydown.enter)="selectStandardSize(item.value)"
+                  (click)="selectStandardSize(item.value??'')"
+                  (keydown.enter)="selectStandardSize(item.value??'')"
                 >
 
                   <img [src]="item.imgSrc" alt="{{item.label}}" class="w-max-24 object-contain" />
@@ -114,7 +114,7 @@
             }
           </div>
         </p-tabpanel>
-        <p-tabpanel [value]="1">
+        <p-tabpanel [value]="WhatsSendTabIndex.CUSTOM">
 
           <div class="flex flex-col gap-4">
             <div class="flex items-center justify-center gap-4">
@@ -314,7 +314,7 @@
       ></p-inputnumber>
       <small class="text-xs text-gray-secondary ">Necesario para el seguro de tu envío en caso de pérdida</small>
       <app-input-error-message
-        errorText="No ingresaste un número válido."
+        [errorText]="articleValueMessage"
         [control]="whatSendForm.get('articleValue')"
       ></app-input-error-message>
 

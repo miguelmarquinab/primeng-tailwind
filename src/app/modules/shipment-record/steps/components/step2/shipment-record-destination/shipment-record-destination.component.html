@@ -1,15 +1,17 @@
 <div class="flex flex-col gap-4">
   <p-tabs [value]="currentTab" class="tab-border-square">
     <p-tablist>
-      <p-tab [value]="0"
-             (click)="changeTab(0)"
-             (keydown.enter)="changeTab(0)"
-      >
-        <div class="flex items-center justify-center gap-[7px]">
-          <img class="w-3.5" src="shared/images/box-icon.svg" />
-          <span class="font-bold font-inter">Entrega en domicilio</span>
-        </div>
-      </p-tab>
+      @if (!(cartData.header.whoPay === 'DESTINATION')) {
+        <p-tab [value]="0"
+               (click)="changeTab(0)"
+               (keydown.enter)="changeTab(0)"
+        >
+          <div class="flex items-center justify-center gap-[7px]">
+            <img class="w-3.5" src="shared/images/box-icon.svg" />
+            <span class="font-bold font-inter">Entrega en domicilio</span>
+          </div>
+        </p-tab>
+      }
       <p-tab [value]="1"
              (click)="changeTab(1)"
              (keydown.enter)="changeTab(1)"
@@ -21,36 +23,42 @@
       </p-tab>
     </p-tablist>
     <p-tabpanels>
-      <p-tabpanel [value]="0">
-        @if (currentTab === 0) {
+      @if (!(cartData.header.whoPay === 'DESTINATION')) {
+        <p-tabpanel [value]="0">
+          @if (currentTab === 0) {
 
-          <app-shipment-record-destination-address-form
-            [homeDestinations]="homeDestinationsData"
-            (formChanged)="onHomeDestinationChanged($event)"
-          >
-            <div returnChargeToggle class="flex flex-col gap-1">
-              <app-shipment-record-return-charge-toggle
-                mode="home"
-                (returnChargeChanged)="onReturnChargeChanged($event)"
-              ></app-shipment-record-return-charge-toggle>
-            </div>
-          </app-shipment-record-destination-address-form>
+            <app-shipment-record-destination-address-form
+              [homeDestinations]="homeDestinationsData"
+              (formChanged)="onHomeDestinationChanged($event)"
+            >
+              <div returnChargeToggle class="flex flex-col gap-1">
+                <app-shipment-record-return-charge-toggle
+                  mode="home"
+                  (returnChargeChanged)="onReturnChargeChanged($event)"
+                ></app-shipment-record-return-charge-toggle>
+              </div>
+            </app-shipment-record-destination-address-form>
 
 
-        }
-      </p-tabpanel>
+          }
+        </p-tabpanel>
+
+      }
       <p-tabpanel [value]="1">
         @if (currentTab === 1) {
           <app-shipment-record-destination-storage-form
             [storeDestinationsData]="storeDestinationsData"
+            [cartData]="cartData"
             (formChanged)="onStoreDestinationChanged($event)"
           >
-            <div returnChargeToggle class="flex flex-col gap-1">
-              <app-shipment-record-return-charge-toggle
-                mode="store"
-                (returnChargeChanged)="onReturnChargeChanged($event)"
-              ></app-shipment-record-return-charge-toggle>
-            </div>
+            @if (!(cartData.header.whoPay === 'DESTINATION')) {
+              <div returnChargeToggle class="flex flex-col gap-1">
+                <app-shipment-record-return-charge-toggle
+                  mode="store"
+                  (returnChargeChanged)="onReturnChargeChanged($event)"
+                ></app-shipment-record-return-charge-toggle>
+              </div>
+            }
           </app-shipment-record-destination-storage-form>
         }
       </p-tabpanel>

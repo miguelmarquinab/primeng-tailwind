@@ -3,6 +3,8 @@ import { CartItemDraft, OriginPayload, PersonPayload } from '@shipment-record/mo
 export interface CartSessionStorageHeader {
     person: PersonPayload | null;
     origin: OriginPayload | null;
+    whoPay?: string | null;
+    whoPayDetail?: any | null;
 }
 
 export interface CartSessionStorage {

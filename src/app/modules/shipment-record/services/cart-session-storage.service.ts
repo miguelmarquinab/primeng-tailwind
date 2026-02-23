@@ -48,6 +48,22 @@ export class CartSessionStorageService {
         this.setCartData(cartData);
     }
 
+    setWhoPay(whoPay:string,detail:any){
+        const cartData = this.getCartData();
+        cartData.header.whoPay = whoPay;
+        cartData.header.whoPayDetail = detail;
+        this.setCartData(cartData);
+    }
+
+    getWhoPay(){
+        const cartData = this.getCartData();
+
+        return {
+            whoPay: cartData.header.whoPay,
+            whoPayDetail: cartData.header.whoPayDetail
+        };
+    }
+
     setCartData(data: CartSessionStorage) {
         this.sessionStorage.set(this.CART_KEY, data);
     }
@@ -292,4 +308,6 @@ export class CartSessionStorageService {
     clear() {
         this.sessionStorage.remove(this.CART_KEY);
     }
+
+
 }

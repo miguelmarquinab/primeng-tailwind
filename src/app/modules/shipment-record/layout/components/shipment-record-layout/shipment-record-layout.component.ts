@@ -156,6 +156,13 @@ export class ShipmentRecordLayoutComponent implements OnInit, OnDestroy {
                         console.log(result);
                         this.setCurrentStep(1);
                         this.cartSessionStorageService.clear();
+                    },
+                    error: (error) => {
+                        console.log(error);
+                        if(error.status === 404){
+                            this.setCurrentStep(1);
+                            this.cartSessionStorageService.clear();
+                        }
                     }
                 });
             },

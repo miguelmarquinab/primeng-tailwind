@@ -22,10 +22,11 @@ import { RUCValidator } from '@shared/validators/RUC.validator';
 import { CellphoneValidator } from '@shared/validators/cellphone.validator';
 import { PersonFormConfig } from '@shipment-record/models/person.modal';
 import { PersonConstant } from '@shipment-record/contansts/person.constant';
+import { DisplayShortTextDirective } from '@shared/directives/display-short-text.directive';
 
 @Component({
     selector: 'app-person-form',
-    imports: [AccordionModule, ButtonModule, InputTextModule, SelectModule, ReactiveFormsModule, OnlyNumberDirective, NgClass, Message, InputRegexDirective, RestrictCharsDirective, InputErrorMessageComponent],
+    imports: [AccordionModule, ButtonModule, InputTextModule, SelectModule, ReactiveFormsModule, OnlyNumberDirective, NgClass, Message, InputRegexDirective, RestrictCharsDirective, InputErrorMessageComponent, DisplayShortTextDirective],
     templateUrl: './person-form.component.html',
     styleUrls: ['./person-form.component.scss'],
     standalone: true,

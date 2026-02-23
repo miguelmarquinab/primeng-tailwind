@@ -22,6 +22,7 @@
         <p-accordion-content [ngClass]="'accordioncontent-without-padding'">
           <app-shipment-record-what-send
             [articleCategories]="articleCategories"
+            [cartData]="cartData"
             (submitForm)="submitWhatSenderForm($event)"
           ></app-shipment-record-what-send>
 

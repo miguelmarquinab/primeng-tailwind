@@ -92,6 +92,7 @@
               'ng-invalid': peopleForm.get('firstName')?.invalid
             }"
               [appInputRegex]="AppConstant.NAME_REGEX_PATTERN"
+              appDisplayShortText
             />
 
             <app-input-error-message
@@ -117,6 +118,7 @@
 
               }"
               [appInputRegex]="AppConstant.NAME_REGEX_PATTERN"
+              appDisplayShortText
             />
 <!--            'blur-heavy': enableBlur && personExist-->
             <app-input-error-message

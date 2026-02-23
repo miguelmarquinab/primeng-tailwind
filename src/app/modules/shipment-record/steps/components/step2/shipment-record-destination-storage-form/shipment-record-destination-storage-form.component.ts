@@ -12,6 +12,7 @@ import { ShipmentRecordDestinationStorageMapComponent } from '@shipment-record/s
 import { DestinationStoreFormState, DestinationStoreFormValues } from '@shipment-record/models/destination-form.model';
 import { BreakpointService } from '@shared/services/breakpoint/breakpoint.service';
 import { Button } from 'primeng/button';
+import { CartSessionStorage } from '@shipment-record/models/cart-session-storage.model';
 
 @Component({
     selector: 'app-shipment-record-destination-storage-form',
@@ -22,6 +23,7 @@ import { Button } from 'primeng/button';
 })
 export class ShipmentRecordDestinationStorageFormComponent implements OnInit, OnChanges, OnDestroy {
     @Input() storeDestinationsData: DestinationEntityResponse[] = [];
+    @Input() cartData!: CartSessionStorage;
     storeDestinationsFiltered: DestinationEntityResponse[] = [];
     currentDestination: DestinationEntityResponse = { ubigeo_concatenated: '' };
     headquarters: HeadquartersEntityResponse[] = [];
@@ -40,11 +42,17 @@ export class ShipmentRecordDestinationStorageFormComponent implements OnInit, On
 
     ngOnInit(): void {
         this.initForm();
+        this.initStoreDestinations();
     }
 
     ngOnChanges(SimpleChanges: any): void {
         console.log('Input changes detected:', SimpleChanges);
-        // this.changeTab(this.currentTab);
+    }
+
+    initStoreDestinations() {
+        if (this.cartData.header.whoPay === 'DESTINATION') {
+            this.storeDestinationsData = this.filterStoreHeadquarters();
+        }
     }
 
     initForm() {
@@ -82,12 +90,21 @@ export class ShipmentRecordDestinationStorageFormComponent implements OnInit, On
         }
 
         if (tabId === 1) {
-            this.storeDestinationFiltered = this.storeDestinationsData.filter((item) => item.is_agent === false);
+            this.storeDestinationFiltered = this.filterStoreHeadquarters();
+            // this.storeDestinationsData.filter((item) => item.is_agent === false);
         }
 
         if (tabId === 2) {
-            this.storeDestinationFiltered = this.storeDestinationsData.filter((item) => item.is_agent === true);
+            this.storeDestinationFiltered = this.filterAgentsHeadquarters();
         }
+    }
+
+    filterStoreHeadquarters() {
+        return this.storeDestinationsData.filter((item) => item.is_agent === false);
+    }
+
+    filterAgentsHeadquarters() {
+        return this.storeDestinationsData.filter((item) => item.is_agent === true);
     }
 
     loadHeadquarters() {

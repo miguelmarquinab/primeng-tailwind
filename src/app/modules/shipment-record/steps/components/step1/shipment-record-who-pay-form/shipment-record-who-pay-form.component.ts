@@ -1,4 +1,14 @@
-import { Component, inject, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import {
+    Component,
+    EventEmitter,
+    inject,
+    Input,
+    OnChanges,
+    OnDestroy,
+    OnInit,
+    Output,
+    SimpleChanges
+} from '@angular/core';
 import { Button } from 'primeng/button';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Message } from 'primeng/message';
@@ -24,6 +34,7 @@ export class ShipmentRecordWhoPayFormComponent implements OnInit, OnChanges, OnD
     private readonly destroy$ = new Subject<void>();
 
     @Input() currentHeadquarter!: HeadquartersEntityResponse;
+    @Output() submitWhoPayForm = new EventEmitter<any>();
 
     whoPayTypeEnabled: any[] = [ShipmentRecordStepsConstant.WHO_PAY_TYPE_ONLINE, ShipmentRecordStepsConstant.WHO_PAY_TYPE_DESTINATION, ShipmentRecordStepsConstant.WHO_PAY_TYPE_STORE];
 
@@ -81,9 +92,13 @@ export class ShipmentRecordWhoPayFormComponent implements OnInit, OnChanges, OnD
             //     .pipe(takeUntil(this.destroy$))
             //     .subscribe({
             //         next: () => {
-            this.cartService.setStepNumber(2);
+            // this.cartService.setStepNumber(2);
             //     }
             // });
+            this.submitWhoPayForm.emit({
+                whoPay: this.whoPayForm.value,
+                detail: this.currentHeadquarter
+            });
         }
     }
 

@@ -21,7 +21,7 @@
 
     @if (isMobile()) {
       @if (!modalVisible) {
-        @if(currentDestination){
+        @if (currentDestination) {
           <app-shipment-record-destination-card
             [destination]="currentDestination"
             [selected]="currentDestination.ubigeo_id === currentDestination.ubigeo_id"
@@ -99,26 +99,26 @@
     } @else {
       @if (storeDestinationsData) {
         <div class="flex flex-col gap-2 h-48">
-          @if(!isMobile() ) {
+          @if (!isMobile()) {
             <ng-container
               [ngTemplateOutlet]="addressTabsContainerTpl"
             ></ng-container>
 
           }
-          @if(isMobile() && modalVisible) {
+          @if (isMobile() && modalVisible) {
 
             <ng-container
               [ngTemplateOutlet]="addressTabsContainerTpl"
             ></ng-container>
 
             <div class="w-full">
-              <p-button severity="primary" label="Confirmar dirección" styleClass="w-full" (click)="modalVisible=false"></p-button>
+              <p-button severity="primary" label="Confirmar dirección" styleClass="w-full"
+                        (click)="modalVisible=false"></p-button>
             </div>
           }
         </div>
       }
     }
-
 
 
   </div>
@@ -145,26 +145,31 @@
           <span>Tienda</span>
         </div>
       </p-tab>
-      <p-tab [value]="2"
-             (click)="changeTab(2)"
-             (keydown.enter)="changeTab(2)"
-      >
-        <div class="flex items-center justify-center gap-2 ">
-          <span class="pi pi-shop"></span>
-          <span>Agente</span>
-        </div>
-      </p-tab>
+      @if (!(cartData.header.whoPay === 'DESTINATION')) {
+        <p-tab [value]="2"
+               (click)="changeTab(2)"
+               (keydown.enter)="changeTab(2)"
+        >
+          <div class="flex items-center justify-center gap-2 ">
+            <span class="pi pi-shop"></span>
+            <span>Agente</span>
+          </div>
+        </p-tab>
+      }
     </p-tablist>
     <p-tabpanels style="padding: 8px;">
+
       <p-tabpanel [value]="0">
         <ng-container *ngTemplateOutlet="destinationsContainer"></ng-container>
       </p-tabpanel>
       <p-tabpanel [value]="1">
         <ng-container *ngTemplateOutlet="destinationsContainer"></ng-container>
       </p-tabpanel>
-      <p-tabpanel [value]="2">
-        <ng-container *ngTemplateOutlet="destinationsContainer"></ng-container>
-      </p-tabpanel>
+      @if (!(cartData.header.whoPay === 'DESTINATION')) {
+        <p-tabpanel [value]="2">
+          <ng-container *ngTemplateOutlet="destinationsContainer"></ng-container>
+        </p-tabpanel>
+      }
     </p-tabpanels>
   </p-tabs>
 </ng-template>

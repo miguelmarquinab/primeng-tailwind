@@ -114,6 +114,15 @@ export class ShipmentRecordStep1Component implements OnInit {
         }
     }
 
+    submitWhoPayForm(event:any){
+        console.log('submitWhoPayForm', event);
+        console.log('whoPay', event.whoPay.paymentType);
+        console.log('whoPay', event.detail);
+        const paymentType = event.whoPay.paymentType;
+        const whoPayDetail = event.detail;
+        this.cartSessionService.setWhoPay(paymentType, whoPayDetail);
+        this.cartService.setStepNumber(2);
+    };
     getHeadquarterById(headquarterId: number): HeadquartersEntityResponse {
         return (
             this.headquarters.find((headquarter) => headquarter.headquarter_id === headquarterId) || {

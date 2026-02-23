@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Select } from 'primeng/select';
@@ -14,6 +14,10 @@ import { CartItemWhatSendPayload } from '@shipment-record/models/cart.model';
 import { Tooltip } from 'primeng/tooltip';
 import { ValidationDirective } from '@shared/directives/validation.directive';
 import { BreakpointService } from '@shared/services/breakpoint/breakpoint.service';
+import { CartSessionStorage } from '@shipment-record/models/cart-session-storage.model';
+import { StandardSize } from '@shipment-record/models/standard-size.model';
+import { STANDARD_SIZES, VALIDATION_LIMITS, WhatsSendTabIndex } from '@shipment-record/contansts/shipment-record-step.constant';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
     selector: 'app-shipment-record-what-send',
@@ -21,41 +25,42 @@ import { BreakpointService } from '@shared/services/breakpoint/breakpoint.servic
     templateUrl: './shipment-record-what-send.component.html',
     styleUrl: './shipment-record-what-send.component.scss'
 })
-export class ShipmentRecordWhatSendComponent implements OnInit {
-    standardSizes = [
-        { label: 'Sobre', value: 'letter', dimensions: '', maxWeight: '500g', imgSrc: 'shared/images/letter-1.svg', large: 0, width: 0, height: 0, weight: 0.5 },
-        { label: 'Pequeño', value: 'small', dimensions: '20X20X19 cm', maxWeight: '500g', imgSrc: 'shared/images/box-1.svg', large: 20, width: 20, height: 19, weight: 0.5 },
-        { label: 'Mediano', value: 'middle', dimensions: '25X25X22 cm', maxWeight: '500g', imgSrc: 'shared/images/box-1.svg', large: 25, width: 25, height: 22, weight: 0.5 },
-        { label: 'Grande', value: 'big', dimensions: '28X28X25 cm', maxWeight: '3kg', imgSrc: 'shared/images/box-1.svg', large: 28, width: 28, height: 25, weight: 3 },
-        { label: 'Extra Grande', value: 'extra-big', dimensions: '30X30X30 cm', maxWeight: '4 Kg', imgSrc: 'shared/images/box-1.svg', large: 30, width: 30, height: 30, weight: 4 }
-    ];
-    currentSize: any = null;
+export class ShipmentRecordWhatSendComponent implements OnInit, OnDestroy {
+    readonly standardSizes: StandardSize[] = STANDARD_SIZES;
+    currentSize: string | null = null;
 
+    protected readonly WhatsSendTabIndex = WhatsSendTabIndex;
     whatSendForm!: FormGroup;
     @Input() articleCategories: ArticleCategoriesEntityResponse[] = [];
     @Output() submitForm = new EventEmitter<CartItemWhatSendPayload>();
     currentTab = 0;
-    currentSizeModal: any = null;
+    currentSizeModal: StandardSize | null = null;
     protected readonly AppConstant = AppConstant;
     private readonly formBuilder: FormBuilder = inject(FormBuilder);
     private readonly breakpointService = inject(BreakpointService);
-    isMobile = this.breakpointService.isMobile;
+    protected readonly isMobile = this.breakpointService.isMobile;
+
+    @Input() cartData!: CartSessionStorage;
+    articleValueMessage = '';
+
+    private destroy$ = new Subject<void>();
 
     ngOnInit() {
         this.initForm();
-        this.changeTab(0);
+        this.setupFormListeners();
+        this.changeTab(WhatsSendTabIndex.STANDARD);
     }
 
-    changeTab(index: number) {
+    changeTab(index: WhatsSendTabIndex) {
         this.currentTab = index;
-        if (this.currentTab === 0) {
+        if (this.currentTab === WhatsSendTabIndex.STANDARD) {
             this.whatSendForm.reset();
             const ctrl = this.whatSendForm.get('standardSize');
             // Aplicar required y forzar recalculo de validación
             ctrl?.setValidators([Validators.required]);
             ctrl?.updateValueAndValidity();
         }
-        if (this.currentTab === 1) {
+        if (this.currentTab === WhatsSendTabIndex.CUSTOM) {
             this.currentSize = null;
             this.currentSizeModal = null;
             this.whatSendForm.reset();
@@ -66,32 +71,73 @@ export class ShipmentRecordWhatSendComponent implements OnInit {
         }
     }
 
+    // changeTab(index: WhatsSendTabIndex) {
+    //     this.currentTab = index;
+    //     this.whatSendForm.reset();
+    //     const ctrl = this.whatSendForm.get('standardSize');
+    //
+    //     if (index === WhatsSendTabIndex.STANDARD) {
+    //         ctrl?.setValidators([Validators.required]);
+    //     } else {
+    //         this.currentSize = null;
+    //         this.currentSizeModal = null;
+    //         ctrl?.clearValidators();
+    //     }
+    //     ctrl?.updateValueAndValidity();
+    // }
+
     initForm() {
+        const { articleValue, articleValueMessage } = this.buildDestinationConfig();
+        this.articleValueMessage = articleValueMessage;
         this.whatSendForm = this.formBuilder.group({
             category: [0, [Validators.required, Validators.min(1)]],
-            articleValue: [null, [Validators.required, Validators.min(0.0101), Validators.max(10000)]],
-            large: [null, [Validators.min(1), Validators.max(110)]],
-            width: [null, [Validators.min(1), Validators.max(110)]],
-            height: [null, [Validators.min(1), Validators.max(110)]],
-            weight: [null, [Validators.min(0.1), Validators.max(25)]],
+            articleValue: [null, [Validators.required, Validators.min(VALIDATION_LIMITS.MIN_ARTICLE_VALUE), Validators.max(articleValue)]],
+            large: [null, [Validators.min(VALIDATION_LIMITS.MIN_DIMENSION), Validators.max(VALIDATION_LIMITS.MAX_DIMENSION)]],
+            width: [null, [Validators.min(VALIDATION_LIMITS.MIN_DIMENSION), Validators.max(VALIDATION_LIMITS.MAX_DIMENSION)]],
+            height: [null, [Validators.min(VALIDATION_LIMITS.MIN_DIMENSION), Validators.max(VALIDATION_LIMITS.MAX_DIMENSION)]],
+            weight: [null, [Validators.min(VALIDATION_LIMITS.MIN_WEIGHT), Validators.max(VALIDATION_LIMITS.MAX_WEIGHT)]],
             isFragile: [0],
             standardSize: [null]
         });
 
-        this.whatSendForm.get('standardSize')?.valueChanges.subscribe((size) => {
-            // this.selectStandardSize(value);
-            this.currentSizeModal = this.getCurrentSizeModal(size);
-        });
+        // this.whatSendForm
+        //     .get('standardSize')
+        //     ?.valueChanges.pipe(takeUntil(this.destroy$))
+        //     .subscribe((size) => {
+        //         this.currentSizeModal = this.getCurrentSizeModal(size);
+        //     });
     }
 
-    selectStandardSize(size: any) {
+    private setupFormListeners() {
+        this.whatSendForm
+            .get('standardSize')
+            ?.valueChanges.pipe(takeUntil(this.destroy$))
+            .subscribe((size) => {
+                this.currentSizeModal = this.getCurrentSizeModal(size);
+            });
+    }
+
+    buildDestinationConfig() {
+        let articleValue = VALIDATION_LIMITS.ARTICLE_VALUE_DEFAULT;
+        let articleValueMessage = 'No ingresaste un número válido.';
+        if (this.cartData.header.whoPay === 'DESTINATION') {
+            articleValueMessage = 'Tu envío está en el límite permitido.\n' + 'Verifica que no supere S/ 500.00';
+            articleValue = VALIDATION_LIMITS.ARTICLE_VALUE_DESTINATION;
+        }
+        return {
+            articleValue,
+            articleValueMessage
+        };
+    }
+    selectStandardSize(size: string) {
+        console.log('Select size', size);
         this.currentSize = size;
         this.currentSizeModal = this.getCurrentSizeModal(size);
-        this.whatSendForm.get('standardSize')?.patchValue(this.currentSizeModal.value);
+        this.whatSendForm.get('standardSize')?.patchValue(this.currentSizeModal?.value);
     }
 
-    getCurrentSizeModal(size: any) {
-        return this.standardSizes.find((s) => s.value === size);
+    getCurrentSizeModal(size: string): StandardSize | null {
+        return this.standardSizes.find((s) => s.value === size) ?? null;
     }
 
     handleSubmitSender() {
@@ -100,24 +146,21 @@ export class ShipmentRecordWhatSendComponent implements OnInit {
     }
 
     buildPayload(): CartItemWhatSendPayload {
-        console.log(this.currentTab);
-        console.log(this.currentSizeModal);
-        if (this.currentTab === 0) {
+        if (this.currentTab === WhatsSendTabIndex.STANDARD) {
             if (!this.currentSizeModal) {
                 throw new Error('Standard size not selected');
             }
         }
 
-        if (this.currentTab === 1) {
+        if (this.currentTab === WhatsSendTabIndex.CUSTOM) {
             if (this.whatSendForm.invalid) {
-                console.log(this.whatSendForm.value);
                 throw new Error('Formulario inválido');
             }
         }
-        const height = this.currentTab === 0 ? this.currentSizeModal.height : this.whatSendForm.value.height;
-        const width = this.currentTab === 0 ? this.currentSizeModal.width : this.whatSendForm.value.width;
-        const large = this.currentTab === 0 ? this.currentSizeModal.large : this.whatSendForm.value.large;
-        const weight = this.currentTab === 0 ? this.currentSizeModal.weight : this.whatSendForm.value.weight;
+        const height = this.currentTab === WhatsSendTabIndex.STANDARD ? this.currentSizeModal?.height : this.whatSendForm.value.height;
+        const width = this.currentTab === WhatsSendTabIndex.STANDARD ? this.currentSizeModal?.width : this.whatSendForm.value.width;
+        const large = this.currentTab === WhatsSendTabIndex.STANDARD ? this.currentSizeModal?.large : this.whatSendForm.value.large;
+        const weight = this.currentTab === WhatsSendTabIndex.STANDARD ? this.currentSizeModal?.weight : this.whatSendForm.value.weight;
         return {
             height,
             width,
@@ -127,5 +170,10 @@ export class ShipmentRecordWhatSendComponent implements OnInit {
             declared_value: this.whatSendForm.value.articleValue,
             fragile: this.whatSendForm.value.isFragile
         };
+    }
+
+    ngOnDestroy() {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 }

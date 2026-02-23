@@ -14,7 +14,7 @@ import { ReturnChargePayload } from '@shipment-record/models/return-charge.model
 import { CartService } from '@shipment-record/services/cart.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { ShipmentRecordConfirmationModalComponent } from '../shipment-record-confirmation-modal/shipment-record-confirmation-modal.component.component';
+import { CartSessionStorage } from '@shipment-record/models/cart-session-storage.model';
 
 @Component({
     selector: 'app-shipment-record-destination',
@@ -38,8 +38,15 @@ export class ShipmentRecordDestinationComponent implements OnInit {
     private storeDestinationReady = false;
     ref: DynamicDialogRef<any> | null = null;
 
+    cartData!: CartSessionStorage;
+
     ngOnInit(): void {
         this.changeTab(this.currentTab);
+        this.cartData = this.cartSessionService.getCartData();
+
+        if (this.cartData.header.whoPay === 'DESTINATION') {
+            this.changeTab(1)
+        }
     }
 
     changeTab(tabId: number) {
