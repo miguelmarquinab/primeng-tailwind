@@ -1,5 +1,5 @@
 import { SearchAddressEntityResponse } from '@/modules/geo/models/search-address.model';
-import { DestinationEntityResponse } from '@shipment-record/models/destination.model';
+import { DestinationCollectionMode, DestinationEntityResponse } from '@shipment-record/models/destination.model';
 
 export interface DestinationAddressFormValues {
     ubigeo: string | null;
@@ -12,6 +12,7 @@ export interface DestinationAddressFormState {
     ubigeoDestination: DestinationEntityResponse | null;
     formValues: DestinationAddressFormValues;
     placeId?: string | null;
+    type: DestinationCollectionMode;
 }
 
 export interface DestinationStoreFormValues {

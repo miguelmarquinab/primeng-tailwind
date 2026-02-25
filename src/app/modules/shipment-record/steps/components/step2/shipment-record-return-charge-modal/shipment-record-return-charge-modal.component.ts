@@ -88,41 +88,41 @@ export class ShipmentRecordReturnChargeModalComponent implements OnInit, OnDestr
     }
 
     loadDestinations(): void {
-        this.loadHomeDestinations();
-        this.loadStoreDestinations();
+        // this.loadHomeDestinations();
+        // this.loadStoreDestinations();
     }
 
-    loadStoreDestinations(): void {
-        if (this.localStorageService.get('storeDestinations')) {
-            this.storeDestinationsData = this.localStorageService.get('storeDestinations');
-            return;
-        }
-        this.destinationsService
-            .getAll('store')
-            .pipe(takeUntil(this.destroy$))
-            .subscribe({
-                next: (response) => {
-                    this.storeDestinationsData = response.data ?? [];
-                    this.localStorageService.set('storeDestinations', this.storeDestinationsData);
-                }
-            });
-    }
-
-    loadHomeDestinations(): void {
-        if (this.localStorageService.get('homeDestinations')) {
-            this.homeDestinationsData = this.localStorageService.get('homeDestinations');
-            return;
-        }
-        this.destinationsService
-            .getAll('home')
-            .pipe(takeUntil(this.destroy$))
-            .subscribe({
-                next: (response) => {
-                    this.homeDestinationsData = response.data ?? [];
-                    this.localStorageService.set('homeDestinations', this.homeDestinationsData);
-                }
-            });
-    }
+    // loadStoreDestinations(): void {
+    //     if (this.localStorageService.get('storeDestinations')) {
+    //         this.storeDestinationsData = this.localStorageService.get('storeDestinations');
+    //         return;
+    //     }
+    //     this.destinationsService
+    //         .getAll('store')
+    //         .pipe(takeUntil(this.destroy$))
+    //         .subscribe({
+    //             next: (response) => {
+    //                 this.storeDestinationsData = response.data ?? [];
+    //                 this.localStorageService.set('storeDestinations', this.storeDestinationsData);
+    //             }
+    //         });
+    // }
+    //
+    // loadHomeDestinations(): void {
+    //     if (this.localStorageService.get('homeDestinations')) {
+    //         this.homeDestinationsData = this.localStorageService.get('homeDestinations');
+    //         return;
+    //     }
+    //     this.destinationsService
+    //         .getAll('home')
+    //         .pipe(takeUntil(this.destroy$))
+    //         .subscribe({
+    //             next: (response) => {
+    //                 this.homeDestinationsData = response.data ?? [];
+    //                 this.localStorageService.set('homeDestinations', this.homeDestinationsData);
+    //             }
+    //         });
+    // }
 
     changeTab(tabId: number) {
         this.currentTab = tabId;

@@ -9,7 +9,7 @@ import { AutocompleteCollectionResponse, AutocompletePredictionEntityResponse } 
 
 import { AutoComplete, AutoCompleteCompleteEvent, AutoCompleteSelectEvent } from 'primeng/autocomplete';
 import { SearchAddressEntityResponse, SearchAddressQueryParams } from '@/modules/geo/models/search-address.model';
-import { DestinationEntityResponse } from '@shipment-record/models/destination.model';
+import { DestinationCollectionMode, DestinationEntityResponse } from '@shipment-record/models/destination.model';
 import { DestinationAddressFormState, DestinationAddressFormValues } from '@shipment-record/models/destination-form.model';
 import { BreakpointService } from '@shared/services/breakpoint/breakpoint.service';
 import { NgTemplateOutlet } from '@angular/common';
@@ -175,7 +175,8 @@ export class ShipmentRecordDestinationAddressFormComponent implements OnInit, On
             searchAddress: this.currentSearchAddress,
             ubigeoDestination: this.currentUbigeoDestination,
             formValues: this.storeDestinationForm.value as DestinationAddressFormValues,
-            placeId: this.currentPlaceId
+            placeId: this.currentPlaceId,
+            type: DestinationCollectionMode.HOME
         };
     }
 

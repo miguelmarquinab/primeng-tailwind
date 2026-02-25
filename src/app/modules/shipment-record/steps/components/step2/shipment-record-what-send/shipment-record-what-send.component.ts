@@ -10,7 +10,6 @@ import { Checkbox } from 'primeng/checkbox';
 import { Message } from 'primeng/message';
 import { ArticleCategoriesEntityResponse } from '@shipment-record/models/article-categories.model';
 import { Button } from 'primeng/button';
-import { CartItemWhatSendPayload } from '@shipment-record/models/cart.model';
 import { Tooltip } from 'primeng/tooltip';
 import { ValidationDirective } from '@shared/directives/validation.directive';
 import { BreakpointService } from '@shared/services/breakpoint/breakpoint.service';
@@ -18,6 +17,7 @@ import { CartSessionStorage } from '@shipment-record/models/cart-session-storage
 import { StandardSize } from '@shipment-record/models/standard-size.model';
 import { STANDARD_SIZES, VALIDATION_LIMITS, WhatsSendTabIndex } from '@shipment-record/contansts/shipment-record-step.constant';
 import { Subject, takeUntil } from 'rxjs';
+import { CartItemWhatSendPayload } from '@shipment-record/models/cart-item.model';
 
 @Component({
     selector: 'app-shipment-record-what-send',
@@ -51,10 +51,23 @@ export class ShipmentRecordWhatSendComponent implements OnInit, OnDestroy {
         this.changeTab(WhatsSendTabIndex.STANDARD);
     }
 
+    getDefaultFormValues() {
+        return {
+            category: 0,
+            articleValue: null,
+            large: null,
+            width: null,
+            height: null,
+            weight: null,
+            isFragile: 0,
+            standardSize: null
+        };
+    }
+
     changeTab(index: WhatsSendTabIndex) {
         this.currentTab = index;
         if (this.currentTab === WhatsSendTabIndex.STANDARD) {
-            this.whatSendForm.reset();
+            this.whatSendForm.reset(this.getDefaultFormValues());
             const ctrl = this.whatSendForm.get('standardSize');
             // Aplicar required y forzar recalculo de validación
             ctrl?.setValidators([Validators.required]);
@@ -63,7 +76,7 @@ export class ShipmentRecordWhatSendComponent implements OnInit, OnDestroy {
         if (this.currentTab === WhatsSendTabIndex.CUSTOM) {
             this.currentSize = null;
             this.currentSizeModal = null;
-            this.whatSendForm.reset();
+            this.whatSendForm.reset(this.getDefaultFormValues());
             const ctrl = this.whatSendForm.get('standardSize');
             // Remover validadores y forzar recalculo de validación
             ctrl?.clearValidators();
@@ -86,10 +99,10 @@ export class ShipmentRecordWhatSendComponent implements OnInit, OnDestroy {
     //     ctrl?.updateValueAndValidity();
     // }
 
-    initForm() {
+    getFormConfig() {
         const { articleValue, articleValueMessage } = this.buildDestinationConfig();
         this.articleValueMessage = articleValueMessage;
-        this.whatSendForm = this.formBuilder.group({
+        return {
             category: [0, [Validators.required, Validators.min(1)]],
             articleValue: [null, [Validators.required, Validators.min(VALIDATION_LIMITS.MIN_ARTICLE_VALUE), Validators.max(articleValue)]],
             large: [null, [Validators.min(VALIDATION_LIMITS.MIN_DIMENSION), Validators.max(VALIDATION_LIMITS.MAX_DIMENSION)]],
@@ -98,7 +111,10 @@ export class ShipmentRecordWhatSendComponent implements OnInit, OnDestroy {
             weight: [null, [Validators.min(VALIDATION_LIMITS.MIN_WEIGHT), Validators.max(VALIDATION_LIMITS.MAX_WEIGHT)]],
             isFragile: [0],
             standardSize: [null]
-        });
+        };
+    }
+    initForm() {
+        this.whatSendForm = this.formBuilder.group(this.getFormConfig());
 
         // this.whatSendForm
         //     .get('standardSize')

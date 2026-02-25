@@ -8,7 +8,7 @@ import {
     CartItemPayload,
     CartItemPersonPayload,
     CartItemReturnChargeDetailPayload,
-    CartItemWhatSendPayload,
+    // CartItemWhatSendPayload,
     CartPayload,
     OriginPayload,
     PersonPayload,
@@ -117,9 +117,9 @@ export class CartSessionStorageService {
         });
     }
 
-    setItemWhatSend(itemIndex: number, payload: CartItemWhatSendPayload) {
-        this.updateItem(itemIndex, payload);
-    }
+    // setItemWhatSend(itemIndex: number, payload: CartItemWhatSendPayload) {
+    //     this.updateItem(itemIndex, payload);
+    // }
 
     clearItemReturnCharge(itemIndex: number) {
         const cartData = this.getCartData();

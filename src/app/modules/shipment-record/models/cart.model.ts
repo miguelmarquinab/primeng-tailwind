@@ -140,6 +140,6 @@ export interface CartItemDraft {
     fragile?: number | boolean;
 }
 
-export type CartItemWhatSendPayload = Pick<CartItemDraft, 'article_id' | 'declared_value' | 'length' | 'width' | 'height' | 'weight' | 'fragile'>;
+// export type CartItemWhatSendPayload = Pick<CartItemDraft, 'article_id' | 'declared_value' | 'length' | 'width' | 'height' | 'weight' | 'fragile'>;
 
 export interface CartItemEntityResponse extends CartItemPayload {}

@@ -4,17 +4,18 @@ import { ShipmentRecordDestinationAddressFormComponent } from '@shipment-record/
 import { ShipmentRecordDestinationStorageFormComponent } from '@shipment-record/steps/components/step2/shipment-record-destination-storage-form/shipment-record-destination-storage-form.component';
 import { ShipmentRecordReturnChargeToggleComponent } from '@shipment-record/steps/components/step2/shipment-record-return-charge-toggle/shipment-record-return-charge-toggle.component';
 import { DestinationsService } from '@shipment-record/services/destinations.service';
-import { DestinationEntityResponse } from '@shipment-record/models/destination.model';
+import { DestinationCollectionModality, DestinationCollectionMode, DestinationCollectionQuery, DestinationEntityResponse } from '@shipment-record/models/destination.model';
 import { LocalStorageService } from '@shared/services/storage/local-storage.service';
 import { CartSessionStorageService } from '@shipment-record/services/cart-session-storage.service';
 import { DestinationAddressFormState, DestinationStoreFormState } from '@shipment-record/models/destination-form.model';
-import { CartItemDestinationPayload } from '@shipment-record/models/cart.model';
+// import { CartItemAddressPayload, CartItemDestinationPayload } from '@shipment-record/models/cart.model';
 import { Button } from 'primeng/button';
 import { ReturnChargePayload } from '@shipment-record/models/return-charge.model';
 import { CartService } from '@shipment-record/services/cart.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CartSessionStorage } from '@shipment-record/models/cart-session-storage.model';
+import { CartItemDestinationPayload } from '@shipment-record/models/cart-item.model';
 
 @Component({
     selector: 'app-shipment-record-destination',
@@ -27,7 +28,7 @@ export class ShipmentRecordDestinationComponent implements OnInit {
     currentTab = 0;
     storeDestinationsData: DestinationEntityResponse[] = [];
     homeDestinationsData: DestinationEntityResponse[] = [];
-    @Output() submitDestination = new EventEmitter<void>();
+    @Output() submitDestination = new EventEmitter<any>();
     @Output() returnChargeChanged = new EventEmitter<ReturnChargePayload>();
     private readonly destinationsService: DestinationsService = inject(DestinationsService);
     private readonly localStorageService: LocalStorageService = inject(LocalStorageService);
@@ -39,14 +40,16 @@ export class ShipmentRecordDestinationComponent implements OnInit {
     ref: DynamicDialogRef<any> | null = null;
 
     cartData!: CartSessionStorage;
+    destinationData: any;
 
     ngOnInit(): void {
-        this.changeTab(this.currentTab);
         this.cartData = this.cartSessionService.getCartData();
 
         if (this.cartData.header.whoPay === 'DESTINATION') {
-            this.changeTab(1)
+            this.changeTab(1);
+            return;
         }
+        this.changeTab(this.currentTab);
     }
 
     changeTab(tabId: number) {
@@ -71,7 +74,12 @@ export class ShipmentRecordDestinationComponent implements OnInit {
     }
 
     loadStoreDestinations(): void {
-        this.destinationsService.getAll('store').subscribe({
+        const query: DestinationCollectionQuery = {
+            mode: DestinationCollectionMode.STORE,
+            ubigeo_code: this.cartData.header.whoPayDetail.ubigeo_code,
+            modality: DestinationCollectionModality.DESTINATION
+        };
+        this.destinationsService.getAll(query).subscribe({
             next: (response) => {
                 console.log('Destinations loaded:', response);
                 this.storeDestinationsData = response.data ?? [];
@@ -80,7 +88,12 @@ export class ShipmentRecordDestinationComponent implements OnInit {
         });
     }
     loadHomeDestinations(): void {
-        this.destinationsService.getAll('home').subscribe({
+        const query: DestinationCollectionQuery = {
+            mode: DestinationCollectionMode.HOME,
+            ubigeo_code: this.cartData.header.whoPayDetail.ubigeo_code,
+            modality: DestinationCollectionModality.DESTINATION
+        };
+        this.destinationsService.getAll(query).subscribe({
             next: (response) => {
                 console.log('Destinations loaded:', response);
                 this.homeDestinationsData = response.data ?? [];
@@ -96,20 +109,22 @@ export class ShipmentRecordDestinationComponent implements OnInit {
     onHomeDestinationChanged(payload: DestinationAddressFormState) {
         console.log('Home destination changed:', payload);
 
-        const destinationPayload: CartItemDestinationPayload = {
-            type: 'home',
-            address: payload
-        };
-        this.cartSessionService.setItemDestination(0, destinationPayload);
-        this.homeDestinationReady = this.isHomeDestinationReady(payload);
+        this.destinationData = payload;
+        // const destinationPayload: CartItemAddressPayload = {
+        //     type: 'home',
+        //     // address: payload
+        // };
+        // // this.cartSessionService.setItemDestination(0, destinationPayload);
+        // this.homeDestinationReady = this.isHomeDestinationReady(payload);
+        // this.submitDestination.emit(payload);
     }
 
     onStoreDestinationChanged(payload: DestinationStoreFormState) {
-        const destinationPayload: CartItemDestinationPayload = {
-            type: 'store',
-            store: payload
-        };
-        this.cartSessionService.setItemDestination(0, destinationPayload);
+        // const destinationPayload: CartItemDestinationPayload = {
+        //     type: 'store',
+        //     store: payload
+        // };
+        // this.cartSessionService.setItemDestination(0, destinationPayload);
         this.storeDestinationReady = this.isStoreDestinationReady(payload);
     }
 
@@ -122,13 +137,14 @@ export class ShipmentRecordDestinationComponent implements OnInit {
     }
 
     handleSubmitDestination(): void {
-        if (this.isNextDisabled) {
-            return;
-        }
-        const sessionUuid = this.cartSessionService.getCardId();
-        if (!sessionUuid) {
-            return;
-        }
+        // if (this.isNextDisabled) {
+        //     return;
+        // }
+        // const sessionUuid = this.cartSessionService.getCardId();
+        // if (!sessionUuid) {
+        //     return;
+        // }
+
         // this.ref = this.dialogService.open(ShipmentRecordConfirmationModalComponent, {
         //     height: 'auto',
         //     width: '340px',
@@ -142,7 +158,15 @@ export class ShipmentRecordDestinationComponent implements OnInit {
         // const payload = this.cartSessionService.buildCartPayload();
         // this.cartService.update(sessionUuid, payload).subscribe({
         //     next: () => {
-        this.submitDestination.emit();
+        console.log('handleSubmitDestination', this.destinationData);
+        const destinationPayload: CartItemDestinationPayload = {
+            ubigeo_id: this.destinationData.formValues?.ubigeo?.ubigeo_id,
+            address: this.destinationData.searchAddress?.address,
+            reference: this.destinationData.formValues?.references,
+            polygon: this.destinationData.searchAddress?.polygon,
+            office_id:0,
+        };
+        this.submitDestination.emit(destinationPayload);
         //     }
         // });
     }

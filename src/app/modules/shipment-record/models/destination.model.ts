@@ -1,6 +1,19 @@
 import { ResponseCollection } from '@shared/models/response-collection.model';
 import { AppTypeStringMutated, NullableString } from '@shared/types/app.type';
 
+export enum DestinationCollectionMode {
+    HOME = 'home',
+    STORE = 'store',
+    ALL = 'all'
+}
+export enum DestinationCollectionModality {
+    DESTINATION = 'destination'
+}
+export interface DestinationCollectionQuery {
+    mode: DestinationCollectionMode;
+    modality?: DestinationCollectionModality;
+    ubigeo_code?: string;
+}
 export interface DestinationCollectionResponse extends ResponseCollection<DestinationEntityResponse[]> {}
 
 export interface DestinationEntityResponse {
