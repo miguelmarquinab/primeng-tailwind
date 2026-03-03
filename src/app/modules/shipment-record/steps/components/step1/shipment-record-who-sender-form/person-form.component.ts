@@ -357,16 +357,29 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     onSubmitHandler() {
         let firstName = this.peopleForm.get('firstName')?.value || '';
         let lastName = this.peopleForm.get('lastName')?.value || '';
+        const documentNumber = this.peopleForm.get('documentNumber')?.value || '';
+        const emailAddress = this.peopleForm.get('emailAddress')?.value || '';
+        const cellPhone = this.peopleForm.get('cellPhone')?.value || '';
         if (this.currentDocumentType.value === AppConstant.DOCUMENT_TYPE_RUC) {
             firstName = this.personResponse.full_name;
             lastName = '';
         }
-        const dataToEmit = {
-            ...this.peopleForm.value,
-            firstName: firstName,
-            lastName: lastName,
+        const dataToEmit: WhoSenderFormData = {
+            first_names: firstName,
+            last_name: lastName,
+            document_number: documentNumber,
+            document_type: this.personResponse?.document_type,
+            email: emailAddress,
+            phone: cellPhone,
+            person_legal_area: this.personResponse?.juridical_area_id,
+            package_headquarter_code: this.personResponse?.package_headquarter_code,
+            discount_shipments_count: this.personResponse?.discount_shipments_count,
+            rounding_factor: this.personResponse?.rounding_factor,
+            tax_affectation_type_id: this.personResponse?.tax_affectation_type,
+            employee_id: this.personResponse?.employee_id,
             personResponse: this.personResponse
         };
+        console.log('onSubmitHandler', dataToEmit);
         this.submitWhoSenderForm.emit(dataToEmit);
     }
 

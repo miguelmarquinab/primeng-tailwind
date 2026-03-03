@@ -50,7 +50,7 @@ export class ShipmentRecordDestinationStorageFormComponent implements OnInit, On
     }
 
     initStoreDestinations() {
-        if (this.cartData.header.whoPay === 'DESTINATION') {
+        if (this.cartData?.header?.whoPay === 'DESTINATION') {
             this.storeDestinationsData = this.filterStoreHeadquarters();
         }
     }
@@ -91,7 +91,6 @@ export class ShipmentRecordDestinationStorageFormComponent implements OnInit, On
 
         if (tabId === 1) {
             this.storeDestinationFiltered = this.filterStoreHeadquarters();
-            // this.storeDestinationsData.filter((item) => item.is_agent === false);
         }
 
         if (tabId === 2) {
@@ -107,11 +106,8 @@ export class ShipmentRecordDestinationStorageFormComponent implements OnInit, On
         return this.storeDestinationsData.filter((item) => item.is_agent === true);
     }
 
-    loadHeadquarters() {
-        this.headquarters = this.sessionStorage.get('headquarters');
-    }
-
     selectDestination(destination: DestinationEntityResponse) {
+        console.log(destination);
         this.currentDestination = destination;
         this.formChanged.emit(this.buildResponse());
     }
@@ -130,6 +126,7 @@ export class ShipmentRecordDestinationStorageFormComponent implements OnInit, On
             this.modalVisible = true;
         }
     }
+
 
     ngOnDestroy(): void {
         this.destroy$.next();

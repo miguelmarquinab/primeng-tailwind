@@ -4,24 +4,34 @@ import { ToggleSwitch } from 'primeng/toggleswitch';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { TranslateModule } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
-import { ShipmentRecordReturnChargeModalComponent } from '@shipment-record/steps/components/step2/shipment-record-return-charge-modal/shipment-record-return-charge-modal.component';
-import { ReturnChargeDetail, ReturnChargeMode, ReturnChargePayload } from '@shipment-record/models/return-charge.model';
+import {
+    ShipmentRecordReturnChargeModalComponent
+} from '@shipment-record/steps/components/step2/shipment-record-return-charge-modal/shipment-record-return-charge-modal.component';
+import { ReturnChargeDetail } from '@shipment-record/models/return-charge.model';
 import { CartSessionStorageService } from '@shipment-record/services/cart-session-storage.service';
 import { InputNumber } from 'primeng/inputnumber';
 import { DestinationAddressFormState, DestinationStoreFormState } from '@shipment-record/models/destination-form.model';
 import { BreakpointService } from '@shared/services/breakpoint/breakpoint.service';
+import { DestinationEntityResponse } from '@shipment-record/models/destination.model';
+import { CartItemDestinationPayload, CartItemReturnChargePayload } from '@shipment-record/models/cart-item.model';
+import { DELIVERY_TYPE } from '@shipment-record/contansts/shipment-record-step.constant';
+import { TitleCasePipe } from '@angular/common';
 
 @Component({
     selector: 'app-shipment-record-return-charge-toggle',
-    imports: [ReactiveFormsModule, ToggleSwitch, TranslateModule, InputNumber],
+    imports: [ReactiveFormsModule, ToggleSwitch, TranslateModule, InputNumber, TitleCasePipe],
     templateUrl: './shipment-record-return-charge-toggle.component.html',
     styleUrl: './shipment-record-return-charge-toggle.component.scss',
     providers: [DialogService]
 })
 export class ShipmentRecordReturnChargeToggleComponent implements OnInit, OnDestroy {
-    @Input() mode: ReturnChargeMode = 'home';
+    @Input() mode: DELIVERY_TYPE = DELIVERY_TYPE.HOME;
     @Input() itemIndex = 0;
-    @Output() returnChargeChanged = new EventEmitter<ReturnChargePayload>();
+
+    @Input() storeDestinationsData: DestinationEntityResponse[] = [];
+    @Input() homeDestinationsData: DestinationEntityResponse[] = [];
+
+    @Output() returnChargeChanged = new EventEmitter<CartItemReturnChargePayload>();
 
     returnChargeControl = new FormControl(false, { nonNullable: true });
     foliosControl = new FormControl(1, {
@@ -35,16 +45,16 @@ export class ShipmentRecordReturnChargeToggleComponent implements OnInit, OnDest
     private readonly breakpointService = inject(BreakpointService);
     isMobile = this.breakpointService.isMobile;
     private readonly destroy$ = new Subject<void>();
-
+    returnChargePayload!: CartItemReturnChargePayload;
     ngOnInit(): void {
         this.seedFromStorage();
-        this.returnChargeControl.valueChanges.pipe(takeUntil(this.destroy$)).subscribe((enabled) => {
-            if (enabled) {
-                this.syncReturnChargePayload();
-                return;
-            }
-            this.clearReturnCharge();
-        });
+        // this.returnChargeControl.valueChanges.pipe(takeUntil(this.destroy$)).subscribe((enabled) => {
+        //     // if (enabled) {
+        //     //     this.syncReturnChargePayload();
+        //     //     return;
+        //     // }
+        //     this.clearReturnCharge();
+        // });
 
         this.foliosControl.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
             if (!this.returnChargeControl.value) {
@@ -56,7 +66,7 @@ export class ShipmentRecordReturnChargeToggleComponent implements OnInit, OnDest
                     folios: this.getNormalizedFolios()
                 };
             }
-            this.syncReturnChargePayload();
+            // this.syncReturnChargePayload();
         });
     }
 
@@ -80,7 +90,9 @@ export class ShipmentRecordReturnChargeToggleComponent implements OnInit, OnDest
             data: {
                 mode: this.mode,
                 initialValue: this.returnChargeDetail,
-                folios: this.getNormalizedFolios()
+                folios: this.getNormalizedFolios(),
+                storeDestinationsData: this.storeDestinationsData,
+                homeDestinationsData: this.homeDestinationsData
             }
         });
         if (!dialogRef) {
@@ -88,38 +100,60 @@ export class ShipmentRecordReturnChargeToggleComponent implements OnInit, OnDest
         }
         this.dialogRef = dialogRef;
 
-        dialogRef.onClose.pipe(takeUntil(this.destroy$)).subscribe((detail: ReturnChargeDetail | null) => {
+        dialogRef.onClose.pipe(takeUntil(this.destroy$)).subscribe((detail: CartItemDestinationPayload | null) => {
+            console.log(detail);
             if (detail) {
                 this.applyReturnCharge(detail);
                 return;
             }
-            this.syncReturnChargePayload();
+            // this.syncReturnChargePayload();
         });
     }
 
-    private applyReturnCharge(detail: ReturnChargeDetail) {
-        this.returnChargeDetail = {
-            ...detail,
-            folios: this.getNormalizedFolios()
-        };
+    buildPayload(detail: ReturnChargeDetail): CartItemDestinationPayload {
+        const destinationType = detail.delivery_type;
+        let destinationPayload: CartItemDestinationPayload = {};
+        if (destinationType === DELIVERY_TYPE.HOME) {
+            destinationPayload = {
+                // ubigeo_id: this.destinationData.formValues?.ubigeo?.ubigeo_id,
+                // address: this.destinationData.searchAddress?.address,
+                // reference: this.destinationData.formValues?.references,
+                // polygon: this.destinationData.searchAddress?.polygon,
+                // office_id: 0,
+                // delivery_type: this.destinationType
+            };
+        }
+        return destinationPayload;
+    }
+
+    private applyReturnCharge(detail: CartItemDestinationPayload) {
+        // this.returnChargeDetail = {
+        //     ...detail,
+        //     folios: this.getNormalizedFolios()
+        // };
         if (!this.returnChargeControl.value) {
             this.returnChargeControl.setValue(true, { emitEvent: false });
         }
-        this.syncReturnChargePayload();
+        this.returnChargePayload = {
+            ...detail,
+            folios: this.getNormalizedFolios()
+        };
+        this.returnChargeChanged.emit(this.returnChargePayload);
+        // this.syncReturnChargePayload();
     }
 
-    private clearReturnCharge() {
-        this.returnChargeDetail = null;
-        this.foliosControl.setValue(1, { emitEvent: false });
-        this.cartSessionService.clearItemReturnCharge(this.itemIndex);
-        this.returnChargeChanged.emit({ return_charge: false });
-    }
+    // private clearReturnCharge() {
+    //     this.returnChargeDetail = null;
+    //     this.foliosControl.setValue(1, { emitEvent: false });
+    //     this.cartSessionService.clearItemReturnCharge(this.itemIndex);
+    //     this.returnChargeChanged.emit({ return_charge: false });
+    // }
 
     get hasReturnDestination(): boolean {
         if (!this.returnChargeDetail) {
             return false;
         }
-        if (this.returnChargeDetail.destinationType === 'store') {
+        if (this.returnChargeDetail.delivery_type === DELIVERY_TYPE.HOME) {
             return !!this.returnChargeDetail.store?.destination?.ubigeo_id;
         }
         return !!this.returnChargeDetail.address?.searchAddress?.address;
@@ -129,21 +163,21 @@ export class ShipmentRecordReturnChargeToggleComponent implements OnInit, OnDest
         if (!this.returnChargeDetail) {
             return '';
         }
-        if (this.returnChargeDetail.destinationType === 'store') {
+        if (this.returnChargeDetail.delivery_type === DELIVERY_TYPE.HOME) {
             return this.formatStoreAddress(this.returnChargeDetail.store);
         }
         return this.formatHomeAddress(this.returnChargeDetail.address);
     }
 
-    get returnChargeReferences(): string | null {
-        if (!this.returnChargeDetail) {
-            return null;
-        }
-        if (this.returnChargeDetail.destinationType === 'store') {
-            return this.returnChargeDetail.store?.formValues?.additionalInfo?.trim() || null;
-        }
-        return this.returnChargeDetail.address?.formValues?.references?.trim() || null;
-    }
+    // get returnChargeReferences(): string | null {
+    //     if (!this.returnChargeDetail) {
+    //         return null;
+    //     }
+    //     if (this.returnChargeDetail.delivery_type === DELIVERY_TYPE.OFFICE) {
+    //         return this.returnChargeDetail.store?.formValues?.additionalInfo?.trim() || null;
+    //     }
+    //     return this.returnChargeDetail.address?.formValues?.references?.trim() || null;
+    // }
 
     ngOnDestroy(): void {
         this.destroy$.next();
@@ -166,14 +200,15 @@ export class ShipmentRecordReturnChargeToggleComponent implements OnInit, OnDest
         }
     }
 
-    private syncReturnChargePayload(): void {
-        const payload: ReturnChargePayload = {
-            return_charge: true,
-            return_charge_detail: this.buildReturnChargeDetail()
-        };
-        this.cartSessionService.setItemReturnCharge(this.itemIndex, payload);
-        this.returnChargeChanged.emit(payload);
-    }
+    // private syncReturnChargePayload(): void {
+    //     const payload: ReturnChargePayload = {
+    //         return_charge: true,
+    //         return_charge_detail: this.buildReturnChargeDetail()
+    //     };
+    //     // this.cartSessionService.setItemReturnCharge(this.itemIndex, payload);
+    //     console.log(payload);
+    //     this.returnChargeChanged.emit(payload);
+    // }
 
     private getNormalizedFolios(value?: number): number {
         const rawValue = typeof value === 'number' ? value : this.foliosControl.value;
@@ -200,11 +235,18 @@ export class ShipmentRecordReturnChargeToggleComponent implements OnInit, OnDest
     private buildReturnChargeDetail(): ReturnChargeDetail {
         const baseDetail: ReturnChargeDetail = this.returnChargeDetail ?? {
             folios: this.getNormalizedFolios(),
-            destinationType: this.mode
+            delivery_type: this.mode
         };
         return {
             ...baseDetail,
             folios: this.getNormalizedFolios()
         };
     }
+
+    get findStoreById(): DestinationEntityResponse {
+        const headquarter_id = this.returnChargePayload.office_id;
+        return <DestinationEntityResponse>this.storeDestinationsData.find((store) => (store?.headquarter_id ?? 0) === headquarter_id);
+    }
+
+    protected readonly DELIVERY_TYPE = DELIVERY_TYPE;
 }

@@ -95,7 +95,7 @@ export class ShippingSummaryComponent implements OnInit, OnDestroy {
     }
 
     getLatestCart() {
-        const cartId = this.cartSessionService.getCardId();
+        const cartId = this.cartSessionService.getCartId();
 
         // Cargar el carrito una sola vez al inicio si existe
         if (cartId) {

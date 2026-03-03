@@ -15,6 +15,12 @@ export interface PersonEntityResponse {
     person_type_id?: string;
     document_type_code?: string;
     from_cache?: boolean;
+    juridical_area_id?: number;
+    package_headquarter_code?: string;
+    discount_shipments_count?: number;
+    rounding_factor?: number;
+    tax_affectation_type?: string;
+    employee_id?: number;
 }
 
 export interface PersonValidatePayload {

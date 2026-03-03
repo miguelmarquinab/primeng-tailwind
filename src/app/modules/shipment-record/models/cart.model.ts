@@ -7,6 +7,7 @@ export interface CartPayload {
     person?: PersonPayload;
     origin?: OriginPayload;
     items?: CartItemPayload[];
+    pricing?: any;
 }
 
 export interface OriginPayload {
@@ -25,9 +26,15 @@ export interface PersonPayload {
     last_name_paternal?: string;
     last_name_maternal?: string;
     last_name?: string;
-    cellphone?: string;
+    phone?: string;
     full_name?: string;
-    email_address?: string;
+    email?: string;
+    person_legal_area?: number;
+    package_headquarter_code?: string;
+    discount_shipments_count?: number;
+    rounding_factor?: number;
+    tax_affectation_type_id?: string;
+    employee_id?: number;
 }
 
 export interface CartState {
@@ -39,7 +46,6 @@ export interface CartState {
     // destinations?: any[]; // ajusta según tu modelo
     // createdAt?: Date;
 }
-
 
 export interface CartEntityResponse {
     session_id?: string;

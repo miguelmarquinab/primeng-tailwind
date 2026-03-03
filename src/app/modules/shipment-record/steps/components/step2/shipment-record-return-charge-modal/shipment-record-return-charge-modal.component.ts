@@ -3,38 +3,25 @@ import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Button } from 'primeng/button';
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
 import { TranslateModule } from '@ngx-translate/core';
-import { Subject, takeUntil } from 'rxjs';
-import { DestinationsService } from '@shipment-record/services/destinations.service';
+import { Subject } from 'rxjs';
 import { DestinationEntityResponse } from '@shipment-record/models/destination.model';
-import { LocalStorageService } from '@shared/services/storage/local-storage.service';
-import {
-    ShipmentRecordDestinationAddressFormComponent
-} from '@shipment-record/steps/components/step2/shipment-record-destination-address-form/shipment-record-destination-address-form.component';
-import {
-    ShipmentRecordDestinationStorageFormComponent
-} from '@shipment-record/steps/components/step2/shipment-record-destination-storage-form/shipment-record-destination-storage-form.component';
+import { ShipmentRecordDestinationAddressFormComponent } from '@shipment-record/steps/components/step2/shipment-record-destination-address-form/shipment-record-destination-address-form.component';
+import { ShipmentRecordDestinationStorageFormComponent } from '@shipment-record/steps/components/step2/shipment-record-destination-storage-form/shipment-record-destination-storage-form.component';
 import { DestinationAddressFormState, DestinationStoreFormState } from '@shipment-record/models/destination-form.model';
 import { ReturnChargeDetail, ReturnChargeMode } from '@shipment-record/models/return-charge.model';
+import { DELIVERY_TYPE } from '@shipment-record/contansts/shipment-record-step.constant';
 
 interface ReturnChargeModalData {
     mode: ReturnChargeMode;
     initialValue?: ReturnChargeDetail | null;
     folios?: number;
+    storeDestinationsData?: DestinationEntityResponse[];
+    homeDestinationsData?: DestinationEntityResponse[];
 }
 
 @Component({
     selector: 'app-shipment-record-return-charge-shipment-record-pin-modal',
-    imports: [
-        Button,
-        Tabs,
-        TabList,
-        Tab,
-        TabPanels,
-        TabPanel,
-        TranslateModule,
-        ShipmentRecordDestinationAddressFormComponent,
-        ShipmentRecordDestinationStorageFormComponent
-    ],
+    imports: [Button, Tabs, TabList, Tab, TabPanels, TabPanel, TranslateModule, ShipmentRecordDestinationAddressFormComponent, ShipmentRecordDestinationStorageFormComponent],
     templateUrl: './shipment-record-return-charge-modal.component.html',
     standalone: true,
     styleUrl: './shipment-record-return-charge-modal.component.scss'
@@ -53,8 +40,6 @@ export class ShipmentRecordReturnChargeModalComponent implements OnInit, OnDestr
     private readonly destroy$ = new Subject<void>();
     private readonly dynamicDialogRef = inject(DynamicDialogRef);
     private readonly dynamicDialogConfig = inject(DynamicDialogConfig);
-    private readonly destinationsService = inject(DestinationsService);
-    private readonly localStorageService = inject(LocalStorageService);
 
     get canConfirm(): boolean {
         return this.isReturnDestinationReady;
@@ -76,11 +61,11 @@ export class ShipmentRecordReturnChargeModalComponent implements OnInit, OnDestr
     }
 
     initSelection(initialValue: ReturnChargeDetail | null) {
-        if (initialValue?.destinationType === 'store') {
+        if (initialValue?.delivery_type === DELIVERY_TYPE.OFFICE) {
             this.currentTab = 1;
             return;
         }
-        if (initialValue?.destinationType === 'home') {
+        if (initialValue?.delivery_type === DELIVERY_TYPE.HOME) {
             this.currentTab = 0;
             return;
         }
@@ -88,41 +73,9 @@ export class ShipmentRecordReturnChargeModalComponent implements OnInit, OnDestr
     }
 
     loadDestinations(): void {
-        // this.loadHomeDestinations();
-        // this.loadStoreDestinations();
+        this.homeDestinationsData = this.dynamicDialogConfig.data.homeDestinationsData ?? [];
+        this.storeDestinationsData = this.dynamicDialogConfig.data.storeDestinationsData ?? [];
     }
-
-    // loadStoreDestinations(): void {
-    //     if (this.localStorageService.get('storeDestinations')) {
-    //         this.storeDestinationsData = this.localStorageService.get('storeDestinations');
-    //         return;
-    //     }
-    //     this.destinationsService
-    //         .getAll('store')
-    //         .pipe(takeUntil(this.destroy$))
-    //         .subscribe({
-    //             next: (response) => {
-    //                 this.storeDestinationsData = response.data ?? [];
-    //                 this.localStorageService.set('storeDestinations', this.storeDestinationsData);
-    //             }
-    //         });
-    // }
-    //
-    // loadHomeDestinations(): void {
-    //     if (this.localStorageService.get('homeDestinations')) {
-    //         this.homeDestinationsData = this.localStorageService.get('homeDestinations');
-    //         return;
-    //     }
-    //     this.destinationsService
-    //         .getAll('home')
-    //         .pipe(takeUntil(this.destroy$))
-    //         .subscribe({
-    //             next: (response) => {
-    //                 this.homeDestinationsData = response.data ?? [];
-    //                 this.localStorageService.set('homeDestinations', this.homeDestinationsData);
-    //             }
-    //         });
-    // }
 
     changeTab(tabId: number) {
         this.currentTab = tabId;
@@ -142,16 +95,37 @@ export class ShipmentRecordReturnChargeModalComponent implements OnInit, OnDestr
         }
         const detail: ReturnChargeDetail = {
             folios: this.currentFolios,
-            destinationType: this.currentTab === 1 ? 'store' : 'home'
+            delivery_type: this.currentTab === 1 ? DELIVERY_TYPE.OFFICE : DELIVERY_TYPE.HOME
         };
 
-        if (detail.destinationType === 'store') {
+        if (detail.delivery_type === DELIVERY_TYPE.OFFICE) {
             detail.store = this.storeReturnForm?.buildResponse() ?? this.storeReturn ?? undefined;
         } else {
             detail.address = this.homeReturnForm?.buildResponse() ?? this.homeReturn ?? undefined;
         }
 
-        this.dynamicDialogRef?.close(detail);
+        console.log('confirmReturnCharge: ', detail);
+
+        let returnChargePayload = {};
+
+        if (detail.delivery_type === DELIVERY_TYPE.HOME) {
+            returnChargePayload = {
+                ubigeo_id: detail?.address?.formValues?.ubigeo?.ubigeo_id,
+                address: detail?.address?.searchAddress?.address,
+                reference: detail?.address?.formValues?.references,
+                polygon: detail?.address?.searchAddress?.polygon,
+                office_id: 0,
+                delivery_type: detail.delivery_type
+            };
+        }
+        if (detail.delivery_type === DELIVERY_TYPE.OFFICE) {
+            returnChargePayload = {
+                office_id: detail?.store?.destination.headquarter_id,
+                delivery_type: detail.delivery_type
+            };
+        }
+
+        this.dynamicDialogRef?.close(returnChargePayload);
     }
 
     cancel() {

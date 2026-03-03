@@ -150,7 +150,7 @@ export class ShipmentRecordLayoutComponent implements OnInit, OnDestroy {
             },
 
             accept: () => {
-                const cartUuid = this.cartSessionStorageService.getCardId() ?? '';
+                const cartUuid = this.cartSessionStorageService.getCartId() ?? '';
                 this.cartService.delete(cartUuid).subscribe({
                     next: (result) => {
                         console.log(result);

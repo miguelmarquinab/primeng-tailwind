@@ -71,13 +71,21 @@ export class ShipmentRecordStep1Component implements OnInit {
     }
 
     buildPersonPayload(): PersonPayload {
+        console.log(this.whoSend);
+
         return {
-            document_type: this.whoSend.documentType ?? '',
-            document_number: this.whoSend.documentNumber ?? '',
-            first_names: this.whoSend.firstName ?? '',
-            last_name: this.whoSend.lastName ?? '',
-            cellphone: this.whoSend.cellPhone ?? '',
-            email_address: this.whoSend.emailAddress ?? ''
+            document_type: this.whoSend.document_type ?? '',
+            document_number: this.whoSend.document_number ?? '',
+            first_names: this.whoSend.first_names ?? '',
+            last_name: this.whoSend.last_name ?? '',
+            phone: this.whoSend.phone ?? '',
+            email: this.whoSend.email ?? '',
+            employee_id: this.whoSend.employee_id,
+            discount_shipments_count: this.whoSend.discount_shipments_count,
+            rounding_factor: this.whoSend.rounding_factor,
+            package_headquarter_code: this.whoSend.package_headquarter_code,
+            tax_affectation_type_id: this.whoSend.tax_affectation_type_id,
+            person_legal_area: this.whoSend.person_legal_area,
         };
     }
 
@@ -98,7 +106,7 @@ export class ShipmentRecordStep1Component implements OnInit {
         if (this.currentHeadquarter) {
             const originPayload = this.buildOriginPayload();
             this.cartSessionService.setHeaderOrigin(originPayload);
-            const sessionUuid = this.cartSessionService.getCardId();
+            const sessionUuid = this.cartSessionService.getCartId();
             if (!sessionUuid) {
                 return;
             }

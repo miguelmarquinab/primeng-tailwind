@@ -87,3 +87,8 @@ export const VALIDATION_LIMITS = {
     MAX_WEIGHT: 25,
     MIN_WEIGHT: 0.1
 };
+
+export enum DELIVERY_TYPE {
+    HOME = 'D',
+    OFFICE = 'O'
+}

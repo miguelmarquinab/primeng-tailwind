@@ -9,14 +9,13 @@ import { Subject, takeUntil } from 'rxjs';
 import { ArticleCategoriesEntityResponse } from '@shipment-record/models/article-categories.model';
 import { ShipmentRecordDestinationComponent } from '@shipment-record/steps/components/step2/shipment-record-destination/shipment-record-destination.component';
 import { AppConstant } from '@shared/contants/app.constant';
-import { ReturnChargePayload } from '@shipment-record/models/return-charge.model';
 import { CartSessionStorageService } from '@shipment-record/services/cart-session-storage.service';
 import { WhoSenderFormData } from '@shipment-record/models/who-sender-form.model';
 
 import { NgClass } from '@angular/common';
 import { CartService } from '@shipment-record/services/cart.service';
 import { CartSessionStorage } from '@shipment-record/models/cart-session-storage.model';
-import { CartItemDestinationPayload, CartItemPayload, CartItemWhatSendPayload, CartItemWhoPersonReceivesPayload } from '@shipment-record/models/cart-item.model';
+import { CartItemDestinationPayload, CartItemPayload, CartItemReturnChargePayload, CartItemWhatSendPayload, CartItemWhoPersonReceivesPayload } from '@shipment-record/models/cart-item.model';
 
 @Component({
     selector: 'app-shipment-record-step2',
@@ -26,7 +25,7 @@ import { CartItemDestinationPayload, CartItemPayload, CartItemWhatSendPayload, C
     encapsulation: ViewEncapsulation.None
 })
 export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
-    // default
+    //// default
     panelsDisabled: boolean[] = [false, true, true, true]; // panel 0 habilitado, panel 1 deshabilitado
     protected currentAccordionIndex = 0;
 
@@ -35,7 +34,7 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
 
     articleCategories: ArticleCategoriesEntityResponse[] = [];
 
-    returnChargePayload: ReturnChargePayload | null = null;
+    returnChargePayload!: CartItemReturnChargePayload | null;
     protected readonly PersonConstant = PersonConstant;
     protected readonly ShipmentRecordStepsConstant = ShipmentRecordStepsConstant;
     protected readonly AppConstant = AppConstant;
@@ -69,7 +68,6 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
     }
 
     submitWhoSenderForm(event: WhoSenderFormData) {
-        // this.cartSessionService.setItemPerson(0, payload);
         this.cartItem.who_receive = this.buildPersonWhoReceive(event);
         this.enablePanel(1);
         this.currentAccordionIndex = 1;
@@ -80,7 +78,6 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
     submitWhatSenderForm(event: CartItemWhatSendPayload) {
         console.log('submitWhatSenderForm');
         console.log(event);
-        // this.cartSessionService.setItemWhatSend(0, event);
         this.currentAccordionIndex = 2;
         this.enablePanel(2);
         this.scrollAccordionToTop(2);
@@ -89,13 +86,25 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
     }
 
     submitDestinationForm(event: any) {
-        // this.currentAccordionIndex = 3;
-        // this.enablePanel(3);
-        // this.scrollAccordionToTop(3);
         console.log('submitDestinationForm', event);
+        console.log('this.returnChargePayload', this.returnChargePayload);
         this.cartItem.destination = this.buildDestinationPayload(event);
+        this.cartItem.service = {
+            return_charge: false,
+            delivery_type: this.cartItem?.destination?.delivery_type
+        };
+        if (this.returnChargePayload) {
+            this.cartItem.service.return_charge = true;
+            this.cartItem.return_charge = this.returnChargePayload;
+        }
         console.log(this.cartItem);
-        this.cartService.setStepNumber(3);
+        const cartSessionUuid = this.cartSessionService.getCartId() ?? '';
+        this.cartService.createItem(cartSessionUuid, this.cartItem).subscribe({
+            next: (response) => {
+                console.log('Item creado:', response);
+                this.cartService.setStepNumber(3);
+            }
+        });
     }
 
     buildDestinationPayload(event: any): CartItemDestinationPayload {
@@ -103,8 +112,9 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
         return event;
     }
 
-    onReturnChargeChanged(payload: ReturnChargePayload) {
+    onReturnChargeChanged(payload: CartItemReturnChargePayload) {
         this.returnChargePayload = payload;
+        console.log('Return charge changed:', payload);
     }
 
     enablePanel(index: number) {
@@ -127,10 +137,10 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
 
     buildPersonWhoReceive(event: WhoSenderFormData): CartItemWhoPersonReceivesPayload {
         return {
-            document_type: event.documentType ?? undefined,
-            document_number: event.documentNumber ?? undefined,
-            first_names: event.firstName ?? undefined,
-            last_name: event.lastName ?? undefined
+            document_type: event.document_type ?? undefined,
+            document_number: event.document_number ?? undefined,
+            first_names: event.first_names ?? undefined,
+            last_name: event.last_name ?? undefined
         };
     }
 
@@ -161,7 +171,8 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
             height: event.height,
             width: event.width,
             length: event.length,
-            article_id: event.article_id
+            article_id: event.article_id,
+            declared_value: event.declared_value
         };
     }
 }

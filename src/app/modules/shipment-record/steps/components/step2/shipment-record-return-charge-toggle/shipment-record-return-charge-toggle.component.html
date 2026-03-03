@@ -27,7 +27,7 @@
             <img src="shared/images/return-icon1.svg" alt="Ícono de devolución" class="w-6" />
             <div class="flex flex-col gap-1">
               <span class="font-semibold">Retorno de cargo</span>
-              <span  >Envío de cargo al remitente</span>
+              <span>Envío de cargo al remitente</span>
             </div>
 
           </div>
@@ -75,24 +75,29 @@
       <div class="flex items-center gap-2 min-w-0">
         <span class="pi pi-map-marker text-lg text-color-secondary"></span>
         <div class="flex flex-wrap items-center gap-1 min-w-0 text-sm">
-          @if (!hasReturnDestination) {
+          @if (!returnChargePayload) {
             <span class="font-semibold">
               {{ 'shipmentRecord.returnCharge.selectAddressLabel' | translate }}
             </span>
           } @else {
+
             <span class="font-semibold">
-              @if (returnChargeDetail?.destinationType === 'home') {
+              @if (returnChargePayload?.delivery_type === DELIVERY_TYPE.HOME) {
                 {{ 'shipmentRecord.returnCharge.homePrefix' | translate }}
               } @else {
-                {{ 'shipmentRecord.returnCharge.storePrefix' | translate }}
+                Tienda {{ findStoreById.headquarter_name | titlecase }}:
               }
             </span>
             <span class="text-theme-text-800">
-              {{ returnChargeAddress }}
+               @if (returnChargePayload?.delivery_type === DELIVERY_TYPE.HOME) {
+                 {{ returnChargePayload.address?.trim() }}
+               } @else {
+                 {{ findStoreById.headquarter_address }}
+               }
             </span>
-            @if (returnChargeReferences) {
+            @if (returnChargePayload?.reference) {
               <span class="text-theme-text-800">
-                - {{ 'shipmentRecord.returnCharge.referencesLabel' | translate }} {{ returnChargeReferences }}
+                - {{ 'shipmentRecord.returnCharge.referencesLabel' | translate }} {{ returnChargePayload.reference?.trim() }}
               </span>
             }
           }

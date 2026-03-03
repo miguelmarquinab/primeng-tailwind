@@ -1,16 +1,4 @@
-import {
-    AfterViewInit,
-    Component,
-    ElementRef,
-    EventEmitter,
-    Input,
-    OnChanges,
-    OnDestroy,
-    OnInit,
-    Output,
-    SimpleChanges,
-    ViewChild
-} from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import * as L from 'leaflet';
 import { LeafletMouseEvent } from 'leaflet';
 import { SearchAddressEntityResponse } from '@/modules/geo/models/search-address.model';
@@ -156,10 +144,10 @@ export class ShipmentRecordDestinationMapComponent implements AfterViewInit, OnC
         this.map.setView(point, 15);
         this.marker = L.marker(point, {
             icon: this.olvaIcon
-        })
-            .addTo(this.map)
-            .bindPopup(`<b>${this.currentSearchAddress?.address ?? ''}</b>`)
-            .openPopup();
+        }).addTo(this.map);
+        if (this.currentSearchAddress?.address) {
+            this.marker.bindPopup(`<b>${this.currentSearchAddress?.address ?? ''}</b>`).openPopup();
+        }
     }
 
     private applyPendingCoordinates(): void {

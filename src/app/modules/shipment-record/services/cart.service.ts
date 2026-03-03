@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { CartEntityResponse, CartPayload, PersonPayload } from '@shipment-record/models/cart.model';
 import { HeadquartersEntityResponse } from '@shipment-record/models/headquarters.model';
+import { CartItemPayload } from '@shipment-record/models/cart-item.model';
 
 @Injectable({
     providedIn: 'root'
@@ -67,5 +68,20 @@ export class CartService {
             reset: true,
             event
         });
+    }
+
+    createItem(sessionUuid: string, payload: CartItemPayload): Observable<any> {
+        const endpoint = `${this.baseUrl}/v1/cart/${sessionUuid}/item`;
+        return this.http.post<any>(endpoint, payload);
+    }
+
+    updateItem(sessionUuid: string, itemUuid: string, payload: any): Observable<any> {
+        const endpoint = `${this.baseUrl}/v1/cart/${sessionUuid}/item/${itemUuid}`;
+        return this.http.patch<any>(endpoint, payload);
+    }
+
+    deleteItem(sessionUuid: string, itemUuid: string): Observable<any> {
+        const endpoint = `${this.baseUrl}/v1/cart/${sessionUuid}/item/${itemUuid}`;
+        return this.http.delete<any>(endpoint);
     }
 }

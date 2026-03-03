@@ -103,6 +103,13 @@ export class ShipmentRecordDestinationAddressFormComponent implements OnInit, On
         console.log('Ubigeo selected:', event);
 
         this.currentUbigeoDestination = event.value;
+
+        this.currentSearchAddress = {
+            coordinates: {
+                latitude: parseFloat(event.value.department_latitude ?? '0'),
+                longitude: parseFloat(event.value.department_longitude ?? '0')
+            }
+        };
     }
 
     search(event: AutoCompleteCompleteEvent) {

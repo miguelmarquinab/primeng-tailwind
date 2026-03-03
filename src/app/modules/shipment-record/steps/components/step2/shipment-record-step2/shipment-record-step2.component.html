@@ -32,8 +32,8 @@
         <p-accordion-header>¿A dónde quieres enviar? (Destino)</p-accordion-header>
         <p-accordion-content [ngClass]="'accordioncontent-without-padding'">
           <app-shipment-record-destination
-            (submitDestination)="submitDestinationForm($event)"
             (returnChargeChanged)="onReturnChargeChanged($event)"
+            (submitDestination)="submitDestinationForm($event)"
           >
           </app-shipment-record-destination>
         </p-accordion-content>

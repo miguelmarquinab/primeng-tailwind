@@ -6,8 +6,8 @@
                (click)="changeTab(0)"
                (keydown.enter)="changeTab(0)"
         >
-          <div class="flex items-center justify-center gap-[7px]">
-            <img class="w-3.5" src="shared/images/box-icon.svg" />
+          <div class="flex items-center justify-center gap-1.75">
+            <img class="w-3.5" src="shared/images/box-icon.svg" alt="" />
             <span class="font-bold font-inter">Entrega en domicilio</span>
           </div>
         </p-tab>
@@ -16,7 +16,7 @@
              (click)="changeTab(1)"
              (keydown.enter)="changeTab(1)"
       >
-        <div class="flex items-center justify-center gap-[7px]">
+        <div class="flex items-center justify-center gap-1.75">
           <span class="pi pi-shop"></span>
           <span class="font-bold font-inter">Entrega en tienda</span>
         </div>
@@ -33,7 +33,9 @@
             >
               <div returnChargeToggle class="flex flex-col gap-1">
                 <app-shipment-record-return-charge-toggle
-                  mode="home"
+                  [mode]="DELIVERY_TYPE.HOME"
+                  [storeDestinationsData]="storeDestinationsData"
+                  [homeDestinationsData]="homeDestinationsData"
                   (returnChargeChanged)="onReturnChargeChanged($event)"
                 ></app-shipment-record-return-charge-toggle>
               </div>
@@ -54,7 +56,9 @@
             @if (!(cartData.header.whoPay === 'DESTINATION')) {
               <div returnChargeToggle class="flex flex-col gap-1">
                 <app-shipment-record-return-charge-toggle
-                  mode="store"
+                  [mode]="DELIVERY_TYPE.OFFICE"
+                  [storeDestinationsData]="storeDestinationsData"
+                  [homeDestinationsData]="homeDestinationsData"
                   (returnChargeChanged)="onReturnChargeChanged($event)"
                 ></app-shipment-record-return-charge-toggle>
               </div>

@@ -2,7 +2,7 @@ import { SearchAddressEntityResponse } from '@/modules/geo/models/search-address
 import { DestinationCollectionMode, DestinationEntityResponse } from '@shipment-record/models/destination.model';
 
 export interface DestinationAddressFormValues {
-    ubigeo: string | null;
+    ubigeo: any;
     street: string | null;
     references: string | null;
 }

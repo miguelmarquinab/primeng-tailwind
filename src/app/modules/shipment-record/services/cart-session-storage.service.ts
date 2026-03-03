@@ -8,7 +8,6 @@ import {
     CartItemPayload,
     CartItemPersonPayload,
     CartItemReturnChargeDetailPayload,
-    // CartItemWhatSendPayload,
     CartPayload,
     OriginPayload,
     PersonPayload,
@@ -16,6 +15,7 @@ import {
 } from '@shipment-record/models/cart.model';
 import { DestinationAddressFormState, DestinationStoreFormState } from '@shipment-record/models/destination-form.model';
 import { ReturnChargeDetail, ReturnChargePayload } from '@shipment-record/models/return-charge.model';
+import { DELIVERY_TYPE } from '@shipment-record/contansts/shipment-record-step.constant';
 
 @Injectable({
     providedIn: 'root'
@@ -48,14 +48,14 @@ export class CartSessionStorageService {
         this.setCartData(cartData);
     }
 
-    setWhoPay(whoPay:string,detail:any){
+    setWhoPay(whoPay: string, detail: any) {
         const cartData = this.getCartData();
         cartData.header.whoPay = whoPay;
         cartData.header.whoPayDetail = detail;
         this.setCartData(cartData);
     }
 
-    getWhoPay(){
+    getWhoPay() {
         const cartData = this.getCartData();
 
         return {
@@ -97,13 +97,13 @@ export class CartSessionStorageService {
     getCurrentStep() {
         return this.getCartData()?.currentStep ?? 1;
     }
-    getCardId() {
+    getCartId() {
         return this.getCartData().cardId;
     }
 
-    setItemReturnCharge(itemIndex: number, payload: ReturnChargePayload) {
-        this.updateItem(itemIndex, payload);
-    }
+    // setItemReturnCharge(itemIndex: number, payload: ReturnChargePayload) {
+    //     this.updateItem(itemIndex, payload);
+    // }
 
     setItemPerson(itemIndex: number, payload: PersonPayload) {
         this.updateItem(itemIndex, {
@@ -140,7 +140,12 @@ export class CartSessionStorageService {
         return {
             person: cartData.header.person ?? undefined,
             origin: cartData.header.origin ?? undefined,
-            items: this.buildItemsPayload(cartData.items)
+            items: [], //this.buildItemsPayload(cartData.items),
+            // @TODO Remove after check
+            pricing: {
+                service_id: 1,
+                exclusive_rate: 0
+            }
         };
     }
 
@@ -165,9 +170,7 @@ export class CartSessionStorageService {
         if (!items.length) {
             return undefined;
         }
-        const payload = items
-            .map((item) => (item ? this.mapItemPayload(item) : null))
-            .filter((item): item is CartItemPayload => !!item);
+        const payload = items.map((item) => (item ? this.mapItemPayload(item) : null)).filter((item): item is CartItemPayload => !!item);
         return payload.length ? payload : undefined;
     }
 
@@ -216,7 +219,7 @@ export class CartSessionStorageService {
         if (!detail) {
             return undefined;
         }
-        const address = detail.destinationType === 'store' ? this.buildStoreAddressPayload(detail.store) : this.buildHomeAddressPayload(detail.address);
+        const address = detail.delivery_type === DELIVERY_TYPE.OFFICE ? this.buildStoreAddressPayload(detail.store) : this.buildHomeAddressPayload(detail.address);
         if (!address) {
             return undefined;
         }
@@ -308,6 +311,4 @@ export class CartSessionStorageService {
     clear() {
         this.sessionStorage.remove(this.CART_KEY);
     }
-
-
 }
