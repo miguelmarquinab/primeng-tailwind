@@ -12,6 +12,12 @@ import { SessionStorageService } from '@shared/services/storage/session-storage.
 import { PaymentMethodModalComponent } from '@shared/payment-method-modal/payment-method-modal.component';
 import { RegistrationSuccessModalComponent } from '@shared/registration-success-modal/registration-success-modal.component';
 import { PinModal } from '@shipment-record/steps/components/step3/shipment-record-pin-modal/pin-modal.component';
+import {
+    ShipmentRecordFinalStepsModalComponent
+} from '@shipment-record/steps/components/step3/shipment-record-final-steps-modal/shipment-record-final-steps-modal.component';
+import {
+    ShipmentRecordDeclarationAffidavitModalComponent
+} from '@shipment-record/steps/components/step3/shipment-record-declaration-affidavit-modal/shipment-record-declaration-affidavit-modal.component';
 
 
 @Component({
@@ -79,7 +85,10 @@ export class ShippingSummaryComponent implements OnInit, OnDestroy {
                         this.origin = response.data.origin;
                     }
 
-                    this.sessionStorageService.set(this.CART_DATA_KEY, response.data);
+                    // this.sessionStorageService.set(this.CART_DATA_KEY, response.data);
+                    this.cartSessionService.setItems(response.data?.items ?? []);
+
+                    // this.cartService.setItems(response.data?.items ?? []);
                 },
                 error: (error) => {
                     console.error('Error fetching cart by UUID:', error);
@@ -108,26 +117,109 @@ export class ShippingSummaryComponent implements OnInit, OnDestroy {
         this.destroy$.complete();
     }
 
+    // openPinModal() {
+    //     this.ref = this.dialog.open(ShipmentRecordFinalStepsModalComponent, {
+    //         header: '',
+    //         width: '371px',
+    //         contentStyle: { 'max-height': '500px', overflow: 'auto' },
+    //         // baseZIndex: 10000,
+    //         closable: true
+    //     });
+    //
+    //     this.ref?.onClose.subscribe({
+    //         next: (data) => {
+    //             console.log('Modal closed with data:', data);
+    //
+    //             this.openPaymentMethodModal();
+    //         }
+    //     });
+    // }
+
     openPinModal() {
+        // Solo para dibujar el step-bar del PIN (2 o 3)
+        const cartData = this.sessionStorageService.get(this.CART_DATA_KEY);
+        const hasDeclaracionPreview = this.hasDeclaracionJurada(cartData);
+
+        console.log('Abriendo PinModal con cartData:', cartData);
 
 
+        const cartUuid = this.cartSessionService.getCartId();
+        console.log('Cart UUID para PinModal:', cartUuid);
         this.ref = this.dialog.open(PinModal, {
             header: '',
             width: '371px',
             contentStyle: { 'max-height': '500px', overflow: 'auto' },
-            // baseZIndex: 10000,
-            closable: true
+            closable: true,
+            data: {
+                // ✅ lo usará PinModal para pintar 2 o 3 segmentos
+                hasDeclaracionPreview,
+                cartUuid
+            }
         });
 
         this.ref?.onClose.subscribe({
             next: (data) => {
                 console.log('Modal closed with data:', data);
 
-                this.openPaymentMethodModal();
+                // data puede ser string (pin) o { pin: string }
+                const pinValue = typeof data === 'string' ? data : data?.pin;
+
+                if (!pinValue) {
+                    return;
+                }
+
+                // ✅ AQUÍ se hace la evaluación real (por ahora desde cartData).
+                // Luego lo conectamos a endpoint: "obtener predios/envíos"
+                const cartDataReal = this.sessionStorageService.get(this.CART_DATA_KEY);
+                const hasDeclaracion = this.hasDeclaracionJurada(cartDataReal);
+                const shipmentsToDeclare = this.buildShipmentsToDeclare(cartDataReal);
+
+                if (hasDeclaracion) {
+                    this.openDeclaracionJuradaModal(shipmentsToDeclare);
+                } else {
+                    this.openPaymentMethodModal();
+                }
             }
         });
     }
 
+    // ===== Helpers internos (no cambian nombres existentes) =====
+
+    private hasDeclaracionJurada(cartData: any): boolean {
+        const items = cartData?.items ?? [];
+        return items.some((x: any) => Number(x?.declared_value ?? 0) >= 500);
+    }
+
+    private buildShipmentsToDeclare(cartData: any): Array<{ item: number; contenido: string; valor: string }> {
+        const items = cartData?.items ?? [];
+        const filtered = items
+            .map((x: any, idx: number) => ({
+                item: idx + 1,
+                contenido: x?.article_id ? `Artículo ${x.article_id}` : `Envío ${idx + 1}`,
+                valor: `S/${Number(x?.declared_value ?? 0).toFixed(2)}`
+            }))
+            .filter((x: any) => {
+                const num = Number(String(x.valor).replace('S/', ''));
+                return num >= 500;
+            });
+
+        return filtered;
+    }
+
+    // openPaymentMethodModal(): void {
+    //     this.ref = this.dialog.open(PaymentMethodModalComponent, {
+    //         width: '571px',
+    //         contentStyle: { 'max-height': '600px', overflow: 'auto' },
+    //         closable: true,
+    //         data: {
+    //             selectedPaymentMethod: 'niubiz',
+    //             error: null
+    //             //error: { reason: 'Fondos insuficientes', message: '...' }
+    //         }
+    //     });
+    // }
+
+    // ✅ MANTENGO EL MISMO MÉTODO openPaymentMethodModal()
     openPaymentMethodModal(): void {
         this.ref = this.dialog.open(PaymentMethodModalComponent, {
             width: '571px',
@@ -135,8 +227,45 @@ export class ShippingSummaryComponent implements OnInit, OnDestroy {
             closable: true,
             data: {
                 selectedPaymentMethod: 'niubiz',
-                error: null
-                //error: { reason: 'Fondos insuficientes', message: '...' }
+                error: null,
+
+                // ✅ NUEVO (opcional): para que Payment pinte header+steps como prototipo
+                showFinalHeader: true,
+                totalSteps: 2,
+                currentStep: 2
+            }
+        });
+    }
+
+    // ✅ modal nuevo
+    openDeclaracionJuradaModal(shipmentsToDeclare: Array<{ item: number; contenido: string; valor: string }>): void {
+        this.ref = this.dialog.open(ShipmentRecordDeclarationAffidavitModalComponent, {
+            header: '',
+            width: '571px',
+            contentStyle: { 'max-height': '600px', overflow: 'auto' },
+            closable: true,
+            data: {
+                shipmentsToDeclare
+            }
+        });
+
+        this.ref?.onClose.subscribe({
+            next: (accepted) => {
+                if (accepted) {
+                    // Si aceptó DJ, paso a Pago (3 pasos, paso 3)
+                    this.ref = this.dialog.open(PaymentMethodModalComponent, {
+                        width: '571px',
+                        contentStyle: { 'max-height': '600px', overflow: 'auto' },
+                        closable: true,
+                        data: {
+                            selectedPaymentMethod: 'niubiz',
+                            error: null,
+                            showFinalHeader: true,
+                            totalSteps: 3,
+                            currentStep: 3
+                        }
+                    });
+                }
             }
         });
     }

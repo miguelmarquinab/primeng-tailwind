@@ -16,6 +16,7 @@ import {
 import { DestinationAddressFormState, DestinationStoreFormState } from '@shipment-record/models/destination-form.model';
 import { ReturnChargeDetail, ReturnChargePayload } from '@shipment-record/models/return-charge.model';
 import { DELIVERY_TYPE } from '@shipment-record/contansts/shipment-record-step.constant';
+import { CartItemEntityResponse } from '@shipment-record/models/cart-item.model';
 
 @Injectable({
     providedIn: 'root'
@@ -70,6 +71,7 @@ export class CartSessionStorageService {
 
     getCartData(): CartSessionStorage {
         let cartData = this.sessionStorage.get(this.CART_KEY) as CartSessionStorage | null;
+        console.log(cartData);
         if (!cartData) {
             this.init();
             cartData = this.sessionStorage.get(this.CART_KEY) as CartSessionStorage | null;
@@ -105,35 +107,35 @@ export class CartSessionStorageService {
     //     this.updateItem(itemIndex, payload);
     // }
 
-    setItemPerson(itemIndex: number, payload: PersonPayload) {
-        this.updateItem(itemIndex, {
-            person: payload
-        });
-    }
-
-    setItemDestination(itemIndex: number, payload: CartItemDestinationPayload) {
-        this.updateItem(itemIndex, {
-            destination: payload
-        });
-    }
+    // setItemPerson(itemIndex: number, payload: PersonPayload) {
+    //     this.updateItem(itemIndex, {
+    //         person: payload
+    //     });
+    // }
+    //
+    // setItemDestination(itemIndex: number, payload: CartItemDestinationPayload) {
+    //     this.updateItem(itemIndex, {
+    //         destination: payload
+    //     });
+    // }
 
     // setItemWhatSend(itemIndex: number, payload: CartItemWhatSendPayload) {
     //     this.updateItem(itemIndex, payload);
     // }
 
-    clearItemReturnCharge(itemIndex: number) {
-        const cartData = this.getCartData();
-        if (!cartData.items.length) {
-            return;
-        }
-        cartData.items = this.ensureItems(cartData.items);
-        cartData.items[itemIndex] = {
-            ...(cartData.items[itemIndex] ?? {}),
-            return_charge: false
-        };
-        delete cartData.items[itemIndex].return_charge_detail;
-        this.setCartData(cartData);
-    }
+    // clearItemReturnCharge(itemIndex: number) {
+    //     const cartData = this.getCartData();
+    //     if (!cartData.items.length) {
+    //         return;
+    //     }
+    //     cartData.items = this.ensureItems(cartData.items);
+    //     cartData.items[itemIndex] = {
+    //         ...(cartData.items[itemIndex] ?? {}),
+    //         return_charge: false
+    //     };
+    //     delete cartData.items[itemIndex].return_charge_detail;
+    //     this.setCartData(cartData);
+    // }
 
     buildCartPayload(): CartPayload {
         const cartData = this.getCartData();
@@ -149,6 +151,12 @@ export class CartSessionStorageService {
         };
     }
 
+    setItems(cartItems: CartItemEntityResponse[] = []) {
+        const cartData = this.getCartData();
+        cartData.items = cartItems;
+        this.setCartData(cartData);
+    }
+
     private ensureItems(items: CartItemDraft[] | null | undefined): CartItemDraft[] {
         if (!items) {
             return [];
@@ -156,15 +164,15 @@ export class CartSessionStorageService {
         return items;
     }
 
-    private updateItem(itemIndex: number, patch: Partial<CartItemDraft>) {
-        const cartData = this.getCartData();
-        cartData.items = this.ensureItems(cartData.items);
-        cartData.items[itemIndex] = {
-            ...(cartData.items[itemIndex] ?? {}),
-            ...patch
-        };
-        this.setCartData(cartData);
-    }
+    // private updateItem(itemIndex: number, patch: Partial<CartItemDraft>) {
+    //     const cartData = this.getCartData();
+    //     cartData.items = this.ensureItems(cartData.items);
+    //     cartData.items[itemIndex] = {
+    //         ...(cartData.items[itemIndex] ?? {}),
+    //         ...patch
+    //     };
+    //     this.setCartData(cartData);
+    // }
 
     private buildItemsPayload(items: CartItemDraft[]): CartItemPayload[] | undefined {
         if (!items.length) {

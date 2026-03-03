@@ -47,7 +47,7 @@ export class ShipmentRecordReturnChargeToggleComponent implements OnInit, OnDest
     private readonly destroy$ = new Subject<void>();
     returnChargePayload!: CartItemReturnChargePayload;
     ngOnInit(): void {
-        this.seedFromStorage();
+        // this.seedFromStorage();
         // this.returnChargeControl.valueChanges.pipe(takeUntil(this.destroy$)).subscribe((enabled) => {
         //     // if (enabled) {
         //     //     this.syncReturnChargePayload();
@@ -186,18 +186,18 @@ export class ShipmentRecordReturnChargeToggleComponent implements OnInit, OnDest
     }
 
     private seedFromStorage(): void {
-        const cartData = this.cartSessionService.getCartData();
-        const item = cartData.items?.[this.itemIndex];
-        if (!item?.return_charge) {
-            return;
-        }
-        this.returnChargeControl.setValue(true, { emitEvent: false });
-        if (item.return_charge_detail) {
-            this.returnChargeDetail = item.return_charge_detail;
-            if (typeof item.return_charge_detail.folios === 'number') {
-                this.foliosControl.setValue(this.getNormalizedFolios(item.return_charge_detail.folios), { emitEvent: false });
-            }
-        }
+        // const cartData = this.cartSessionService.getCartData();
+        // const item = cartData.items?.[this.itemIndex];
+        // if (!item?.return_charge) {
+        //     return;
+        // }
+        // this.returnChargeControl.setValue(true, { emitEvent: false });
+        // if (item.return_charge_detail) {
+        //     this.returnChargeDetail = item.return_charge_detail;
+        //     if (typeof item.return_charge_detail.folios === 'number') {
+        //         this.foliosControl.setValue(this.getNormalizedFolios(item.return_charge_detail.folios), { emitEvent: false });
+        //     }
+        // }
     }
 
     // private syncReturnChargePayload(): void {

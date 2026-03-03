@@ -2,6 +2,7 @@ import { HeadquartersEntityResponse } from '@shipment-record/models/headquarters
 import { PersonEntityResponse } from '@/modules/people/models/person.model';
 import { ReturnChargeDetail } from '@shipment-record/models/return-charge.model';
 import { DestinationAddressFormState, DestinationStoreFormState } from '@shipment-record/models/destination-form.model';
+import { CartItemEntityResponse } from '@shipment-record/models/cart-item.model';
 
 export interface CartPayload {
     person?: PersonPayload;
@@ -148,4 +149,5 @@ export interface CartItemDraft {
 
 // export type CartItemWhatSendPayload = Pick<CartItemDraft, 'article_id' | 'declared_value' | 'length' | 'width' | 'height' | 'weight' | 'fragile'>;
 
-export interface CartItemEntityResponse extends CartItemPayload {}
+// export interface CartItemEntityResponse extends CartItemPayload {}
+

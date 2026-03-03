@@ -1,0 +1,58 @@
+<div class="flex flex-col gap-4">
+
+  <div class="text-sm font-bold text-gray-900">Shipments over S/500</div>
+
+  <div class="text-xs text-gray-600 leading-relaxed">
+    You exceeded S/500.00 in shipments. To finish, accept the regulation and complete your affidavit.
+    <a class="text-blue-700 font-semibold underline cursor-pointer">See details.</a>
+  </div>
+
+  <div class="border border-gray-100 rounded-xl shadow-sm overflow-hidden bg-white">
+    <div class="px-3 py-2 text-xs font-semibold text-gray-700 bg-gray-50">Shipments to declare</div>
+
+    <div class="max-h-44 overflow-auto">
+      <table class="w-full text-xs">
+        <thead class="sticky top-0 bg-white">
+        <tr class="border-b border-gray-100">
+          <th class="text-left px-3 py-2 font-semibold text-gray-700 w-12">Item</th>
+          <th class="text-left px-3 py-2 font-semibold text-gray-700">Content</th>
+          <th class="text-right px-3 py-2 font-semibold text-gray-700 w-24">Value</th>
+        </tr>
+        </thead>
+        <tbody>
+          @for (s of shipmentsToDeclare; track s.item) {
+            <tr class="border-b border-gray-50">
+              <td class="px-3 py-2">{{ s.item }}</td>
+              <td class="px-3 py-2">{{ s.contenido }}</td>
+              <td class="px-3 py-2 text-right">{{ s.valor }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <label class="flex items-start gap-2 text-xs text-gray-700 mt-1">
+    <input type="checkbox" [(ngModel)]="checkRegulation" class="mt-0.5" />
+    <span>
+      I have read and accept the <span class="text-blue-700 font-semibold underline">shipping regulation</span>
+      and the <span class="text-blue-700 font-semibold underline">affidavit</span>.
+    </span>
+  </label>
+
+  <label class="flex items-start gap-2 text-xs text-gray-700">
+    <input type="checkbox" [(ngModel)]="checkAffidavit" class="mt-0.5" />
+    <span>I declare under oath the products listed in the shipment record.</span>
+  </label>
+
+  <div class="mt-2">
+    <p-button
+      label="Next"
+      styleClass="w-full"
+      severity="primary"
+      [disabled]="!(checkRegulation && checkAffidavit)"
+      (click)="next()"
+    ></p-button>
+  </div>
+
+</div>

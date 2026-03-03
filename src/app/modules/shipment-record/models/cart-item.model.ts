@@ -70,3 +70,49 @@ export interface CartItemServicePayload {
     return_charge?: boolean;
     delivery_type?: DELIVERY_TYPE;
 }
+
+
+
+export interface CartItemEntityResponse {
+    who_receive?: CartItemWhoReceiveEntityResponse;
+    what_send?: CartItemWhatSendEntityResponse;
+    destination?: CartItemDestinationEntityResponse;
+    service?: CartItemServiceEntityResponse;
+    pricing?: CartItemPricingEntityResponse;
+    uuid?: string;
+}
+
+export interface CartItemDestinationEntityResponse {
+    ubigeo_id?: string;
+    address?: string;
+    reference?: null;
+    polygon?: string;
+    office_id?: number;
+}
+
+export interface CartItemPricingEntityResponse {
+    amount?: number;
+}
+
+export interface CartItemServiceEntityResponse {
+    return_charge?: boolean;
+    delivery_type?: string;
+}
+
+export interface CartItemWhatSendEntityResponse {
+    weight?: number;
+    shipment_type?: number;
+    declared_value?: number;
+    fragile?: number;
+    height?: number;
+    width?: number;
+    length?: number;
+    article_id?: number;
+}
+
+export interface CartItemWhoReceiveEntityResponse {
+    document_number?: string;
+    document_type?: string;
+    first_names?: string;
+    last_name?: string;
+}

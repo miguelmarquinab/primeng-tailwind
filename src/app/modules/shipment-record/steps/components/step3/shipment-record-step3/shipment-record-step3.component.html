@@ -1,12 +1,16 @@
-<div class="p-4 flex flex-col gap-3 border bg-surface-50 border-secondary-sutile rounded-xl w-full max-h-[calc(100vh-220px)]">
+<div
+  class="p-4 flex flex-col gap-3 border bg-surface-50 border-secondary-sutile rounded-xl w-full max-h-[calc(100vh-220px)]">
   <div class="flex flex-col gap-3 flex-1 overflow-y-auto">
-    @for (item of shipments; track item.id; let i = $index) {
-      <app-shipment-list [index]="i + 1"
-                                 [city]="item.city"
-                                 [customer]="item.customer"
-                                 [description]="item.description"
-                                 [address]="item.address"
-                                 [total]="item.total" />
+    @if(cartData){
+      @for (item of cartData.items; track item.uuid; let i = $index) {
+        <app-shipment-list [index]="i + 1"
+                           [city]="item.destination?.address??''"
+                           [customer]="`${item.who_receive?.first_names} ${item.who_receive?.last_name}`"
+                           [description]="item.what_send?.article_id  + ''"
+                           [address]="item.destination?.address ?? ''"
+                           [total]="item.pricing?.amount ?? 0" />
+      }
+
     }
   </div>
   <div class="w-full">

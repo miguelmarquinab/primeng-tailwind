@@ -1,9 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Button } from 'primeng/button';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { PinModal } from '@shipment-record/steps/components/step3/shipment-record-pin-modal/pin-modal.component';
-import { ShipmentListComponent} from '@shipment-record/steps/components/step3/shipment-list/shipment-list.component';
+import { ShipmentListComponent } from '@shipment-record/steps/components/step3/shipment-list/shipment-list.component';
 import { CartService } from '@shipment-record/services/cart.service';
+import { CartSessionStorageService } from '@shipment-record/services/cart-session-storage.service';
+import { CartSessionStorage } from '@shipment-record/models/cart-session-storage.model';
 
 @Component({
     selector: 'app-shipment-record-step3',
@@ -12,11 +13,12 @@ import { CartService } from '@shipment-record/services/cart.service';
     styleUrl: './shipment-record-step3.component.scss',
     providers: [DialogService]
 })
-export class ShipmentRecordStep3Component {
+export class ShipmentRecordStep3Component implements OnInit {
     dialog = inject(DialogService);
 
     private readonly cartService = inject(CartService);
-
+    private readonly cartSessionService = inject(CartSessionStorageService);
+    cartData!: CartSessionStorage;
     shipments = [
         {
             id: 1,
@@ -85,9 +87,12 @@ export class ShipmentRecordStep3Component {
     ];
 
     ref: DynamicDialogRef | null = null;
+    ngOnInit() {
+        setTimeout(() => {
+            this.cartData = this.cartSessionService.getCartData();
+        }, 1000);
+    }
     openModal() {
-
-
         this.cartService.setStepNumber(2);
 
         // this.ref = this.dialog.open(MarkupModal, {

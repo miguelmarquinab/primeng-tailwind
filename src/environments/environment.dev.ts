@@ -10,5 +10,12 @@ export const environment = {
                 client_secret: '123456'
             }
         }
+    },
+    paymentGateway: {
+        niubiz: {
+            assets: {
+                script: 'https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true'
+            }
+        }
     }
 };

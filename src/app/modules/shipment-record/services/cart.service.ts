@@ -46,6 +46,14 @@ export class CartService {
         });
     }
 
+    setItems(items: any[]) {
+        const currentCart = this.cartStore.getValue() || {};
+        this.cartStore.next({
+            ...currentCart,
+            items: items
+        });
+    }
+
     getByUuid(sessionUuid: string): Observable<CartEntityResponse> {
         const endpoint = `${this.baseUrl}/v1/cart/${sessionUuid}`;
         return this.http.get<CartEntityResponse>(endpoint);
@@ -83,5 +91,12 @@ export class CartService {
     deleteItem(sessionUuid: string, itemUuid: string): Observable<any> {
         const endpoint = `${this.baseUrl}/v1/cart/${sessionUuid}/item/${itemUuid}`;
         return this.http.delete<any>(endpoint);
+    }
+
+    createPin(sessionUuid: string,pin:string): Observable<any> {
+        const endpoint = `${this.baseUrl}/v1/shipping-records/cart/${sessionUuid}/pin`;
+        return this.http.put<any>(endpoint, {
+            pin
+        });
     }
 }

@@ -21,6 +21,7 @@ import { HeadquartersService } from '@shipment-record/services/headquarters.serv
 import { HeadquartersEntityResponse } from '@shipment-record/models/headquarters.model';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
+import { CartEntityDataResponse, CartEntityResponse } from '@shipment-record/models/cart.model';
 
 @Component({
     selector: 'app-shipment-record-layout',
@@ -49,6 +50,7 @@ export class ShipmentRecordLayoutComponent implements OnInit, OnDestroy {
     private confirmationService = inject(ConfirmationService);
 
     stepLabel = 'Datos de origen';
+    cart!: CartEntityDataResponse;
 
     constructor() {
         const raw = this.route.snapshot.paramMap.get('stepNumber');
@@ -88,6 +90,8 @@ export class ShipmentRecordLayoutComponent implements OnInit, OnDestroy {
                     this.sessionStorage.setPlain('refresh_token', response.refresh_token);
                 }
                 this.getAllHeadquarters();
+                if (this.stepNumber > 1) {
+                }
                 this.tokenIsLoading = false;
             });
     }
@@ -159,7 +163,7 @@ export class ShipmentRecordLayoutComponent implements OnInit, OnDestroy {
                     },
                     error: (error) => {
                         console.log(error);
-                        if(error.status === 404){
+                        if (error.status === 404) {
                             this.setCurrentStep(1);
                             this.cartSessionStorageService.clear();
                         }
@@ -172,8 +176,7 @@ export class ShipmentRecordLayoutComponent implements OnInit, OnDestroy {
         });
     }
 
-    reset(event:any){
-
+    reset(event: any) {
         this.cartService.reset(event);
     }
     ngOnDestroy(): void {

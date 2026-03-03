@@ -1,4 +1,4 @@
-import { Component, computed, inject, Input, OnInit } from '@angular/core';
+import { Component, computed, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
@@ -38,6 +38,15 @@ export class PaymentMethodModalComponent implements OnInit {
     @Input() selectedPaymentMethod: PaymentMethod = 'niubiz';
     @Input() paymentAmount = 'S/78.33';
     @Input() error: PaymentMethodError | null = null;
+
+    // ✅ nuevo: modo embebido
+    @Input() embedded = false;
+
+    // ✅ nuevo: evento para wizard
+    @Output() paymentConfirmed = new EventEmitter<{ paymentMethod: PaymentMethod; termsAccepted: boolean }>();
+
+    // ✅ nuevo: evento para “ir a finish” desde wizard
+    @Output() goToFinishRequested = new EventEmitter<void>();
 
     termsAccepted = false;
     isMobile = computed(() => this.breakpointService.isMobile());
