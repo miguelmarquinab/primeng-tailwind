@@ -1,58 +1,93 @@
-<div class="flex flex-col gap-4">
-
-  <div class="text-sm font-bold text-gray-900">Shipments over S/500</div>
-
-  <div class="text-xs text-gray-600 leading-relaxed">
-    You exceeded S/500.00 in shipments. To finish, accept the regulation and complete your affidavit.
-    <a class="text-blue-700 font-semibold underline cursor-pointer">See details.</a>
-  </div>
-
-  <div class="border border-gray-100 rounded-xl shadow-sm overflow-hidden bg-white">
-    <div class="px-3 py-2 text-xs font-semibold text-gray-700 bg-gray-50">Shipments to declare</div>
-
-    <div class="max-h-44 overflow-auto">
-      <table class="w-full text-xs">
-        <thead class="sticky top-0 bg-white">
-        <tr class="border-b border-gray-100">
-          <th class="text-left px-3 py-2 font-semibold text-gray-700 w-12">Item</th>
-          <th class="text-left px-3 py-2 font-semibold text-gray-700">Content</th>
-          <th class="text-right px-3 py-2 font-semibold text-gray-700 w-24">Value</th>
-        </tr>
-        </thead>
-        <tbody>
-          @for (s of shipmentsToDeclare; track s.item) {
-            <tr class="border-b border-gray-50">
-              <td class="px-3 py-2">{{ s.item }}</td>
-              <td class="px-3 py-2">{{ s.contenido }}</td>
-              <td class="px-3 py-2 text-right">{{ s.valor }}</td>
-            </tr>
-          }
-        </tbody>
-      </table>
+<div class="box-border flex flex-col justify-between items-stretch p-8 gap-8 w-[627px] h-[643.5px] bg-white border border-[#E3E9F7] rounded-[26px] shadow-[4px_2px_24.6px_rgba(157,164,191,0.21)]">
+  <div class="flex flex-col gap-6 w-full flex-1 min-h-0 mx-auto max-w-[563px]">
+    <div class="flex flex-col gap-6 w-full flex-none">
+      <div class="flex flex-row justify-end items-start gap-6 w-full">
+        <h2 class="m-0 flex-1 font-bold text-2xl leading-[29px] text-[#494949]">Pasos finales</h2>
+        <p-button
+          icon="pi pi-times"
+          severity="secondary"
+          [text]="true"
+          [rounded]="true"
+          ariaLabel="Cerrar"
+          (click)="close()"
+        />
+      </div>
+      <div class="flex flex-row gap-3 w-full">
+        <div class="flex-1 h-2 rounded-full bg-[#FCB414]"></div>
+        <div class="flex-1 h-2 rounded-full bg-[#FCB414]"></div>
+        <div class="flex-1 h-2 rounded-full bg-[#D9D9D9]"></div>
+      </div>
     </div>
+
+    <form [formGroup]="form" class="flex flex-col gap-6 w-full flex-1 min-h-0">
+      <h3 class="m-0 w-full font-bold text-xl leading-6 text-[#494949]">Envíos que superan los S/500</h3>
+      <p class="m-0 text-sm leading-[17px] text-[#494949]">
+        Superaste los S/500.00 en envíos. Para finalizar, acepta la regulación y completa tu declaración jurada.
+        <a class="text-blue-700 font-semibold underline cursor-pointer" href="#">Ver detalles.</a>
+      </p>
+
+      <div class="flex flex-col w-full flex-none">
+        <div class="py-1.5 px-2 text-sm font-bold text-[#334155]">Envíos a declarar</div>
+        <div class="overflow-auto w-full max-h-[223.5px]">
+          <table class="w-full border-collapse text-sm text-[#334155]">
+            <thead>
+              <tr class="border-b border-[#E2E8F0] bg-white">
+                <th class="py-2.5 px-3.5 font-semibold text-left text-[14px] leading-[17px] text-[#334155]">Item</th>
+                <th class="py-2.5 px-3.5 font-semibold text-left text-[14px] leading-[17px] text-[#334155]">Contenido</th>
+                <th class="py-2.5 px-3.5 font-semibold text-right text-[14px] leading-[17px] text-[#334155]">Valor</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (s of shipmentsToDeclare; track s.item) {
+                <tr class="border-b border-[#E2E8F0] bg-white">
+                  <td class="py-2.5 px-3.5 text-[14px] leading-[17px]">{{ s.item }}</td>
+                  <td class="py-2.5 px-3.5 text-[14px] leading-[17px]">{{ s.contenido }}</td>
+                  <td class="py-2.5 px-3.5 text-right text-[14px] leading-[17px]">{{ s.valor }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-3 w-full flex-none">
+        <div class="flex flex-row items-center gap-2">
+          <p-checkbox
+            inputId="checkRegulation"
+            name="checkRegulation"
+            [binary]="true"
+            formControlName="checkRegulation"
+            [trueValue]="true"
+            [falseValue]="false"
+          />
+          <label for="checkRegulation" class="text-sm leading-[17px] text-[#334155] cursor-pointer">
+            He leído la regulación de envíos y la declaración jurada.
+          </label>
+        </div>
+        <div class="flex flex-row items-center gap-2">
+          <p-checkbox
+            inputId="checkAffidavit"
+            name="checkAffidavit"
+            [binary]="true"
+            formControlName="checkAffidavit"
+            [trueValue]="true"
+            [falseValue]="false"
+          />
+          <label for="checkAffidavit" class="text-sm leading-[17px] text-[#334155] cursor-pointer">
+            Declaro bajo juramento los productos escritos en el registro de envíos.
+          </label>
+        </div>
+      </div>
+
+      <div class="w-full flex-none mt-auto pt-2">
+        <p-button
+          label="Siguiente"
+          severity="primary"
+          styleClass="w-full h-11 py-2 px-4 bg-[#2546BB] border border-[#3657A2] shadow-[4px_2px_24.6px_rgba(157,164,191,0.21)] rounded-[28px] text-white font-bold text-[15.75px] leading-[19px]"
+          [disabled]="!form?.valid"
+          (click)="next()"
+        />
+      </div>
+    </form>
   </div>
-
-  <label class="flex items-start gap-2 text-xs text-gray-700 mt-1">
-    <input type="checkbox" [(ngModel)]="checkRegulation" class="mt-0.5" />
-    <span>
-      I have read and accept the <span class="text-blue-700 font-semibold underline">shipping regulation</span>
-      and the <span class="text-blue-700 font-semibold underline">affidavit</span>.
-    </span>
-  </label>
-
-  <label class="flex items-start gap-2 text-xs text-gray-700">
-    <input type="checkbox" [(ngModel)]="checkAffidavit" class="mt-0.5" />
-    <span>I declare under oath the products listed in the shipment record.</span>
-  </label>
-
-  <div class="mt-2">
-    <p-button
-      label="Next"
-      styleClass="w-full"
-      severity="primary"
-      [disabled]="!(checkRegulation && checkAffidavit)"
-      (click)="next()"
-    ></p-button>
-  </div>
-
 </div>

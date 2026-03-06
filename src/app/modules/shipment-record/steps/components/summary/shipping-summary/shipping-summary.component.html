@@ -44,23 +44,23 @@
       <div class="flex flex-col gap-3 text-sm">
         <div class="flex justify-between">
           <span class="text-color-main">Tipo de pago</span>
-          <span class="text-color-ultramarine font-medium">Pago en línea</span>
+          <span class="text-color-ultramarine font-medium">{{ tipoPago }}</span>
         </div>
 
         <div class="flex justify-between">
           <span class="text-color-main">Cantidad de envíos</span>
-          <span class="text-color-ultramarine font-medium">10</span>
+          <span class="text-color-ultramarine font-medium">{{ cantidadEnvios }}</span>
         </div>
 
         <div class="flex justify-between">
           <span class="text-color-main">IGV (18%)</span>
-          <span class="text-color-ultramarine font-medium">S/ 7.25</span>
+          <span class="text-color-ultramarine font-medium">{{ igvFormatted }}</span>
         </div>
 
         <div class="flex justify-between pt-2 border-t border-color-gray-sutile">
           <span class="text-color-main font-semibold">Total pago</span>
           <span class="text-color-ultramarine font-bold text-lg">
-            S/ 78.33
+            {{ totalPago }}
           </span>
         </div>
       </div>

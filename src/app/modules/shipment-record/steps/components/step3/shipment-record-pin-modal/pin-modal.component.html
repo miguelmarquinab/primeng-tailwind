@@ -1,16 +1,57 @@
-<form [formGroup]="form">
-  <div class="flex flex-col gap-4 items-center">
-    <span class="font-bold text-base">Ingresa una clave de 4 dígitos</span>
+<form [formGroup]="form" class="flex flex-col gap-8 w-full">
+  @if (!embedded) {
+    <div class="box-border flex flex-col justify-between items-stretch p-8 gap-8 w-[627px] h-[643.5px] bg-white border border-[#E3E9F7] rounded-[26px] shadow-[4px_2px_24.6px_rgba(157,164,191,0.21)]">
+      <div class="flex flex-col gap-6 w-full flex-1 min-h-0">
+        <div class="flex flex-row justify-end items-center gap-6 w-full">
+          <h2 class="m-0 flex-1 font-bold text-2xl leading-[29px] text-[#494949]">Pasos finales</h2>
+          <p-button
+            icon="pi pi-times"
+            severity="secondary"
+            [text]="true"
+            [rounded]="true"
+            ariaLabel="Cerrar"
+            (click)="close()"
+          />
+        </div>
+        <div class="flex flex-row gap-3 w-full">
+          <div class="flex-1 h-2 rounded-full bg-[#FCB414]"></div>
+          <div class="flex-1 h-2 rounded-full bg-[#D9D9D9]"></div>
+          @if (totalSteps === 3) {
+            <div class="flex-1 h-2 rounded-full bg-[#D9D9D9]"></div>
+          }
+        </div>
 
-    <div class="text-center">
-      La necesitas para autorizar el recojo en tienda. Evita usar patrones simples o números consecutivos.
-      <span class="font-bold">Compártela con quien retirará el envío.</span>
+        <div class="flex flex-col items-start gap-6 w-full flex-1 min-h-0">
+          <h3 class="m-0 w-full font-bold text-xl leading-[52px] flex items-center text-[#494949]">Ingresa una clave de 4 dígitos</h3>
+          <p class="m-0 text-sm leading-[17px] text-[#334155] w-full">
+            La necesitas para autorizar el recojo en tienda. Evita usar patrones simples o números consecutivos. <span class="font-semibold">Compártela con quien retirará el envío.</span>
+          </p>
+          <div class="flex justify-center w-full">
+            <p-inputOtp formControlName="pin" />
+          </div>
+          @if (pinError) {
+            <p class="m-0 w-full text-sm leading-[17px] text-center text-[#E8212B]">{{ pinError }}</p>
+          }
+        </div>
+        <div class="w-full flex-none pt-2">
+          <p-button
+            label="Siguiente"
+            severity="primary"
+            styleClass="w-full"
+            (click)="next()"
+          />
+        </div>
+      </div>
     </div>
-
-    <div class="flex justify-center">
+  } @else {
+    <div class="flex flex-col gap-6 w-full">
+      <span class="text-lg font-bold text-[#494949]">Ingresa una clave de 4 dígitos</span>
+      <p class="m-0 text-sm text-[#334155]">La necesitas para autorizar el recojo en tienda. Evita usar patrones simples o números consecutivos. <span class="font-semibold">Compártela con quien retirará el envío.</span></p>
       <p-inputOtp formControlName="pin"></p-inputOtp>
+      @if (pinError) {
+        <p class="m-0 text-sm text-center text-[#E8212B]">{{ pinError }}</p>
+      }
+      <p-button label="Siguiente" severity="primary" styleClass="w-full" (click)="next()" />
     </div>
-
-    <p-button label="Siguiente" severity="primary" styleClass="w-full" (click)="next()"></p-button>
-  </div>
+  }
 </form>

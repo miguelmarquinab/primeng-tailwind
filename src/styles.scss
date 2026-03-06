@@ -22,3 +22,22 @@
   border-radius: 12px !important;
   overflow: hidden;
 }
+
+/* PIN y Declaración jurada: una sola ventana (card interna), sin header ni X del dialog */
+.shipment-step-dialog.p-dialog,
+.shipment-step-dialog .p-dialog {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.shipment-step-dialog .p-dialog-header,
+.shipment-step-dialog .p-dialog-titlebar {
+  display: none !important;
+}
+
+.shipment-step-dialog .p-dialog-content {
+  padding: 0 !important;
+  background: transparent !important;
+  overflow: visible;
+}

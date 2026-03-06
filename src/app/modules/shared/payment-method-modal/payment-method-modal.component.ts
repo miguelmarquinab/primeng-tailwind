@@ -20,6 +20,7 @@ export interface PaymentMethodModalData {
     selectedPaymentMethod?: PaymentMethod;
     paymentAmount?: string;
     error?: PaymentMethodError | null;
+    totalSteps?: 2 | 3;
 }
 
 @Component({
@@ -30,8 +31,8 @@ export interface PaymentMethodModalData {
     standalone: true
 })
 export class PaymentMethodModalComponent implements OnInit {
-    private readonly dynamicDialogRef = inject(DynamicDialogRef);
-    private readonly dynamicDialogConfig = inject(DynamicDialogConfig);
+    private readonly dynamicDialogRef = inject(DynamicDialogRef, { optional: true });
+    private readonly dynamicDialogConfig = inject(DynamicDialogConfig, { optional: true });
     private readonly breakpointService = inject(BreakpointService);
     private readonly router = inject(Router);
 
@@ -39,20 +40,19 @@ export class PaymentMethodModalComponent implements OnInit {
     @Input() paymentAmount = 'S/78.33';
     @Input() error: PaymentMethodError | null = null;
 
-    // ✅ nuevo: modo embebido
     @Input() embedded = false;
 
-    // ✅ nuevo: evento para wizard
+    @Input() totalSteps: 2 | 3 = 3;
+
     @Output() paymentConfirmed = new EventEmitter<{ paymentMethod: PaymentMethod; termsAccepted: boolean }>();
 
-    // ✅ nuevo: evento para “ir a finish” desde wizard
     @Output() goToFinishRequested = new EventEmitter<void>();
 
     termsAccepted = false;
     isMobile = computed(() => this.breakpointService.isMobile());
 
     ngOnInit(): void {
-        const data = this.dynamicDialogConfig.data as PaymentMethodModalData | undefined;
+        const data = this.dynamicDialogConfig?.data as PaymentMethodModalData | undefined;
         if (data) {
             if (data.selectedPaymentMethod) {
                 this.selectedPaymentMethod = data.selectedPaymentMethod;
@@ -63,6 +63,9 @@ export class PaymentMethodModalComponent implements OnInit {
             if (data.error !== undefined) {
                 this.error = data.error;
             }
+            if (data.totalSteps === 2 || data.totalSteps === 3) {
+                this.totalSteps = data.totalSteps;
+            }
         }
     }
 
@@ -71,8 +74,14 @@ export class PaymentMethodModalComponent implements OnInit {
     }
 
     onPay(): void {
-        if (this.termsAccepted && !this.error) {
-            this.dynamicDialogRef.close({
+        if (!this.termsAccepted || this.error) return;
+        if (this.embedded) {
+            this.paymentConfirmed.emit({
+                paymentMethod: this.selectedPaymentMethod,
+                termsAccepted: this.termsAccepted
+            });
+        } else {
+            this.dynamicDialogRef?.close({
                 paymentMethod: this.selectedPaymentMethod,
                 termsAccepted: this.termsAccepted
             });
@@ -84,11 +93,15 @@ export class PaymentMethodModalComponent implements OnInit {
     }
 
     close(): void {
-        this.dynamicDialogRef.close();
+        this.dynamicDialogRef?.close();
     }
 
-    goToFinish() {
-        this.dynamicDialogRef.close();
-        this.router.navigate(['/shipment-record/finish']);
+    goToFinish(): void {
+        if (this.embedded) {
+            this.goToFinishRequested.emit();
+        } else {
+            this.dynamicDialogRef?.close();
+            this.router.navigate(['/shipment-record/finish']);
+        }
     }
 }
