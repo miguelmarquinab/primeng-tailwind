@@ -164,6 +164,16 @@ export class CartSessionStorageService {
         this.setCartData(cartData);
     }
 
+    setAppliedCouponCode(code: string | null): void {
+        const cartData = this.getCartData();
+        cartData.appliedCouponCode = code ?? null;
+        this.setCartData(cartData);
+    }
+
+    getAppliedCouponCode(): string | null {
+        return this.getCartData()?.appliedCouponCode ?? null;
+    }
+
     private ensureItems(items: CartItemDraft[] | null | undefined): CartItemDraft[] {
         if (!items) {
             return [];

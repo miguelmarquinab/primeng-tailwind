@@ -102,10 +102,12 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
         this.cartService.createItem(cartSessionUuid, this.cartItem).subscribe({
             next: (response) => {
                 console.log('Item creado:', response);
-
-                this.cartService.getByUuid(cartSessionUuid).subscribe({
+                const loadCart$ = this.cartSessionService.getAppliedCouponCode()
+                    ? this.cartService.applyCoupon(cartSessionUuid)
+                    : this.cartService.getByUuid(cartSessionUuid);
+                loadCart$.subscribe({
                     next: (response) => {
-                        this.cartSessionService.setItems(response.data?.items);
+                        this.cartSessionService.setItems(response.data?.items ?? []);
                         this.cartSessionService.setPricing(response.data?.pricing ?? {});
                         this.cartService.setStepNumber(3);
                     }

@@ -5,6 +5,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { CartEntityResponse, CartNiubizSessionEntityResponse, CartPayload, CartPresaleLabelEntityResponse, PersonPayload } from '@shipment-record/models/cart.model';
 import { HeadquartersEntityResponse } from '@shipment-record/models/headquarters.model';
 import { CartItemPayload } from '@shipment-record/models/cart-item.model';
+import { CouponService } from '@shipment-record/services/coupon.service';
 
 @Injectable({
     providedIn: 'root'
@@ -12,6 +13,7 @@ import { CartItemPayload } from '@shipment-record/models/cart-item.model';
 export class CartService {
     private readonly baseUrl = environment.shippingRecords.api;
     private readonly http: HttpClient = inject(HttpClient);
+    private readonly couponService = inject(CouponService);
 
     private readonly cartStore = new BehaviorSubject<any>(null);
     public cartStore$ = this.cartStore.asObservable();
@@ -57,6 +59,14 @@ export class CartService {
     getByUuid(sessionUuid: string): Observable<CartEntityResponse> {
         const endpoint = `${this.baseUrl}/v1/cart/${sessionUuid}`;
         return this.http.get<CartEntityResponse>(endpoint);
+    }
+
+    validateCoupon(code: string) {
+        return this.couponService.validateCoupon(code);
+    }
+
+    applyCoupon(sessionUuid: string): Observable<CartEntityResponse> {
+        return this.couponService.applyCoupon(sessionUuid);
     }
 
     updateCart() {

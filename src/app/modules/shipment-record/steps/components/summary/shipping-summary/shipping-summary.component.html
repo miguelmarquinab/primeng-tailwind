@@ -66,13 +66,54 @@
         </div>
       </div>
 
-      <button
-        type="button"
-        class="mt-4 mb-4 w-full flex items-center justify-center gap-2 border border-color-gray-sutile rounded-xl py-3 text-color-main hover:bg-surface-100 transition cursor-pointer"
-      >
-        <i class="pi pi-tag text-color-secondary"></i>
-        <span>Añadir cupón de descuento</span>
-      </button>
+      @if (couponAppliedCode) {
+        <div class="mt-4 mb-2 flex items-center justify-between gap-2 border border-color-gray-sutile rounded-xl px-4 py-3 bg-surface-50">
+          <span class="text-color-main text-sm">
+            <i class="pi pi-tag text-color-secondary mr-2"></i>
+            Cupón aplicado: <strong>{{ couponAppliedCode }}</strong>
+          </span>
+          <button
+            type="button"
+            class="text-color-secondary text-sm hover:underline"
+            (click)="clearAppliedCoupon()"
+          >
+            Quitar
+          </button>
+        </div>
+      } @else if (showCouponForm) {
+        <div class="mt-4 mb-4 flex flex-col gap-2" (click)="$event.stopPropagation()">
+          <label class="text-color-main text-sm font-medium">Código de cupón</label>
+          <div class="flex flex-col sm:flex-row gap-2 min-w-0">
+            <input
+              type="text"
+              pInputText
+              [(ngModel)]="couponCode"
+              placeholder="Ingresa el código"
+              class="w-full min-w-0 flex-1"
+              [disabled]="couponApplying"
+              (keydown.enter)="onCouponEnter($event)"
+              (keydown)="$event.stopPropagation()"
+            />
+            <p-button
+              type="button"
+              label="Aplicar cupón"
+              severity="secondary"
+              styleClass="w-full sm:w-auto shrink-0"
+              [loading]="couponApplying"
+              (onClick)="onApplyCouponClick($event)"
+            />
+          </div>
+        </div>
+      } @else {
+        <button
+          type="button"
+          class="mt-4 mb-4 w-full flex items-center justify-center gap-2 border border-color-gray-sutile rounded-xl py-3 text-color-main hover:bg-surface-100 transition cursor-pointer"
+          (click)="showCouponForm = true"
+        >
+          <i class="pi pi-tag text-color-secondary"></i>
+          <span>Añadir cupón de descuento</span>
+        </button>
+      }
 
       <p-button
         label="Siguiente"

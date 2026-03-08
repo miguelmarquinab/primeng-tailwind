@@ -115,6 +115,11 @@ export interface CartPresaleLabelEntityResponse {
     pdf_base64?: string;
 }
 
+export interface CouponValidateEntityResponse {
+    status?: 'OK' | 'ERROR';
+    message?: string;
+}
+
 export interface CartItemPayload {
     weight?: number;
     shipment_type?: ShipmentType;

@@ -12,6 +12,7 @@ export interface CartSessionStorage {
     header: CartSessionStorageHeader;
     items: CartItemEntityResponse[];
     pricing?: CartPricingEntityResponse;
+    appliedCouponCode?: string | null;
     currentStep?: number;
     cardId?: string;
 }

@@ -16,10 +16,13 @@ import { ShipmentRecordDeclarationAffidavitModalComponent } from '@shipment-reco
 import { CartSessionStorage } from '@shipment-record/models/cart-session-storage.model';
 import { CartItemEntityResponse } from '@shipment-record/models/cart-item.model';
 import { DELIVERY_TYPE } from '@shipment-record/contansts/shipment-record-step.constant';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { FormsModule } from '@angular/forms';
+import { InputTextModule } from 'primeng/inputtext';
 
 @Component({
     selector: 'app-shipping-summary',
-    imports: [Divider, ShippingSummaryStepOriginComponent, ShippingSummaryStepDestinationsComponent, Button],
+    imports: [Divider, ShippingSummaryStepOriginComponent, ShippingSummaryStepDestinationsComponent, Button, FormsModule, InputTextModule],
     templateUrl: './shipping-summary.component.html',
     standalone: true,
     styleUrl: './shipping-summary.component.scss',
@@ -35,6 +38,8 @@ export class ShippingSummaryComponent implements OnInit, OnChanges, OnDestroy {
     private readonly destroy$ = new Subject<void>();
     private readonly cartSessionService = inject(CartSessionStorageService);
     private readonly sessionStorageService = inject(SessionStorageService);
+    private readonly messageService = inject(MessageService);
+    private readonly confirmationService = inject(ConfirmationService);
 
     private cartSubscription: Subscription | null = null;
     private readonly CART_DATA_KEY = 'cartData';
@@ -44,10 +49,16 @@ export class ShippingSummaryComponent implements OnInit, OnChanges, OnDestroy {
 
     cartData!: CartSessionStorage;
 
+    couponCode = '';
+    couponApplying = false;
+    couponAppliedCode: string | null = null;
+    showCouponForm = false;
+
     @Input() stepNumber!: number;
 
     ngOnInit(): void {
         this.cartData = this.cartSessionService.getCartData();
+        this.couponAppliedCode = this.cartSessionService.getAppliedCouponCode();
         this.suscribeToCart();
         this.getLatestCart();
     }
@@ -107,6 +118,7 @@ export class ShippingSummaryComponent implements OnInit, OnChanges, OnDestroy {
                     }
 
                     this.cartSessionService.setItems(response.data?.items ?? []);
+                    this.cartSessionService.setPricing(response.data?.pricing ?? {});
                     this.cartData = this.cartSessionService.getCartData();
                 },
                 error: (error) => {
@@ -128,6 +140,101 @@ export class ShippingSummaryComponent implements OnInit, OnChanges, OnDestroy {
         if (cartId) {
             this.getCartByUuid(cartId);
         }
+    }
+
+    onCouponEnter(event: Event): void {
+        event.preventDefault();
+        event.stopPropagation();
+        this.applyCoupon();
+    }
+
+    onApplyCouponClick(event?: Event): void {
+        event?.preventDefault();
+        event?.stopPropagation();
+        this.applyCoupon();
+    }
+
+    applyCoupon(): void {
+        const code = this.couponCode?.trim();
+        if (!code) {
+            this.messageService.add({ severity: 'warn', summary: 'Cupón', detail: 'Ingresa el código del cupón.' });
+            return;
+        }
+
+        const cartId = this.cartSessionService.getCartId();
+        if (!cartId) {
+            this.messageService.add({ severity: 'error', summary: 'Cupón', detail: 'No hay carrito activo.' });
+            return;
+        }
+
+        this.couponApplying = true;
+        this.cartService
+            .validateCoupon(code)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (validation) => {
+                    if (validation?.status !== 'OK') {
+                        this.couponApplying = false;
+                        this.showInvalidCouponModal();
+                        return;
+                    }
+                    this.cartService
+                        .applyCoupon(cartId)
+                        .pipe(takeUntil(this.destroy$))
+                        .subscribe({
+                            next: (response) => {
+                                this.cartSessionService.setItems(response.data?.items ?? []);
+                                this.cartSessionService.setPricing(response.data?.pricing ?? {});
+                                this.cartSessionService.setAppliedCouponCode(code);
+                                this.cartData = this.cartSessionService.getCartData();
+                                this.couponAppliedCode = code;
+                                this.couponApplying = false;
+                                this.messageService.add({
+                                    severity: 'success',
+                                    summary: 'Cupón aplicado',
+                                    detail: 'Descuento aplicado. Precios y total actualizados.'
+                                });
+                            },
+                            error: () => {
+                                this.couponApplying = false;
+                                this.messageService.add({
+                                    severity: 'error',
+                                    summary: 'Error',
+                                    detail: 'No se pudo aplicar el cupón. Intenta de nuevo.'
+                                });
+                            }
+                        });
+                },
+                error: () => {
+                    this.couponApplying = false;
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: 'Error',
+                        detail: 'No se pudo validar el cupón.'
+                    });
+                }
+            });
+    }
+
+    clearAppliedCoupon(): void {
+        this.cartSessionService.setAppliedCouponCode(null);
+        this.couponAppliedCode = null;
+        this.couponCode = '';
+        this.showCouponForm = false;
+        this.getLatestCart();
+    }
+
+    private showInvalidCouponModal(): void {
+        this.confirmationService.confirm({
+            message: '<span class="font-montserrat">El codigo de cupon ingresado es invalido.</span>',
+            header: 'Cupón inválido',
+            icon: 'pi pi-exclamation-triangle',
+            rejectVisible: false,
+            acceptButtonProps: {
+                label: 'Aceptar',
+                severity: 'primary'
+            }
+        });
     }
 
     ngOnDestroy(): void {

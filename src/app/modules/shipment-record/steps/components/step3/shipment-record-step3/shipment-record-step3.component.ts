@@ -18,14 +18,14 @@ export class ShipmentRecordStep3Component implements OnInit {
 
     private readonly cartService = inject(CartService);
     private readonly cartSessionService = inject(CartSessionStorageService);
-    cartData!: CartSessionStorage;
 
     ref: DynamicDialogRef | null = null;
-    ngOnInit() {
-        // setTimeout(() => {
-            this.cartData = this.cartSessionService.getCartData();
-        // }, 1000);
+
+    get cartData(): CartSessionStorage {
+        return this.cartSessionService.getCartData();
     }
+
+    ngOnInit() {}
     openModal() {
         this.cartService.setStepNumber(2);
 
