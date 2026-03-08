@@ -36,6 +36,9 @@ export interface DestinationEntityResponse {
     province?: string;
     province_code?: string;
     representative_id?: string;
+    office_id?: number;
+    office_name?: string;
+    office_address?: string;
     schedule?: DestinationScheduleEntityResponse;
     ubigeo_code?: string;
     ubigeo_concatenated: string;

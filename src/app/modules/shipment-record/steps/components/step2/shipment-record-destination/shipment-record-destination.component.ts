@@ -191,14 +191,14 @@ export class ShipmentRecordDestinationComponent implements OnInit {
                 address: this.destinationData.searchAddress?.address,
                 reference: this.destinationData.formValues?.references,
                 polygon: this.destinationData.searchAddress?.polygon,
-                office_id: 0,
+                // office_id: 0,
                 delivery_type: this.destinationType
             };
         }
         if (this.destinationType === DELIVERY_TYPE.OFFICE) {
             console.log(this.destinationData);
             destinationPayload = {
-                office_id: this.destinationData.destination.headquarter_id,
+                office_id: this.destinationData.destination.office_id,
                 delivery_type: this.destinationType
             };
         }

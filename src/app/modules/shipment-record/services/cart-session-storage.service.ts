@@ -9,6 +9,7 @@ import {
     CartItemPersonPayload,
     CartItemReturnChargeDetailPayload,
     CartPayload,
+    CartPricingEntityResponse,
     OriginPayload,
     PersonPayload,
     ShipmentType
@@ -71,7 +72,7 @@ export class CartSessionStorageService {
 
     getCartData(): CartSessionStorage {
         let cartData = this.sessionStorage.get(this.CART_KEY) as CartSessionStorage | null;
-        console.log(cartData);
+        // console.log(cartData);
         if (!cartData) {
             this.init();
             cartData = this.sessionStorage.get(this.CART_KEY) as CartSessionStorage | null;
@@ -154,6 +155,12 @@ export class CartSessionStorageService {
     setItems(cartItems: CartItemEntityResponse[] = []) {
         const cartData = this.getCartData();
         cartData.items = cartItems;
+        this.setCartData(cartData);
+    }
+
+    setPricing(pricing: CartPricingEntityResponse) {
+        const cartData = this.getCartData();
+        cartData.pricing = pricing;
         this.setCartData(cartData);
     }
 

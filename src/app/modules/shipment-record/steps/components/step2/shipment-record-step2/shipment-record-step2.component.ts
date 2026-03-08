@@ -106,6 +106,7 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
                 this.cartService.getByUuid(cartSessionUuid).subscribe({
                     next: (response) => {
                         this.cartSessionService.setItems(response.data?.items);
+                        this.cartSessionService.setPricing(response.data?.pricing ?? {});
                         this.cartService.setStepNumber(3);
                     }
                 });
@@ -146,7 +147,8 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
             document_type: event.document_type ?? undefined,
             document_number: event.document_number ?? undefined,
             first_names: event.first_names ?? undefined,
-            last_name: event.last_name ?? undefined
+            last_name: event.last_name ?? undefined,
+            phone: event.phone ?? undefined
         };
     }
 

@@ -53,6 +53,7 @@ export interface CartItemWhoPersonReceivesPayload {
     document_type?: string;
     first_names?: string;
     last_name?: string;
+    phone?: string;
 }
 
 export interface CartItemWhatSendPayload {
@@ -71,8 +72,6 @@ export interface CartItemServicePayload {
     delivery_type?: DELIVERY_TYPE;
 }
 
-
-
 export interface CartItemEntityResponse {
     who_receive?: CartItemWhoReceiveEntityResponse;
     what_send?: CartItemWhatSendEntityResponse;
@@ -88,6 +87,38 @@ export interface CartItemDestinationEntityResponse {
     reference?: null;
     polygon?: string;
     office_id?: number;
+    office?: CartItemDestinationOfficeEntityResponse;
+    ubigeo?: CartItemDestinationUbigeoEntityResponse;
+}
+export interface CartItemDestinationUbigeoEntityResponse {
+    ubigeo_id?: string;
+    department_code?: string;
+    province_code?: string;
+    district_code?: string;
+    name?: string;
+    representative_id?: string;
+    ubigeo_concatenated?: string;
+    ubigeo_code?: string;
+    headquarter_code?: string;
+    headquarter_id?: string;
+    cargo_flag?: string;
+    delivery_type?: string;
+    destination_code?: string;
+    department?: string;
+    province?: string;
+    district?: string;
+    headquarter_name?: string;
+    headquarter_address?: string;
+    office_type?: null;
+    latitude?: null;
+    longitude?: null;
+    receive_shipment?: boolean;
+    pickup_shipment?: boolean;
+    schedule?: null;
+    is_agent?: boolean;
+    department_latitude?: string;
+    department_longitude?: string;
+    is_open?: boolean;
 }
 
 export interface CartItemPricingEntityResponse {
@@ -98,6 +129,22 @@ export interface CartItemServiceEntityResponse {
     return_charge?: boolean;
     delivery_type?: string;
 }
+export interface CartItemDestinationOfficeEntityResponse {
+    office_id?: string;
+    nombres?: string;
+    tipo?: string;
+    ubigeo?: string;
+    partner?: string;
+    direccion?: string;
+    lng?: string;
+    lat?: string;
+    department?: string;
+    province?: string;
+    district?: string;
+    office_name?: string;
+    office_address?: string;
+}
+
 
 export interface CartItemWhatSendEntityResponse {
     weight?: number;
@@ -108,6 +155,14 @@ export interface CartItemWhatSendEntityResponse {
     width?: number;
     length?: number;
     article_id?: number;
+    article_category?: CartItemArticleCategoryEntityResponse;
+}
+
+export interface CartItemArticleCategoryEntityResponse {
+    id?: number;
+    code?: string;
+    name?: string;
+    description?: string;
 }
 
 export interface CartItemWhoReceiveEntityResponse {

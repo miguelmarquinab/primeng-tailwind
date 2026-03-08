@@ -71,6 +71,9 @@ export class ShipmentRecordLayoutComponent implements OnInit, OnDestroy {
         if (this.stepNumber === 2) {
             this.stepLabel = 'Datos de envío';
         }
+        if (this.stepNumber === 3) {
+            this.stepLabel = 'Confirmación y pago';
+        }
     }
 
     getToken() {
@@ -110,6 +113,7 @@ export class ShipmentRecordLayoutComponent implements OnInit, OnDestroy {
     }
 
     subscribeToCart() {
+        console.log('subscribeToCartMethod');
         this.cartService.cartStore$.pipe(takeUntil(this.destroy$)).subscribe((cart) => {
             console.log('subscribeToCart', cart);
             if (cart?.stepNumber) {

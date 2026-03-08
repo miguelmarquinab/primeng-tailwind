@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from '@env/environment';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { CartEntityResponse, CartPayload, PersonPayload } from '@shipment-record/models/cart.model';
+import { CartEntityResponse, CartNiubizSessionEntityResponse, CartPayload, CartPresaleLabelEntityResponse, PersonPayload } from '@shipment-record/models/cart.model';
 import { HeadquartersEntityResponse } from '@shipment-record/models/headquarters.model';
 import { CartItemPayload } from '@shipment-record/models/cart-item.model';
 
@@ -88,15 +88,35 @@ export class CartService {
         return this.http.patch<any>(endpoint, payload);
     }
 
+    cloneItem(sessionUuid: string, itemUuid: string): Observable<any> {
+        const endpoint = `${this.baseUrl}/v1/cart/${sessionUuid}/item/${itemUuid}/clone`;
+        return this.http.post<any>(endpoint,{});
+    }
     deleteItem(sessionUuid: string, itemUuid: string): Observable<any> {
         const endpoint = `${this.baseUrl}/v1/cart/${sessionUuid}/item/${itemUuid}`;
         return this.http.delete<any>(endpoint);
     }
 
-    createPin(sessionUuid: string,pin:string): Observable<any> {
+    createPin(sessionUuid: string, pin: string): Observable<any> {
         const endpoint = `${this.baseUrl}/v1/shipping-records/cart/${sessionUuid}/pin`;
         return this.http.put<any>(endpoint, {
             pin
         });
+    }
+
+    createPaymentNiubizSession(sessionUuid: string): Observable<CartNiubizSessionEntityResponse> {
+        const endpoint = `${this.baseUrl}/v1/cart/${sessionUuid}/payment/niubiz/session`;
+        return this.http.post<CartNiubizSessionEntityResponse>(endpoint, {});
+    }
+
+    createPESession(sessionUuid: string): Observable<any> {
+        const endpoint = `${this.baseUrl}/v1/cart/${sessionUuid}/payment/pagoefectivo`;
+        return this.http.post<any>(endpoint, {
+            email: 'correo@gmail.com'
+        });
+    }
+    downloadLabelPdf(sessionUuid: string): Observable<CartPresaleLabelEntityResponse> {
+        const endpoint = `${this.baseUrl}/v1/shipping-records/cart/${sessionUuid}/label`;
+        return this.http.get<CartPresaleLabelEntityResponse>(endpoint);
     }
 }

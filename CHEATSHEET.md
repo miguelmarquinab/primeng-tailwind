@@ -70,7 +70,7 @@ ng g c modules/[module-name]/components/[component-name] --skip-tests
 ng g c modules/shipment-record/steps/components/step2/my-new-component --skip-tests
 
 # Ejemplo: Componente en shared
-ng g c modules/shared/components/buttons/my-button --skip-tests
+ng g c modules/shared/components/shipping-summary-buttons/my-button --skip-tests
 
 # Componente con test
 ng g c modules/shared/components/[name]

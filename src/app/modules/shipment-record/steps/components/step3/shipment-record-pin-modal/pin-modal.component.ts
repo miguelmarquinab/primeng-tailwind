@@ -1,10 +1,9 @@
-import { Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { InputOtp } from 'primeng/inputotp';
 import { Button } from 'primeng/button';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CartService } from '@shipment-record/services/cart.service';
-import { Subject, takeUntil } from 'rxjs';
 
 @Component({
     selector: 'app-markup-shipment-record-pin-modal',
@@ -14,41 +13,29 @@ import { Subject, takeUntil } from 'rxjs';
     providers: [],
     standalone: true
 })
-export class PinModal implements OnInit, OnDestroy {
+export class PinModal implements OnInit {
     form!: FormGroup;
     formBuilder = inject(FormBuilder);
     cartSessionUuid = '';
-    private readonly dynamicDialogRef = inject(DynamicDialogRef, { optional: true });
-    private readonly dynamicDialogConfig = inject(DynamicDialogConfig, { optional: true });
-    private readonly destroy$ = new Subject<void>();
+    private readonly dynamicDialogRef = inject(DynamicDialogRef);
+    private readonly dynamicDialogConfig = inject(DynamicDialogConfig);
 
     private readonly cartService = inject(CartService);
-
+    // ✅ nuevo: si el componente está dentro del wizard
     @Input() embedded = false;
 
+    // ✅ nuevo: el wizard escucha este evento
     @Output() pinSubmitted = new EventEmitter<string>();
-
-    /** 2 pasos (PIN + pago) o 3 pasos (PIN + declaración jurada + pago). Solo cuando no está embebido. */
-    totalSteps: 2 | 3 = 2;
 
     ngOnInit(): void {
         this.initPinForm();
-        const data = this.dynamicDialogConfig?.data ?? {};
-        this.cartSessionUuid = data.cartUuid ?? '';
-        this.totalSteps = data.hasDeclaracionPreview === true ? 3 : 2;
-        this.form.get('pin')?.valueChanges?.pipe(takeUntil(this.destroy$)).subscribe(() => {
-            this.pinError = null;
-        });
-    }
 
-    ngOnDestroy(): void {
-        this.destroy$.next();
-        this.destroy$.complete();
+        this.cartSessionUuid = this.dynamicDialogConfig.data?.cartUuid ?? {};
     }
 
     initPinForm() {
         this.form = this.formBuilder.group({
-            pin: ['', [Validators.required]]
+            pin: ['', [Validators.required,Validators.minLength(4), Validators.maxLength(4)]]
         });
     }
 
@@ -68,21 +55,9 @@ export class PinModal implements OnInit, OnDestroy {
 
             this.cartService.createPin(this.cartSessionUuid, pinValue).subscribe({
                 next: (response) => {
-                    console.log('PIN creado exitosamente:', response);
-                    this.pinError = null;
-                    this.dynamicDialogRef?.close(pinValue);
-                },
-                error: () => {
-                    this.pinError = 'Clave inválida: No uses número consecutivos (1234) o patrones simples (1111)';
+                    this.dynamicDialogRef.close(pinValue);
                 }
             });
         }
     }
-
-    close(): void {
-        this.dynamicDialogRef?.close();
-    }
-
-    /** Mensaje de error al validar PIN (API o cliente). */
-    pinError: string | null = null;
 }

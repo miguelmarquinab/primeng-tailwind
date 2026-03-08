@@ -1,6 +1,9 @@
 @if (stepNumber !== 3) {
   <div class="flex flex-col h-full">
-    <div class="hidden lg:block text-center text-lg text-color-ultramarine font-bold">Resumen de envío</div>
+    <div class="hidden lg:block text-center text-lg text-color-ultramarine font-bold">
+      Resumen de envío
+    </div>
+
     <div class="hidden lg:block">
       <p-divider />
     </div>
@@ -15,28 +18,26 @@
 
         <app-shipping-summary-step-destinations>
         </app-shipping-summary-step-destinations>
-
       </div>
 
       <div class="flex flex-col border border-color-gray-sutile bg-surface-100 rounded-xl p-4 gap-2 mt-auto">
         <div class="flex justify-between">
           <div class="text-color-main">Cantidad de paquetes</div>
-          <div class="text-color-main">0</div>
+          <div class="text-color-main">{{ cantidadEnvios }}</div>
         </div>
+
         <div class="flex justify-between">
           <div class="text-color-main">Subtotal</div>
-          <div class="text-color-secondary font-bold">S/. 00.00</div>
+          <div class="text-color-secondary font-bold">{{ totalPago }}</div>
         </div>
       </div>
     </div>
   </div>
 }
+
 @if (stepNumber === 3) {
   <div class="flex flex-col h-full gap-6">
-
-    <!-- Card Total -->
     <div class="border border-secondary-sutile bg-surface-50 rounded-2xl p-6 shadow-sm">
-
       <div class="text-lg font-bold text-color-ultramarine mb-4">
         Total
       </div>
@@ -65,7 +66,6 @@
         </div>
       </div>
 
-      <!-- Cupón -->
       <button
         type="button"
         class="mt-4 mb-4 w-full flex items-center justify-center gap-2 border border-color-gray-sutile rounded-xl py-3 text-color-main hover:bg-surface-100 transition cursor-pointer"
@@ -74,9 +74,26 @@
         <span>Añadir cupón de descuento</span>
       </button>
 
-      <p-button label="Siguiente" severity="primary" styleClass="w-full" (click)="openPinModal()"/>
-      <p-button (onClick)="openPaymentMethodModal()" label="Abrir modal metodo de pago" severity="primary" styleClass="w-full my-3" />
-      <p-button (onClick)="openRegistrationSuccessModal()" label="Abrir modal registración exitosa" severity="primary" styleClass="w-full" />
+      <p-button
+        label="Siguiente"
+        severity="primary"
+        styleClass="w-full"
+        (click)="nextStep()"
+      />
+
+<!--      <p-button-->
+<!--        (onClick)="openPaymentMethodModal()"-->
+<!--        label="Abrir modal metodo de pago"-->
+<!--        severity="primary"-->
+<!--        styleClass="w-full my-3"-->
+<!--      />-->
+
+<!--      <p-button-->
+<!--        (onClick)="openRegistrationSuccessModal()"-->
+<!--        label="Abrir modal registración exitosa"-->
+<!--        severity="primary"-->
+<!--        styleClass="w-full"-->
+<!--      />-->
     </div>
   </div>
 }

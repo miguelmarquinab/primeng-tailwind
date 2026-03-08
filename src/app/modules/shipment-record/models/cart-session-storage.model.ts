@@ -1,4 +1,4 @@
-import { CartEntityDataResponse, CartItemDraft, OriginPayload, PersonPayload } from '@shipment-record/models/cart.model';
+import { CartEntityDataResponse, CartItemDraft, CartPricingEntityResponse, OriginPayload, PersonPayload } from '@shipment-record/models/cart.model';
 import { CartItemEntityResponse } from '@shipment-record/models/cart-item.model';
 
 export interface CartSessionStorageHeader {
@@ -11,6 +11,7 @@ export interface CartSessionStorageHeader {
 export interface CartSessionStorage {
     header: CartSessionStorageHeader;
     items: CartItemEntityResponse[];
+    pricing?: CartPricingEntityResponse;
     currentStep?: number;
     cardId?: string;
 }

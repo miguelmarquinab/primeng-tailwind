@@ -1,14 +1,14 @@
 <div
   class="p-4 flex flex-col gap-3 border bg-surface-50 border-secondary-sutile rounded-xl w-full max-h-[calc(100vh-220px)]">
   <div class="flex flex-col gap-3 flex-1 overflow-y-auto">
-    @if(cartData){
+    @if (cartData) {
       @for (item of cartData.items; track item.uuid; let i = $index) {
-        <app-shipment-list [index]="i + 1"
-                           [city]="item.destination?.address??''"
-                           [customer]="`${item.who_receive?.first_names} ${item.who_receive?.last_name}`"
-                           [description]="item.what_send?.article_id  + ''"
-                           [address]="item.destination?.address ?? ''"
-                           [total]="item.pricing?.amount ?? 0" />
+        <app-shipment-card
+          [index]="i + 1"
+          [cartUuid]="this.cartData.cardId??''"
+          [cartItem]="item"
+          [cartItemUuid]="item.uuid??''"
+        />
       }
 
     }
