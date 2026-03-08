@@ -196,7 +196,7 @@ export class ShippingSummaryComponent implements OnInit, OnChanges, OnDestroy {
                                 this.messageService.add({
                                     severity: 'success',
                                     summary: 'Cupón aplicado',
-                                    detail: 'Descuento aplicado. Precios y total actualizados.'
+                                    detail: 'Descuento aplicado.'
                                 });
                             },
                             error: () => {
