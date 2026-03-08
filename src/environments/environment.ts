@@ -2,8 +2,8 @@ export const environment = {
     production: false,
     environment: 'localhost',
     shippingRecords: {
-        api: 'http://localhost:8000',
-         // api: 'https://registrodeenvios-dev.olvaexpress.pe',
+        //api: 'http://localhost:8000',
+        api: 'https://registrodeenvios-dev.olvaexpress.pe',
         public: {
             config: {
                 grant_type: 'client_credentials',

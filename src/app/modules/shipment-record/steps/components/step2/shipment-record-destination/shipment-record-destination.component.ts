@@ -75,15 +75,16 @@ export class ShipmentRecordDestinationComponent implements OnInit {
     }
 
     loadDestinations() {
+        const ubigeoCode = this.cartData.header.whoPayDetail?.ubigeo_code;
         const storeQuery: DestinationCollectionQuery = {
             mode: DestinationCollectionMode.STORE,
-            ubigeo_code: this.cartData.header.whoPayDetail.ubigeo_code,
+            ubigeo_code: ubigeoCode,
             modality: DestinationCollectionModality.DESTINATION
         };
 
         const homeQuery: DestinationCollectionQuery = {
             mode: DestinationCollectionMode.HOME,
-            ubigeo_code: this.cartData.header.whoPayDetail.ubigeo_code,
+            ubigeo_code: ubigeoCode,
             modality: DestinationCollectionModality.DESTINATION
         };
         forkJoin([this.destinationsService.getAll(storeQuery), this.destinationsService.getAll(homeQuery)]).subscribe({

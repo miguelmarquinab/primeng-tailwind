@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { SessionStorageService } from '@shared/services/storage/session-storage.service';
-import { CartSessionStorage } from '@shipment-record/models/cart-session-storage.model';
+import { CartSessionStorage, WhoPayDetail } from '@shipment-record/models/cart-session-storage.model';
 import {
     CartItemAddressPayload,
     CartItemDestinationPayload,
@@ -50,7 +50,7 @@ export class CartSessionStorageService {
         this.setCartData(cartData);
     }
 
-    setWhoPay(whoPay: string, detail: any) {
+    setWhoPay(whoPay: string, detail: WhoPayDetail | null) {
         const cartData = this.getCartData();
         cartData.header.whoPay = whoPay;
         cartData.header.whoPayDetail = detail;

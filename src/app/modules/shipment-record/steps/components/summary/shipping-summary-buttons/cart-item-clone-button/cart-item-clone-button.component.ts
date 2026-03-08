@@ -20,8 +20,8 @@ export class CartItemCloneButtonComponent {
     cloneItem(event: any) {
         this.confirmationService.confirm({
             target: event.target as EventTarget,
-            message: '<span class="font-montserrat">¿Deseas colnar el envío?</span>',
-            header: '¿Quieres colnar el envío?',
+            message: '<span class="font-montserrat">¿Deseas clonar el envío?</span>',
+            header: '¿Quieres clonar el envío?',
             icon: 'pi pi-exclamation-triangle',
 
             rejectButtonProps: {
