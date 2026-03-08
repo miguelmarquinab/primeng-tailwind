@@ -6,8 +6,7 @@ import { CartEntityResponse, CouponValidateEntityResponse } from '@shipment-reco
 import { CouponApiMockService } from '@shipment-record/services/coupon-api.mock.service';
 
 /**
- * JZ: Real coupon API service (HU 7.1).
- * Real endpoint calls are commented until backend is available; currently delegates to mock.
+ * Coupon API service for shipment record module; handles coupon validation and application.
  */
 @Injectable({
     providedIn: 'root'
@@ -18,7 +17,7 @@ export class CouponService {
     private readonly baseUrl = environment.shippingRecords.api;
 
     /**
-     * JZ: Validate coupon (validity and restrictions).
+     * Validate coupon (validity and restrictions).
      * When endpoint is available: uncomment real call and remove mock delegation.
      */
     validateCoupon(code: string): Observable<CouponValidateEntityResponse> {
@@ -31,7 +30,7 @@ export class CouponService {
     }
 
     /**
-     * JZ: Apply coupon to cart; returns cart with updated prices.
+     * Apply coupon to cart; returns cart with updated prices.
      * When endpoint is available: uncomment real call and remove mock delegation.
      */
     applyCoupon(sessionUuid: string, code?: string): Observable<CartEntityResponse> {
