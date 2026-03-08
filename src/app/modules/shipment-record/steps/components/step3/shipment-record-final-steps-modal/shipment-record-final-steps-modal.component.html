@@ -44,7 +44,7 @@
 
       @if (currentStep === 'AFFIDAVIT') {
         <app-shipment-record-declaration-affidavit-modal
-
+          [shipmentsToDeclare]="cartItemsForAffidavit"
           (accepted)="onAffidavitAccepted($event)"
         >
         </app-shipment-record-declaration-affidavit-modal>

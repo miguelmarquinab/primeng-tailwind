@@ -7,6 +7,7 @@ import { SessionStorageService } from '@shared/services/storage/session-storage.
 import { PinModal } from '../shipment-record-pin-modal/pin-modal.component';
 import { PaymentMethodModalComponent } from '@shared/payment-method-modal/payment-method-modal.component';
 import { ShipmentRecordDeclarationAffidavitModalComponent } from '../shipment-record-declaration-affidavit-modal/shipment-record-declaration-affidavit-modal.component';
+import { CartItemEntityResponse } from '@shipment-record/models/cart-item.model';
 
 type FinalStep = 'PIN' | 'AFFIDAVIT' | 'PAYMENT';
 
@@ -30,13 +31,15 @@ export class ShipmentRecordFinalStepsModalComponent implements OnInit {
     private readonly router = inject(Router);
     private readonly CART_DATA_KEY = 'cartData';
 
-    private readonly FORCE_AFFIDAVIT = true;
+    private readonly FORCE_AFFIDAVIT = false;
 
     currentStep: FinalStep = 'PIN';
     totalSteps: 2 | 3 = 2;
 
     pinValue: string | null = null;
     shipmentsToDeclare: ShipmentToDeclare[] = [];
+    /** Cart items to pass to declaration modal when total >= 500. */
+    cartItemsForAffidavit: CartItemEntityResponse[] = [];
 
     ngOnInit(): void {
         const cartData = this.getCartData();
@@ -54,7 +57,8 @@ export class ShipmentRecordFinalStepsModalComponent implements OnInit {
         console.log('cartData:', cartData);
         console.log('items:', cartData?.items);
 
-        this.shipmentsToDeclare = hasAffidavit ? (shipments.length ? shipments : [{ item: 1, contenido: 'Celular', valor: 'S/600.00' }]) : [];
+        this.shipmentsToDeclare = hasAffidavit ? shipments : [];
+        this.cartItemsForAffidavit = hasAffidavit ? (cartData?.items ?? []) : [];
 
         this.totalSteps = hasAffidavit ? 3 : 2;
         this.currentStep = hasAffidavit ? 'AFFIDAVIT' : 'PAYMENT';
@@ -84,12 +88,7 @@ export class ShipmentRecordFinalStepsModalComponent implements OnInit {
     }
 
     private hasDeclarationAffidavit(cartData: any): boolean {
-        const items = cartData?.items ?? [];
-
-        return items.some((item: any) => {
-            const declared = Number(item?.declared_value ?? 0) || Number(item?.what_send?.declared_value ?? 0);
-            return declared >= 500;
-        });
+        return this.getCartTotalNumber(cartData) >= 500;
     }
 
     private getCartTotalNumber(cartData: any): number {
@@ -108,21 +107,17 @@ export class ShipmentRecordFinalStepsModalComponent implements OnInit {
     private buildShipmentsToDeclare(cartData: any): ShipmentToDeclare[] {
         const items = cartData?.items ?? [];
 
-        return items
-            .map((item: any, idx: number): ShipmentToDeclare => {
-                const declared = Number(item?.declared_value ?? 0) || Number(item?.what_send?.declared_value ?? 0);
-                const articleId = item?.article_id ?? item?.what_send?.article_id;
+        return items.map((item: any, idx: number): ShipmentToDeclare => {
+            const amount = Number(item?.pricing?.amount ?? item?.amount ?? 0);
+            const declared = Number(item?.declared_value ?? 0) || Number(item?.what_send?.declared_value ?? 0);
+            const articleId = item?.article_id ?? item?.what_send?.article_id;
 
-                return {
-                    item: idx + 1,
-                    contenido: articleId ? `Artículo ${articleId}` : `Envío ${idx + 1}`,
-                    valor: `S/${declared.toFixed(2)}`
-                };
-            })
-            .filter((row: ShipmentToDeclare) => {
-                const num = Number(String(row.valor).replace('S/', ''));
-                return num >= 500;
-            });
+            return {
+                item: idx + 1,
+                contenido: articleId ? `Artículo ${articleId}` : `Envío ${idx + 1}`,
+                valor: `S/${(amount || declared).toFixed(2)}`
+            };
+        });
     }
 
     get currentStepIndex(): 1 | 2 | 3 {

@@ -101,8 +101,12 @@ export class ShippingSummaryComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     getCartByUuid(uuid: string): void {
-        this.cartService
-            .getByUuid(uuid)
+        const hasCouponApplied = !!this.cartSessionService.getAppliedCouponCode();
+        const loadCart$ = hasCouponApplied
+            ? this.cartService.applyCoupon(uuid)
+            : this.cartService.getByUuid(uuid);
+
+        loadCart$
             .pipe(shareReplay(1), takeUntil(this.destroy$))
             .subscribe({
                 next: (response) => {
@@ -330,12 +334,6 @@ export class ShippingSummaryComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     private hasDeclaracionJurada(cartData: any): boolean {
-        const items = cartData?.items ?? [];
-
-        if (items.length > 0) {
-            return items.some((item: any) => this.getItemDeclaredValue(item) >= 500);
-        }
-
         return this.getCartTotalNumber(cartData) >= 500;
     }
 
@@ -361,23 +359,7 @@ export class ShippingSummaryComponent implements OnInit, OnChanges, OnDestroy {
 
     private buildShipmentsToDeclare(cartData: CartEntityDataResponse): CartItemEntityResponse[] {
         const items = cartData?.items ?? [];
-
-        return (
-            items
-                // .map((item: any, idx: number) => {
-                //     const declaredValue = this.getItemDeclaredValue(item);
-                //
-                //     return {
-                //         item: idx + 1,
-                //         contenido: this.getItemContenido(item, idx),
-                //         valor: `S/${declaredValue.toFixed(2)}`
-                //     };
-                // })
-                .filter((item: CartItemEntityResponse) => {
-                    const numericValue = Number(String(item.what_send?.declared_value));
-                    return numericValue > 500;
-                })
-        );
+        return items;
     }
 
     private getPaymentAmount(): number {

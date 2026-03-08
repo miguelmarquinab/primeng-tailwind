@@ -54,16 +54,16 @@
             </thead>
 
             <tbody>
-              @for (s of shipmentsToDeclare; track s.uuid; let i = $index) {
+              @for (s of shipmentsToDeclare; track s.uuid ?? $index; let i = $index) {
                 <tr class="border-b border-gray-50">
                   <td class="py-2.5 px-3.5 text-[14px] leading-[17px]">
                     {{ i + 1 }}
                   </td>
                   <td class="py-2.5 px-3.5 text-[14px] leading-[17px]">
-                    {{ s.what_send?.article_category?.description }}
+                    {{ getItemContenido(s, i) }}
                   </td>
                   <td class="py-2.5 px-3.5 text-right text-[14px] leading-[17px]">
-                    {{ s.what_send?.declared_value }}
+                    {{ getItemValor(s) }}
                   </td>
                 </tr>
               }

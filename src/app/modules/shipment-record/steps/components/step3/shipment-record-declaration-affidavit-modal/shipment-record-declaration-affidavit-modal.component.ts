@@ -31,10 +31,24 @@ export class ShipmentRecordDeclarationAffidavitModalComponent implements OnInit 
 
     ngOnInit(): void {
         const data = this.dynamicDialogConfig?.data;
-        console.log('Data recibida en el modal:', data);
-        if (data?.shipmentsToDeclare?.length) {
+        if (data && Array.isArray(data.shipmentsToDeclare)) {
             this.shipmentsToDeclare = data.shipmentsToDeclare;
         }
+    }
+
+    /** Contenido to show for table (description or fallback). */
+    getItemContenido(s: CartItemEntityResponse, index: number): string {
+        const desc = s.what_send?.article_category?.description ?? s.what_send?.article_category?.name;
+        if (desc) return desc;
+        const articleId = s.what_send?.article_id;
+        if (articleId != null) return `Artículo ${articleId}`;
+        return `Envío ${index + 1}`;
+    }
+
+    /** Formatted declared value. */
+    getItemValor(s: CartItemEntityResponse): string {
+        const val = Number(s.what_send?.declared_value ?? 0);
+        return `S/ ${val.toFixed(2)}`;
     }
 
     next(): void {
