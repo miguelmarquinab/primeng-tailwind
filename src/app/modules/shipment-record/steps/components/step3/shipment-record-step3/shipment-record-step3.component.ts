@@ -1,93 +1,59 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Button } from 'primeng/button';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { PinModal } from '@shipment-record/steps/components/step3/shipment-record-pin-modal/pin-modal.component';
-import { ShipmentListComponent} from '@shipment-record/steps/components/step3/shipment-list/shipment-list.component';
+import { ShipmentCardComponent } from '@shipment-record/steps/components/step3/shipment-list/shipment-card.component';
 import { CartService } from '@shipment-record/services/cart.service';
+import { CartSessionStorageService } from '@shipment-record/services/cart-session-storage.service';
+import { CartSessionStorage } from '@shipment-record/models/cart-session-storage.model';
 
 @Component({
     selector: 'app-shipment-record-step3',
-    imports: [Button, ShipmentListComponent],
+    imports: [Button, ShipmentCardComponent],
     templateUrl: './shipment-record-step3.component.html',
     styleUrl: './shipment-record-step3.component.scss',
     providers: [DialogService]
 })
-export class ShipmentRecordStep3Component {
+export class ShipmentRecordStep3Component implements OnInit {
     dialog = inject(DialogService);
 
     private readonly cartService = inject(CartService);
-
-    shipments = [
-        {
-            id: 1,
-            city: 'Chiclayo',
-            customer: 'Angel Esquen',
-            description: 'Ropa y accesorios',
-            address: 'Av. Comandante Espinar',
-            total: 17.5
-        },
-        {
-            id: 2,
-            city: 'Chiclayo',
-            customer: 'Angel Esquen',
-            description: 'Ropa y accesorios',
-            address: 'Av. Comandante Espinar',
-            total: 17.5
-        },
-        {
-            id: 3,
-            city: 'Chiclayo',
-            customer: 'Angel Esquen',
-            description: 'Ropa y accesorios',
-            address: 'Av. Comandante Espinar',
-            total: 17.5
-        },
-        {
-            id: 4,
-            city: 'Chiclayo',
-            customer: 'Angel Esquen',
-            description: 'Ropa y accesorios',
-            address: 'Av. Comandante Espinar',
-            total: 17.5
-        },
-        {
-            id: 5,
-            city: 'Chiclayo',
-            customer: 'Angel Esquen',
-            description: 'Ropa y accesorios',
-            address: 'Av. Comandante Espinar',
-            total: 17.5
-        },
-        {
-            id: 6,
-            city: 'Chiclayo',
-            customer: 'Angel Esquen',
-            description: 'Ropa y accesorios',
-            address: 'Av. Comandante Espinar',
-            total: 17.5
-        },
-        {
-            id: 7,
-            city: 'Chiclayo',
-            customer: 'Angel Esquen',
-            description: 'Ropa y accesorios',
-            address: 'Av. Comandante Espinar',
-            total: 17.5
-        },
-        {
-            id: 8,
-            city: 'Chiclayo',
-            customer: 'Angel Esquen',
-            description: 'Ropa y accesorios',
-            address: 'Av. Comandante Espinar',
-            total: 17.5
-        }
-    ];
+    private readonly cartSessionService = inject(CartSessionStorageService);
+    cartData!: CartSessionStorage;
 
     ref: DynamicDialogRef | null = null;
+
+    ngOnInit() {
+        // setTimeout(() => {
+        this.cartData = this.cartSessionService.getCartData();
+        // }, 1000);
+    }
+
+    loadCartData(): void {
+        this.cartData = this.cartSessionService.getCartData();
+    }
+
+    refreshItems(event: any): void {
+        console.log('refreshItems called', event);
+        const cartUuid = this.cartSessionService.getCartId() ?? '';
+        this.cartService.getByUuid(cartUuid).subscribe({
+            next: (response) => {
+                this.cartSessionService.setItems(response.data?.items ?? []);
+                this.cartData = this.cartSessionService.getCartData();
+                this.loadCartData();
+                this.cartService.updateCart();
+            }
+        });
+    }
+
+    // ✅ nuevo
+    editShipment(itemUuid: string): void {
+        console.log('Editar envío:', itemUuid);
+        this.cartSessionService.setCurrentItemUuid(itemUuid);
+        this.cartService.setStepNumber(2);
+    }
+
     openModal() {
-
-
+        this.cartSessionService.setCurrentItemUuid('');
         this.cartService.setStepNumber(2);
 
         // this.ref = this.dialog.open(MarkupModal, {

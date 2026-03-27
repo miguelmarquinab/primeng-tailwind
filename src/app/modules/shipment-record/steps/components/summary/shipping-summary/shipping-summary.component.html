@@ -1,6 +1,9 @@
 @if (stepNumber !== 3) {
   <div class="flex flex-col h-full">
-    <div class="hidden lg:block text-center text-lg text-color-ultramarine font-bold">Resumen de envío</div>
+    <div class="hidden lg:block text-center text-lg text-color-ultramarine font-bold">
+      Resumen de envío
+    </div>
+
     <div class="hidden lg:block">
       <p-divider />
     </div>
@@ -13,30 +16,30 @@
         >
         </app-shipping-summary-step-origin>
 
-        <app-shipping-summary-step-destinations>
+        <app-shipping-summary-step-destinations
+          [items] = "cartData?.items ?? []">
+          (itemsChanged)="handleSummaryItemsChanged()"
         </app-shipping-summary-step-destinations>
-
       </div>
 
       <div class="flex flex-col border border-color-gray-sutile bg-surface-100 rounded-xl p-4 gap-2 mt-auto">
         <div class="flex justify-between">
           <div class="text-color-main">Cantidad de paquetes</div>
-          <div class="text-color-main">0</div>
+          <div class="text-color-main">{{ cantidadEnvios }}</div>
         </div>
+
         <div class="flex justify-between">
           <div class="text-color-main">Subtotal</div>
-          <div class="text-color-secondary font-bold">S/. 00.00</div>
+          <div class="text-color-secondary font-bold">{{ totalPago }}</div>
         </div>
       </div>
     </div>
   </div>
 }
+
 @if (stepNumber === 3) {
   <div class="flex flex-col h-full gap-6">
-
-    <!-- Card Total -->
     <div class="border border-secondary-sutile bg-surface-50 rounded-2xl p-6 shadow-sm">
-
       <div class="text-lg font-bold text-color-ultramarine mb-4">
         Total
       </div>
@@ -44,39 +47,88 @@
       <div class="flex flex-col gap-3 text-sm">
         <div class="flex justify-between">
           <span class="text-color-main">Tipo de pago</span>
-          <span class="text-color-ultramarine font-medium">Pago en línea</span>
+<!--          <span class="text-color-ultramarine font-medium">{{ cartData?.header?.whoPayDetail?.payment_modalities[0] |json }}</span>-->
+          <span class="text-color-ultramarine font-medium">{{ tipoPago }}</span>
         </div>
 
         <div class="flex justify-between">
           <span class="text-color-main">Cantidad de envíos</span>
-          <span class="text-color-ultramarine font-medium">10</span>
+          <span class="text-color-ultramarine font-medium">{{ cantidadEnvios }}</span>
         </div>
 
         <div class="flex justify-between">
           <span class="text-color-main">IGV (18%)</span>
-          <span class="text-color-ultramarine font-medium">S/ 7.25</span>
+          <span class="text-color-ultramarine font-medium">S/. {{ igvFormatted }}</span>
         </div>
 
         <div class="flex justify-between pt-2 border-t border-color-gray-sutile">
           <span class="text-color-main font-semibold">Total pago</span>
           <span class="text-color-ultramarine font-bold text-lg">
-            S/ 78.33
+            {{ totalPago }}
           </span>
         </div>
       </div>
 
-      <!-- Cupón -->
-      <button
-        type="button"
-        class="mt-4 mb-4 w-full flex items-center justify-center gap-2 border border-color-gray-sutile rounded-xl py-3 text-color-main hover:bg-surface-100 transition cursor-pointer"
-      >
-        <i class="pi pi-tag text-color-secondary"></i>
-        <span>Añadir cupón de descuento</span>
-      </button>
+      <div class="mt-4 mb-4 flex flex-col gap-2" (click)="$event.stopPropagation()">
+        <div class="relative w-full">
+          @if (!couponCode) {
+            <div class="pointer-events-none absolute inset-y-0 left-0 z-10 flex items-center gap-3 pl-4 text-color-main">
+              <span class="text-base">Añadir cupón de descuento</span>
 
-      <p-button label="Siguiente" severity="primary" styleClass="w-full" (click)="openPinModal()"/>
-      <p-button (onClick)="openPaymentMethodModal()" label="Abrir modal metodo de pago" severity="primary" styleClass="w-full my-3" />
-      <p-button (onClick)="openRegistrationSuccessModal()" label="Abrir modal registración exitosa" severity="primary" styleClass="w-full" />
+            </div>
+          }
+
+          <input
+            type="text"
+            pInputText
+            [ngModel]="couponCode"
+            (ngModelChange)="onCouponCodeChange($event)"
+            placeholder=""
+            class="w-full min-w-0 !h-14 !rounded-xl !border !border-color-gray-sutile !bg-white !pr-4 !pl-4 !text-base !text-color-main shadow-none"
+            [disabled]="couponApplying"
+            (keydown)="$event.stopPropagation()"
+          />
+        </div>
+
+        @if (couponAppliedCode) {
+          <div class="flex items-center justify-between gap-2 rounded-xl border border-color-gray-sutile bg-surface-50 px-4 py-3">
+      <span class="text-color-main text-sm">
+        <i class="pi pi-tag mr-2 text-color-secondary"></i>
+        Cupón aplicado: <strong>{{ couponAppliedCode }}</strong>
+      </span>
+
+            <button
+              type="button"
+              class="text-color-secondary text-sm hover:underline"
+              (click)="clearAppliedCoupon()"
+            >
+              Quitar
+            </button>
+          </div>
+        }
+      </div>
+
+
+      <p-button
+        label="Siguiente"
+        severity="primary"
+        styleClass="w-full"
+        (click)="nextStep()"
+      />
+
+<!--      <p-button-->
+<!--        (onClick)="openPaymentMethodModal()"-->
+<!--        label="Abrir modal metodo de pago"-->
+<!--        severity="primary"-->
+<!--        styleClass="w-full my-3"-->
+<!--      />-->
+
+<!--      <p-button-->
+<!--        (onClick)="openRegistrationSuccessModal()"-->
+<!--        label="Abrir modal registración exitosa"-->
+<!--        severity="primary"-->
+<!--        styleClass="w-full"-->
+<!--      />-->
     </div>
   </div>
 }

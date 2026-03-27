@@ -100,7 +100,7 @@ export class ShipmentRecordDestinationMapComponent implements AfterViewInit, OnC
 
         this.map = L.map(mapContainer, {
             zoomControl: false
-        }).setView(limaLocation, 20);
+        }).setView(limaLocation, 15);
 
         L.control
             .zoom({

@@ -11,13 +11,13 @@ export enum DestinationCollectionModality {
 }
 export interface DestinationCollectionQuery {
     mode: DestinationCollectionMode;
-    modality?: DestinationCollectionModality;
+    modality?: string;
     ubigeo_code?: string;
 }
 export interface DestinationCollectionResponse extends ResponseCollection<DestinationEntityResponse[]> {}
 
 export interface DestinationEntityResponse {
-    cargo_flag?: null;
+    cargo_flag?: string;
     delivery_type?: string;
     department?: string;
     department_code?: string;
@@ -26,7 +26,7 @@ export interface DestinationEntityResponse {
     district_code?: string;
     headquarter_address?: string;
     headquarter_code?: AppTypeStringMutated;
-    headquarter_id?: AppTypeStringMutated;
+    headquarter_id?: number;
     headquarter_name?: string;
     latitude?: string;
     longitude?: string;
@@ -36,11 +36,15 @@ export interface DestinationEntityResponse {
     province?: string;
     province_code?: string;
     representative_id?: string;
+    office_id?: number;
+    office_name?: string;
+    office_address?: string;
     schedule?: DestinationScheduleEntityResponse;
     ubigeo_code?: string;
     ubigeo_concatenated: string;
     ubigeo_concatenated_without_spaces?: string;
     ubigeo_id?: string;
+    sort_order?: number;
 }
 
 export interface DestinationScheduleEntityResponse {

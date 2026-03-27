@@ -3,7 +3,8 @@
   <div class="flex flex-col gap-4">
     <div class="relative">
       <form [formGroup]="storeDestinationForm">
-        <div class="md:absolute top-4 left-4 z-1000 w-full md:w-108 max-w-full">
+        <div class="md:absolute top-4 left-4 z-1000 w-full md:w-4/10 max-w-full">
+<!--        <div class="md:absolute top-4 left-4 z-1000 w-full md:w-108 max-w-full">-->
 
           <ng-container
             *ngTemplateOutlet="addressSearchTpl; context: {form: storeDestinationForm }"
@@ -77,6 +78,7 @@
         placeholder="Destino"
         (onSelect)="selectUbigeo($event)"
         (onFocus)="showModal()"
+        (onInputKeydown)="ubigeoInputKeydown($event)"
       />
     </div>
 
@@ -133,9 +135,9 @@
       </div>
     }
 
-    @if (currentAutocompletePrediction) {
+    @if (currentAutocompletePrediction|| currentItem) {
 
-      @if(!currentSearchAddress?.dangerous){
+      @if(!currentSearchAddress?.dangerous || currentItem.destination){
         <div class="flex flex-col gap-2">
 
 
@@ -143,7 +145,12 @@
             class="border rounded-md p-3 flex flex-row gap-2 items-center shadow-lg bg-primary-sutile border-highlight-focus-background">
             <img src="shared/images/marker.svg" alt="GPS Icon" class="w-6 " />
             <div class="flex flex-col flex-1">
-              <span class="text-sm text-button-text-plain">{{ currentAutocompletePrediction.description }}</span>
+              @if(!changeReturnForm){
+                <span class="text-sm text-button-text-plain">{{ currentAutocompletePrediction?.description ??  currentItem.destination?.address}}</span>
+              }
+              @if(changeReturnForm){
+                <span class="text-sm text-button-text-plain">{{ currentAutocompletePrediction?.description ??  currentItem.return_charge?.address}}</span>
+              }
             </div>
             <div>
               <app-trash-button

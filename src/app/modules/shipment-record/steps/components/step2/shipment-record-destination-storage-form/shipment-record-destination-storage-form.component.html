@@ -127,25 +127,29 @@
 <ng-template #addressTabsContainerTpl>
   <p-tabs [value]="currentTab">
     <p-tablist>
-      <p-tab [value]="0"
-             (click)="changeTab(0)"
-             (keydown.enter)="changeTab(0)"
-      >
-        <div class="flex items-center justify-center gap-2">
-          <span class="pi pi-home"></span>
-          <span>Todo</span>
-        </div>
-      </p-tab>
-      <p-tab [value]="1"
-             (click)="changeTab(1)"
-             (keydown.enter)="changeTab(1)"
-      >
-        <div class="flex items-center justify-center gap-2 ">
-          <span class="pi pi-shop"></span>
-          <span>Tienda</span>
-        </div>
-      </p-tab>
-      @if (!(cartData?.header?.whoPay === 'DESTINATION')) {
+      @if (tabsEnabled[0]) {
+        <p-tab [value]="0"
+               (click)="changeTab(0)"
+               (keydown.enter)="changeTab(0)"
+        >
+          <div class="flex items-center justify-center gap-2">
+            <span class="pi pi-home"></span>
+            <span>Todo</span>
+          </div>
+        </p-tab>
+      }
+      @if (tabsEnabled[1]) {
+        <p-tab [value]="1"
+               (click)="changeTab(1)"
+               (keydown.enter)="changeTab(1)"
+        >
+          <div class="flex items-center justify-center gap-2 ">
+            <span class="pi pi-shop"></span>
+            <span>Tienda</span>
+          </div>
+        </p-tab>
+      }
+      @if (tabsEnabled[2]) {
         <p-tab [value]="2"
                (click)="changeTab(2)"
                (keydown.enter)="changeTab(2)"
@@ -159,13 +163,19 @@
     </p-tablist>
     <p-tabpanels style="padding: 8px;">
 
-      <p-tabpanel [value]="0">
-        <ng-container *ngTemplateOutlet="destinationsContainer"></ng-container>
-      </p-tabpanel>
-      <p-tabpanel [value]="1">
-        <ng-container *ngTemplateOutlet="destinationsContainer"></ng-container>
-      </p-tabpanel>
-      @if (!(cartData?.header?.whoPay === 'DESTINATION')) {
+      @if (tabsEnabled[0]) {
+        <p-tabpanel [value]="0">
+          <ng-container *ngTemplateOutlet="destinationsContainer"></ng-container>
+        </p-tabpanel>
+      }
+
+      @if (tabsEnabled[1]) {
+        <p-tabpanel [value]="1">
+          <ng-container *ngTemplateOutlet="destinationsContainer"></ng-container>
+        </p-tabpanel>
+      }
+
+      @if (tabsEnabled[2]) {
         <p-tabpanel [value]="2">
           <ng-container *ngTemplateOutlet="destinationsContainer"></ng-container>
         </p-tabpanel>

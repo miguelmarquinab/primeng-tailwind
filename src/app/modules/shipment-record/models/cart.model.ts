@@ -2,6 +2,7 @@ import { HeadquartersEntityResponse } from '@shipment-record/models/headquarters
 import { PersonEntityResponse } from '@/modules/people/models/person.model';
 import { ReturnChargeDetail } from '@shipment-record/models/return-charge.model';
 import { DestinationAddressFormState, DestinationStoreFormState } from '@shipment-record/models/destination-form.model';
+import { CartItemEntityResponse } from '@shipment-record/models/cart-item.model';
 
 export interface CartPayload {
     person?: PersonPayload;
@@ -57,6 +58,29 @@ export interface CartEntityDataResponse {
     person?: CartPersonEntityResponse;
     origin?: CartOriginEntityResponse;
     items?: CartItemEntityResponse[];
+    pricing?: CartPricingEntityResponse;
+    final_amount_for_payment?: number;
+    nroPedidoPreventa?: string;
+    presale_result?: CartPresaleResultEntityResponse;
+    pagoefectivo_result?: CartPEEntityResponse;
+    payment?: CartPaymentEntityDataResponse;
+}
+export interface CartPaymentEntityDataResponse {
+    method?: string;
+    status?: string;
+    nroPedidoPreventa?: string;
+    niubiz?: CartPaymentNiubizEntityDataResponse;
+}
+
+export interface CartPaymentNiubizEntityDataResponse {
+    status?: string;
+    action_code?: string;
+    reason?: string;
+    transaction_id?: string;
+    transaction_date?: string;
+    trace_number?: string;
+    brand?: string;
+    card?: string;
 }
 
 export interface CartOriginEntityResponse {
@@ -68,6 +92,13 @@ export interface CartOriginEntityResponse {
     ubigeo?: string;
 }
 
+export interface CartPricingEntityResponse {
+    service_id?: number;
+    exclusive_rate?: number;
+    total?: number;
+    igv_total?: number;
+}
+
 export interface CartPersonEntityResponse {
     document_type?: string;
     document_number?: string;
@@ -76,6 +107,33 @@ export interface CartPersonEntityResponse {
     cellphone?: string;
     email_address?: string;
 }
+
+export interface CartPresaleResultEntityResponse {
+    presale_id?: string;
+    nroPedidoPreventa?: string;
+    remitos?: string;
+    fecha?: string;
+    hora?: string;
+    tarjeta?: string;
+}
+
+export interface CartPEEntityResponse {
+    cip_code?: string;
+    currency?: string;
+    amount?: number;
+    expiration_date?: Date;
+    cip_url?: string;
+    qr_image?: null;
+    nroPedidoPreventa?: string;
+}
+
+
+export interface CartPresaleLabelEntityResponse {
+    filename?: string;
+    mime_type?: string;
+    pdf_base64?: string;
+}
+
 export interface CartItemPayload {
     weight?: number;
     shipment_type?: ShipmentType;
@@ -90,6 +148,7 @@ export interface CartItemPayload {
     person?: CartItemPersonPayload;
     address?: CartItemAddressPayload;
 }
+
 
 export type CartItemDestinationType = 'home' | 'store';
 export type ShipmentType = 'D' | 'O';
@@ -146,6 +205,18 @@ export interface CartItemDraft {
     fragile?: number | boolean;
 }
 
+export interface CartNiubizSessionEntityResponse {
+    session_key?: string;
+    expiration?: string;
+    merchant_id?: string;
+    nroPedidoPreventa?: string;
+}
+
+export interface CouponValidateEntityResponse {
+    status?: 'OK' | 'ERROR';
+    message?: string;
+}
+
 // export type CartItemWhatSendPayload = Pick<CartItemDraft, 'article_id' | 'declared_value' | 'length' | 'width' | 'height' | 'weight' | 'fragile'>;
 
-export interface CartItemEntityResponse extends CartItemPayload {}
+// export interface CartItemEntityResponse extends CartItemPayload {}

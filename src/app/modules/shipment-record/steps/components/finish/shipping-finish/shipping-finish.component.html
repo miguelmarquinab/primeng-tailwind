@@ -1,75 +1,177 @@
-<div class="bg-[#E2E8F0] lg:min-h-screen flex items-center justify-center lg:px-4 lg:py-8">
-  <div class="w-full bg-white rounded-none p-4 flex flex-col min-h-[calc(100dvh-2.75rem)] lg:h-auto lg:min-h-0 lg:rounded-2xl lg:p-8 lg:max-w-199.5 lg:max-h-[624.3229px]">
-    <!-- CONTENT -->
-    <div class="flex flex-col flex-1">
-      <!-- MAIN CONTENT -->
-      <div class="flex flex-col lg:flex-row gap-8 items-center lg:items-stretch">
-        <!-- LEFT -->
-        <div class="flex-1 flex flex-col gap-6 w-full">
-          <div class="flex flex-row justify-center items-center gap-3 lg:flex-col">
-            <img src="shared/images/check-star.png" alt="check" class="w-8 h-8 lg:w-13 lg:h-13" />
-            <h2 class="text-2xl lg:text-[32px] font-bold text-color-ultramarine text-left">¡Registro exitoso!</h2>
-          </div>
+@if (loading()) {
+  <app-loading></app-loading>
+}
+@if (cart) {
+  <div class="bg-[#E2E8F0] lg:min-h-screen flex items-center justify-center lg:px-4 lg:py-8">
 
-          <div class="flex flex-col gap-2 text-sm w-full">
-            <div class="flex justify-between gap-4">
-              <span>N° de registro</span>
-              <span>{{ registrationData.registrationNumber }}</span>
+    @if (!cart.pagoefectivo_result) {
+      <div
+        class="w-full bg-white rounded-none p-4 flex flex-col min-h-[calc(100dvh-2.75rem)] lg:h-auto lg:min-h-0 lg:rounded-2xl lg:p-8 lg:max-w-199.5 lg:max-h-[624.3229px]">
+        <!-- CONTENT -->
+        <div class="flex flex-col flex-1 gap-8">
+          <!-- MAIN CONTENT -->
+          <div class="flex flex-col lg:flex-row gap-8 items-center lg:items-stretch">
+            <!-- LEFT -->
+            <div class="flex-1 flex flex-col gap-6 w-full">
+              <div class="flex flex-row justify-center items-center gap-3 lg:flex-col">
+                <img src="shared/images/check-star.png" alt="check" class="w-8 h-8 lg:w-13 lg:h-13" />
+                <h2 class="text-2xl lg:text-[32px] font-bold text-color-ultramarine text-left">¡Registro exitoso!</h2>
+              </div>
+
+              <div class="flex flex-col gap-2 text-sm w-full">
+                <div class="flex justify-between gap-4">
+                  <span>N° de registro</span>
+                  <span>{{ cart.nroPedidoPreventa }}</span>
+                </div>
+
+                @switch (cart?.payment?.method) {
+                  @case ('store') {
+
+                    <div class="flex justify-between gap-4">
+                      <span>Fecha y hora</span>
+                      <span class="text-right">{{ cart.presale_result?.fecha }} - {{ cart.presale_result?.hora }}</span>
+                    </div>
+
+                    <div class="flex justify-between gap-4">
+                      <span>Importe a pagar</span>
+                      <span class="font-bold">S/. {{ cart?.pricing?.total }}</span>
+                    </div>
+
+                  }
+                  @case ('destination') {
+
+                    <div class="flex justify-between gap-4">
+                      <span>Fecha y hora</span>
+                      <span class="text-right">{{ cart.presale_result?.fecha }} - {{ cart.presale_result?.hora }}</span>
+                    </div>
+
+                    <div class="flex justify-between gap-4">
+                      <span>Importe a pagar</span>
+                      <span class="font-bold">S/. {{ cart?.pricing?.total }}</span>
+                    </div>
+
+                  }
+                  @case ('online') {
+
+                    <div class="flex justify-between gap-4">
+                      <span>Fecha y hora</span>
+                      <span class="text-right">{{ cart.presale_result?.fecha }} - {{ cart.presale_result?.hora }}</span>
+                    </div>
+
+
+                    <div class="flex justify-between gap-4">
+                      <span>Tarjeta</span>
+                      <span class="text-right">{{ cart.presale_result?.tarjeta }}</span>
+                    </div>
+
+
+                    <div class="flex justify-between gap-4">
+                      <span>Importe pagado</span>
+                      <span class="font-bold">S/. {{ cart.final_amount_for_payment }}</span>
+                    </div>
+
+                  }
+                }
+
+                <!--                <div class="flex justify-between gap-4">-->
+                <!--                  <span>Fecha y hora</span>-->
+                <!--                  <span class="text-right">{{ cart.presale_result?.fecha }} - {{ cart.presale_result?.hora }}</span>-->
+                <!--                </div>-->
+
+
+                <!--                <div class="flex justify-between gap-4">-->
+                <!--                  <span>Tarjeta</span>-->
+                <!--                  <span class="text-right">{{ cart.presale_result?.tarjeta }}</span>-->
+                <!--                </div>-->
+
+
+                <!--                <div class="flex justify-between gap-4">-->
+                <!--                  <span>Importe pagado</span>-->
+                <!--                  <span class="font-bold">S/. {{ cart.final_amount_for_payment }}</span>-->
+                <!--                </div>-->
+
+              </div>
+
+              <div class="flex flex-col gap-3">
+                <a href="https://www.olvacourier.com/ubicanos">
+                  <p-button label="Ver tiendas o agentes" icon="pi pi-shop" severity="secondary" [outlined]="true"
+                            styleClass="w-full h-11 rounded-full text-sm font-medium justify-center gap-2"
+                  ></p-button>
+                </a>
+
+                <p-button label="Registrar nuevo envío" icon="pi pi-box" severity="secondary" [outlined]="true"
+                          styleClass="w-full h-11 rounded-full text-sm font-medium justify-center gap-2"
+                          (click)="resetProcess($event)"
+                ></p-button>
+              </div>
             </div>
 
-            <div class="flex justify-between gap-4">
-              <span>Fecha y hora</span>
-              <span class="text-right">{{ registrationData.dateTime }}</span>
+            <!-- RIGHT -->
+            <div class="flex-1 flex flex-col gap-4 mt-4 lg:mt-0 lg:border-l lg:border-gray-200 lg:pl-8 justify-center">
+              <div class="flex flex-row items-center gap-3 lg:flex-col">
+                <img src="shared/images/box-hand.png" alt="box" class="w-16 lg:w-35 shrink-0" />
+                <p class="text-color-ultramarine text-sm lg:text-center max-w-xs">¡Recuerda <span class="font-semibold">rotular correctamente</span>
+                  tus envíos!</p>
+              </div>
+
+              <p-button label="Descargar rótulo" icon="pi pi-download" severity="primary"
+                        styleClass="w-full h-11 rounded-full text-sm font-semibold justify-center gap-2"
+                        (click)="onDownloadLabel()"
+              ></p-button>
             </div>
+          </div>
 
-            @if (registrationData.card) {
-              <div class="flex justify-between gap-4">
-                <span>Tarjeta</span>
-                <span class="text-right">{{ registrationData.card }}</span>
+          <!-- DESKTOP MESSAGE -->
+          @switch (cart?.payment?.method) {
+            @case ('store') {
+
+              <!--
+                -->
+              <div class="hidden lg:block text-color-ultramarine mt-4 text-center leading-6 font-montserrat">
+                <span class="font-bold">¡Recuerda que tu pago está pendiente! </span>
+                El destino que has seleccionado
+                <span class="font-bold">sólo admite pago en tienda,</span>
+                acércate a una tienda Olva y paga el importe indicado.
               </div>
             }
+            @case ('destination') {
 
-            @if (registrationData.amountPaid) {
-              <div class="flex justify-between gap-4">
-                <span>Importe pagado</span>
-                <span class="font-bold">{{ registrationData.amountPaid }}</span>
+              <div class="hidden lg:block text-color-ultramarine mt-4 text-center leading-6 font-montserrat">
+                <span class="font-bold">¡Recuerda que tu pago está pendiente y lo realizará el destinatario! Infórmale de esto</span>
+              </div>
+
+            }
+            @case ('online') {
+              <div class="hidden lg:block text-color-ultramarine mt-4 text-center">
+                <span class="font-semibold">Tu envío ya está registrado.</span>
+                Acércate a una tienda Olva y deja tu paquete
+                <span class="font-semibold">sin hacer colas</span>.
               </div>
             }
-          </div>
+          }
 
-          <div class="flex flex-col gap-3">
-            <p-button label="Ver tiendas o agentes" icon="pi pi-shop" severity="secondary" [outlined]="true" styleClass="w-full h-11 rounded-full text-sm font-medium justify-center gap-2"> </p-button>
-
-            <p-button label="Registrar nuevo envío" icon="pi pi-box" severity="secondary" [outlined]="true" styleClass="w-full h-11 rounded-full text-sm font-medium justify-center gap-2"> </p-button>
+          <!-- FOOTER -->
+          <div class="pt-3 mt-auto lg:mt-0">
+            <div
+              class="font-montserrat flex items-center justify-center gap-2 text-[10px] text-center whitespace-normal lg:whitespace-nowrap">
+              <span>Tienda autorizada por Visa y PagoEfectivo para realizar transacciones electrónicas.</span>
+              <img src="shared/images/niubiz.png" alt="niubiz logo" class="w-6 h-auto" />
+              <img src="shared/images/pago-efectivo.png" alt="pago efectivo logo" class="w-6 h-auto" />
+            </div>
           </div>
         </div>
-
-        <!-- RIGHT -->
-        <div class="flex-1 flex flex-col gap-4 mt-4 lg:mt-0 lg:border-l lg:border-gray-200 lg:pl-8 justify-center">
-          <div class="flex flex-row items-center gap-3 lg:flex-col">
-            <img src="shared/images/box-hand.png" alt="box" class="w-16 lg:w-35 shrink-0" />
-            <p class="text-color-ultramarine text-sm lg:text-center max-w-xs">¡Recuerda <span class="font-semibold">rotular correctamente</span> tus envíos!</p>
-          </div>
-
-          <p-button label="Descargar rótulo" icon="pi pi-download" severity="primary" styleClass="w-full h-11 rounded-full text-sm font-semibold justify-center gap-2"> </p-button>
-        </div>
       </div>
+    } @else {
+      <div
+        class="w-full bg-white rounded-none p-4 flex flex-col min-h-[calc(100dvh-2.75rem)] lg:h-auto lg:min-h-0 lg:rounded-2xl lg:p-8 lg:max-w-230 lg:max-h-190">
 
-      <!-- DESKTOP MESSAGE -->
-      <div class="hidden lg:block text-color-ultramarine mt-4 text-center">
-        <span class="font-semibold">Tu envío ya está registrado.</span>
-        Acércate a una tienda Olva y deja tu paquete
-        <span class="font-semibold">sin hacer colas</span>.
+        <span class="flex justify-center gap-3">Número de pedido <span
+          class="font-bold">{{ cart.pagoefectivo_result.nroPedidoPreventa }}</span></span>
+        <iframe [src]="urlSafe" class="w-full h-100 border"></iframe>
       </div>
-
-      <!-- FOOTER -->
-      <div class="pt-3 mt-auto lg:mt-0">
-        <div class="flex items-center justify-center gap-2 text-[10px] text-center whitespace-normal lg:whitespace-nowrap">
-          <span>Tienda autorizada por Visa y PagoEfectivo para realizar transacciones electrónicas.</span>
-          <img src="shared/images/niubiz.png" alt="niubiz logo" class="w-6 h-auto" />
-          <img src="shared/images/pago-efectivo.png" alt="pago efectivo logo" class="w-6 h-auto" />
-        </div>
-      </div>
-    </div>
+    }
   </div>
-</div>
+
+  <p-confirmdialog />
+
+}

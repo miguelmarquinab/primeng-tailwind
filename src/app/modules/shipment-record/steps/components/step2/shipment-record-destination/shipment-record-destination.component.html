@@ -29,19 +29,21 @@
 
             <app-shipment-record-destination-address-form
               [homeDestinations]="homeDestinationsData"
+              [currentItem]="currentItem"
               (formChanged)="onHomeDestinationChanged($event)"
             >
-              <div returnChargeToggle class="flex flex-col gap-1">
-                <app-shipment-record-return-charge-toggle
-                  [mode]="DELIVERY_TYPE.HOME"
-                  [storeDestinationsData]="storeDestinationsData"
-                  [homeDestinationsData]="homeDestinationsData"
-                  (returnChargeChanged)="onReturnChargeChanged($event)"
-                ></app-shipment-record-return-charge-toggle>
-              </div>
+              @if (destinationData?.cargo_flag === '1') {
+                <div returnChargeToggle class="flex flex-col gap-1">
+                  <app-shipment-record-return-charge-toggle
+                    [mode]="DELIVERY_TYPE.HOME"
+                    [storeDestinationsData]="storeDestinationsData"
+                    [homeDestinationsData]="homeDestinationsData"
+                    (returnChargeChanged)="onReturnChargeChanged($event)"
+                    [currentItem]="currentItem"
+                  ></app-shipment-record-return-charge-toggle>
+                </div>
+              }
             </app-shipment-record-destination-address-form>
-
-
           }
         </p-tabpanel>
 
@@ -51,16 +53,20 @@
           <app-shipment-record-destination-storage-form
             [storeDestinationsData]="storeDestinationsData"
             [cartData]="cartData"
+            [currentItem]="currentItem"
             (formChanged)="onStoreDestinationChanged($event)"
           >
             @if (!(cartData.header.whoPay === 'DESTINATION')) {
               <div returnChargeToggle class="flex flex-col gap-1">
-                <app-shipment-record-return-charge-toggle
-                  [mode]="DELIVERY_TYPE.OFFICE"
-                  [storeDestinationsData]="storeDestinationsData"
-                  [homeDestinationsData]="homeDestinationsData"
-                  (returnChargeChanged)="onReturnChargeChanged($event)"
-                ></app-shipment-record-return-charge-toggle>
+                @if (destinationData?.cargo_flag?.trim() === '1') {
+                  <app-shipment-record-return-charge-toggle
+                    [mode]="DELIVERY_TYPE.OFFICE"
+                    [storeDestinationsData]="storeDestinationsData"
+                    [homeDestinationsData]="homeDestinationsData"
+                    (returnChargeChanged)="onReturnChargeChanged($event)"
+                    [currentItem]="currentItem"
+                  ></app-shipment-record-return-charge-toggle>
+                }
               </div>
             }
           </app-shipment-record-destination-storage-form>
