@@ -9,11 +9,10 @@ import { HeadquartersEntityResponse } from '@shipment-record/models/headquarters
 import { InputText } from 'primeng/inputtext';
 import { Subject, takeUntil } from 'rxjs';
 import { ShipmentRecordDestinationStorageMapComponent } from '@shipment-record/steps/components/step2/shipment-record-destination-storage-map/shipment-record-destination-storage-map.component';
+import { DestinationStoreFormState, DestinationStoreFormValues } from '@shipment-record/models/destination-form.model';
 import { BreakpointService } from '@shared/services/breakpoint/breakpoint.service';
 import { Button } from 'primeng/button';
 import { CartSessionStorage } from '@shipment-record/models/cart-session-storage.model';
-import { CartItemDestinationFormState, CartItemEntityResponse } from '@shipment-record/models/cart-item.model';
-import { DELIVERY_TYPE } from '@shipment-record/contansts/shipment-record-step.constant';
 
 @Component({
     selector: 'app-shipment-record-destination-storage-form',
@@ -25,67 +24,34 @@ import { DELIVERY_TYPE } from '@shipment-record/contansts/shipment-record-step.c
 export class ShipmentRecordDestinationStorageFormComponent implements OnInit, OnChanges, OnDestroy {
     @Input() storeDestinationsData: DestinationEntityResponse[] = [];
     @Input() cartData!: CartSessionStorage;
-    @Input() currentItem!: CartItemEntityResponse;
+    storeDestinationsFiltered: DestinationEntityResponse[] = [];
     currentDestination: DestinationEntityResponse = { ubigeo_concatenated: '' };
     headquarters: HeadquartersEntityResponse[] = [];
+    headquartersFiltered: HeadquartersEntityResponse[] = [];
     formBuilder = inject(FormBuilder);
     storeDestinationForm!: FormGroup;
     currentTab = 0;
     storeDestinationFiltered: DestinationEntityResponse[] = [];
-    @Output() formChanged = new EventEmitter<CartItemDestinationFormState>();
+    @Output() formChanged = new EventEmitter<DestinationStoreFormState>();
     private readonly sessionStorage = inject(SessionStorageService);
     private readonly destroy$ = new Subject<void>();
 
     private readonly breakpointService = inject(BreakpointService);
     isMobile = this.breakpointService.isMobile;
     modalVisible: boolean = false;
-    @Input() changeReturnForm = false;
-
-    tabsEnabled: boolean[] = [true, true, true];
 
     ngOnInit(): void {
-        if (this.currentItem) {
-        }
         this.initForm();
         this.initStoreDestinations();
-        this.buildTabsEnabled()
-
-        console.log('--> this.currentItem.destination', this.currentItem?.destination);
     }
-
 
     ngOnChanges(SimpleChanges: any): void {
         console.log('Input changes detected:', SimpleChanges);
     }
 
-    buildTabsEnabled(){
-
-        if(this.cartData?.header?.whoPay === 'DESTINATION'){
-            this.tabsEnabled = [true,false,false];
-        }
-    }
-
     initStoreDestinations() {
         if (this.cartData?.header?.whoPay === 'DESTINATION') {
             this.storeDestinationsData = this.filterStoreHeadquarters();
-        }
-
-        if (this.currentItem) {
-            console.log(this.currentItem.destination);
-            if (this.changeReturnForm) {
-                const currentDestination = this.findDestinationByOfficeId(this.currentItem.return_charge?.office_id as number) as DestinationEntityResponse;
-                console.log(currentDestination);
-                this.storeDestinationFiltered = [currentDestination];
-                this.selectDestination(currentDestination);
-            }
-            if (!this.changeReturnForm) {
-                if (this.currentItem.service?.delivery_type === DELIVERY_TYPE.OFFICE) {
-                    const currentDestination = this.findDestinationByOfficeId(this.currentItem.destination?.office_id as number) as DestinationEntityResponse;
-                    console.log(currentDestination);
-                    this.storeDestinationFiltered = [currentDestination];
-                    this.selectDestination(currentDestination);
-                }
-            }
         }
     }
 
@@ -140,23 +106,16 @@ export class ShipmentRecordDestinationStorageFormComponent implements OnInit, On
         return this.storeDestinationsData.filter((item) => item.is_agent === true);
     }
 
-    findDestinationByOfficeId(officeId: number): DestinationEntityResponse {
-        return this.storeDestinationsData.find((destination) => destination.office_id === officeId) as DestinationEntityResponse;
-    }
-
     selectDestination(destination: DestinationEntityResponse) {
         console.log(destination);
         this.currentDestination = destination;
         this.formChanged.emit(this.buildResponse());
     }
 
-    buildResponse(): CartItemDestinationFormState {
+    buildResponse(): DestinationStoreFormState {
         return {
-            office_id: this.currentDestination.office_id,
-            delivery_type: DELIVERY_TYPE.OFFICE,
-            cargo_flag: this.currentDestination.cargo_flag
-            // destination: this.currentDestination,
-            // formValues: this.storeDestinationForm.value as DestinationStoreFormValues
+            destination: this.currentDestination,
+            formValues: this.storeDestinationForm.value as DestinationStoreFormValues
         };
     }
 
@@ -167,6 +126,7 @@ export class ShipmentRecordDestinationStorageFormComponent implements OnInit, On
             this.modalVisible = true;
         }
     }
+
 
     ngOnDestroy(): void {
         this.destroy$.next();

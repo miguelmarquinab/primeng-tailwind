@@ -9,16 +9,13 @@ import {
     CartItemPersonPayload,
     CartItemReturnChargeDetailPayload,
     CartPayload,
-    CartPricingEntityResponse,
     OriginPayload,
     PersonPayload,
     ShipmentType
 } from '@shipment-record/models/cart.model';
 import { DestinationAddressFormState, DestinationStoreFormState } from '@shipment-record/models/destination-form.model';
-import { ReturnChargeDetail } from '@shipment-record/models/return-charge.model';
+import { ReturnChargeDetail, ReturnChargePayload } from '@shipment-record/models/return-charge.model';
 import { DELIVERY_TYPE } from '@shipment-record/contansts/shipment-record-step.constant';
-import { CartItemEntityResponse, CartItemWhoReceiveEntityResponse } from '@shipment-record/models/cart-item.model';
-import { PersonEntityResponse } from '@/modules/people/models/person.model';
 
 @Injectable({
     providedIn: 'root'
@@ -58,17 +55,6 @@ export class CartSessionStorageService {
         this.setCartData(cartData);
     }
 
-    setCurrentItemUuid(currentItemUuid: string) {
-        const cartData = this.getCartData();
-        cartData.header.currentItemUuid = currentItemUuid;
-        this.setCartData(cartData);
-    }
-
-    getCurrentItemUuid() {
-        const cartData = this.getCartData();
-        return cartData.header.currentItemUuid;
-    }
-
     getWhoPay() {
         const cartData = this.getCartData();
 
@@ -84,7 +70,6 @@ export class CartSessionStorageService {
 
     getCartData(): CartSessionStorage {
         let cartData = this.sessionStorage.get(this.CART_KEY) as CartSessionStorage | null;
-        // console.log(cartData);
         if (!cartData) {
             this.init();
             cartData = this.sessionStorage.get(this.CART_KEY) as CartSessionStorage | null;
@@ -112,43 +97,43 @@ export class CartSessionStorageService {
     getCurrentStep() {
         return this.getCartData()?.currentStep ?? 1;
     }
-    getCartId(): string {
-        return this.getCartData().cardId ?? '';
+    getCartId() {
+        return this.getCartData().cardId;
     }
 
     // setItemReturnCharge(itemIndex: number, payload: ReturnChargePayload) {
     //     this.updateItem(itemIndex, payload);
     // }
 
-    // setItemPerson(itemIndex: number, payload: PersonPayload) {
-    //     this.updateItem(itemIndex, {
-    //         person: payload
-    //     });
-    // }
-    //
-    // setItemDestination(itemIndex: number, payload: CartItemDestinationPayload) {
-    //     this.updateItem(itemIndex, {
-    //         destination: payload
-    //     });
-    // }
+    setItemPerson(itemIndex: number, payload: PersonPayload) {
+        this.updateItem(itemIndex, {
+            person: payload
+        });
+    }
+
+    setItemDestination(itemIndex: number, payload: CartItemDestinationPayload) {
+        this.updateItem(itemIndex, {
+            destination: payload
+        });
+    }
 
     // setItemWhatSend(itemIndex: number, payload: CartItemWhatSendPayload) {
     //     this.updateItem(itemIndex, payload);
     // }
 
-    // clearItemReturnCharge(itemIndex: number) {
-    //     const cartData = this.getCartData();
-    //     if (!cartData.items.length) {
-    //         return;
-    //     }
-    //     cartData.items = this.ensureItems(cartData.items);
-    //     cartData.items[itemIndex] = {
-    //         ...(cartData.items[itemIndex] ?? {}),
-    //         return_charge: false
-    //     };
-    //     delete cartData.items[itemIndex].return_charge_detail;
-    //     this.setCartData(cartData);
-    // }
+    clearItemReturnCharge(itemIndex: number) {
+        const cartData = this.getCartData();
+        if (!cartData.items.length) {
+            return;
+        }
+        cartData.items = this.ensureItems(cartData.items);
+        cartData.items[itemIndex] = {
+            ...(cartData.items[itemIndex] ?? {}),
+            return_charge: false
+        };
+        delete cartData.items[itemIndex].return_charge_detail;
+        this.setCartData(cartData);
+    }
 
     buildCartPayload(): CartPayload {
         const cartData = this.getCartData();
@@ -164,28 +149,6 @@ export class CartSessionStorageService {
         };
     }
 
-    setItems(cartItems: CartItemEntityResponse[] = []) {
-        const cartData = this.getCartData();
-        cartData.items = cartItems;
-        this.setCartData(cartData);
-    }
-
-    setPricing(pricing: CartPricingEntityResponse) {
-        const cartData = this.getCartData();
-        cartData.pricing = pricing;
-        this.setCartData(cartData);
-    }
-
-    setAppliedCouponCode(code: string | null): void {
-        const cartData = this.getCartData();
-        cartData.appliedCouponCode = code ?? null;
-        this.setCartData(cartData);
-    }
-
-    getAppliedCouponCode(): string | null {
-        return this.getCartData()?.appliedCouponCode ?? null;
-    }
-
     private ensureItems(items: CartItemDraft[] | null | undefined): CartItemDraft[] {
         if (!items) {
             return [];
@@ -193,41 +156,41 @@ export class CartSessionStorageService {
         return items;
     }
 
-    // private updateItem(itemIndex: number, patch: Partial<CartItemDraft>) {
-    //     const cartData = this.getCartData();
-    //     cartData.items = this.ensureItems(cartData.items);
-    //     cartData.items[itemIndex] = {
-    //         ...(cartData.items[itemIndex] ?? {}),
-    //         ...patch
-    //     };
-    //     this.setCartData(cartData);
-    // }
+    private updateItem(itemIndex: number, patch: Partial<CartItemDraft>) {
+        const cartData = this.getCartData();
+        cartData.items = this.ensureItems(cartData.items);
+        cartData.items[itemIndex] = {
+            ...(cartData.items[itemIndex] ?? {}),
+            ...patch
+        };
+        this.setCartData(cartData);
+    }
 
-    // private buildItemsPayload(items: CartItemDraft[]): CartItemPayload[] | undefined {
-    //     if (!items.length) {
-    //         return undefined;
-    //     }
-    //     const payload = items.map((item) => (item ? this.mapItemPayload(item) : null)).filter((item): item is CartItemPayload => !!item);
-    //     return payload.length ? payload : undefined;
-    // }
+    private buildItemsPayload(items: CartItemDraft[]): CartItemPayload[] | undefined {
+        if (!items.length) {
+            return undefined;
+        }
+        const payload = items.map((item) => (item ? this.mapItemPayload(item) : null)).filter((item): item is CartItemPayload => !!item);
+        return payload.length ? payload : undefined;
+    }
 
-    // private mapItemPayload(item: CartItemDraft): CartItemPayload {
-    //     const returnCharge = item.return_charge ?? false;
-    //     return {
-    //         weight: item.weight,
-    //         shipment_type: this.resolveShipmentType(item),
-    //         declared_value: item.declared_value,
-    //         height: item.height,
-    //         width: item.width,
-    //         length: item.length,
-    //         return_charge: returnCharge,
-    //         return_charge_detail: returnCharge ? this.buildReturnChargeDetailPayload(item.return_charge_detail) : undefined,
-    //         article_id: item.article_id,
-    //         fragile: item.fragile,
-    //         person: this.buildItemPersonPayload(item.person),
-    //         address: this.buildAddressPayload(item.destination)
-    //     };
-    // }
+    private mapItemPayload(item: CartItemDraft): CartItemPayload {
+        const returnCharge = item.return_charge ?? false;
+        return {
+            weight: item.weight,
+            shipment_type: this.resolveShipmentType(item),
+            declared_value: item.declared_value,
+            height: item.height,
+            width: item.width,
+            length: item.length,
+            return_charge: returnCharge,
+            return_charge_detail: returnCharge ? this.buildReturnChargeDetailPayload(item.return_charge_detail) : undefined,
+            article_id: item.article_id,
+            fragile: item.fragile,
+            person: this.buildItemPersonPayload(item.person),
+            address: this.buildAddressPayload(item.destination)
+        };
+    }
 
     private resolveShipmentType(item: CartItemDraft): ShipmentType | undefined {
         if (item.destination?.type === 'home') {
@@ -252,19 +215,19 @@ export class CartSessionStorageService {
         return this.hasPersonData(payload) ? payload : undefined;
     }
 
-    // private buildReturnChargeDetailPayload(detail?: ReturnChargeDetail | null): CartItemReturnChargeDetailPayload | undefined {
-    //     if (!detail) {
-    //         return undefined;
-    //     }
-    //     const address = detail.delivery_type === DELIVERY_TYPE.OFFICE ? this.buildStoreAddressPayload(detail.store) : this.buildHomeAddressPayload(detail.address);
-    //     if (!address) {
-    //         return undefined;
-    //     }
-    //     return {
-    //         folios: this.normalizeFolios(detail.folios),
-    //         address
-    //     };
-    // }
+    private buildReturnChargeDetailPayload(detail?: ReturnChargeDetail | null): CartItemReturnChargeDetailPayload | undefined {
+        if (!detail) {
+            return undefined;
+        }
+        const address = detail.delivery_type === DELIVERY_TYPE.OFFICE ? this.buildStoreAddressPayload(detail.store) : this.buildHomeAddressPayload(detail.address);
+        if (!address) {
+            return undefined;
+        }
+        return {
+            folios: this.normalizeFolios(detail.folios),
+            address
+        };
+    }
 
     private buildAddressPayload(destination?: CartItemDestinationPayload): CartItemAddressPayload | undefined {
         if (!destination) {
@@ -347,24 +310,5 @@ export class CartSessionStorageService {
 
     clear() {
         this.sessionStorage.remove(this.CART_KEY);
-    }
-
-    addPersonCache(person: any): void {
-        const cacheKey = this.buildPersonCacheKey(person.document_number ?? '');
-        const cachedPerson = this.getPersonCacheByDocumentNumber(person.document_number ?? '');
-        if (cachedPerson) {
-            return;
-        }
-        this.sessionStorage.set(cacheKey, person);
-    }
-
-    getPersonCacheByDocumentNumber(documentNumber: string) {
-        const cacheKey = this.buildPersonCacheKey(documentNumber);
-        const cachedData = this.sessionStorage.get(cacheKey) as CartItemEntityResponse | null;
-        return cachedData ?? undefined;
-    }
-
-    buildPersonCacheKey(documentNumber: string) {
-        return `cache_person_${documentNumber}`;
     }
 }

@@ -7,7 +7,6 @@ import { ButtonModule } from 'primeng/button';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { CartService } from '@shipment-record/services/cart.service';
-import { environment } from '@env/environment';
 
 @Component({
     selector: 'app-shipment-record-steps',
@@ -25,8 +24,7 @@ export class ShipmentRecordStepsComponent implements OnInit, OnChanges {
     private readonly router = inject(Router);
     private readonly cartSessionService = inject(CartSessionStorageService);
     private readonly cartService: CartService = inject(CartService);
-    // @TODO remove
-    env = environment.environment;
+
     constructor() {
         const raw = this.route.snapshot.paramMap.get('stepNumber');
         this.stepNumber = Number(raw);

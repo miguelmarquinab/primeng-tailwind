@@ -1,134 +1,109 @@
-@if (returnChargeForm) {
+<div class="flex flex-col gap-3">
+  <div
+    class="flex flex-col gap-3 bg-white border rounded-lg p-4"
+    [class.border-highlight-focus-background]="returnChargeControl.value"
+  >
+    <div class="flex flex-col md:flex-row  gap-3 min-w-0">
 
-  <form [formGroup]="returnChargeForm">
-    <!--    <pre>-->
-    <!--      {{ returnChargeForm.value | json }}-->
-    <!--    </pre>-->
-    <div class="flex flex-col gap-3">
-      <div
-        class="flex flex-col gap-3 bg-white border rounded-lg p-4"
-        [class.border-highlight-focus-background]="showDetail"
-      >
-        <div class="flex flex-col md:flex-row  gap-3 min-w-0">
+      @if (!isMobile()) {
+        <div class="flex flex-wrap items-center gap-3 min-w-0">
+          <p-toggleSwitch [formControl]="returnChargeControl"></p-toggleSwitch>
+          <img src="shared/images/return-icon1.svg" alt="Ícono de devolución" class="w-6" />
+          <div class="flex flex-col flex-1 min-w-0">
+        <span class="font-semibold">
+          {{ 'shipmentRecord.returnCharge.switchLabel' | translate }}
+        </span>
+            <span class="text-sm text-gray-600">
+          {{ 'shipmentRecord.returnCharge.switchDescription' | translate }}
+        </span>
+          </div>
+        </div>
+      }
 
-          @if (!isMobile()) {
-            <div class="flex flex-wrap items-center gap-3 min-w-0">
-              <p-toggleSwitch formControlName="returnChargeControl"></p-toggleSwitch>
-              <img src="shared/images/return-icon1.svg" alt="Ícono de devolución" class="w-6" />
-              <div class="flex flex-col flex-1 min-w-0">
-                <span class="font-semibold">
-                  {{ 'shipmentRecord.returnCharge.switchLabel' | translate }}
-                </span>
-                <span class="text-sm text-gray-600">
-                  {{ 'shipmentRecord.returnCharge.switchDescription' | translate }}
-                </span>
+      @if (isMobile()) {
 
-              </div>
+        <div class="flex gap-4 justify-between">
+          <div class="flex gap-4">
+            <img src="shared/images/return-icon1.svg" alt="Ícono de devolución" class="w-6" />
+            <div class="flex flex-col gap-1">
+              <span class="font-semibold">Retorno de cargo</span>
+              <span>Envío de cargo al remitente</span>
             </div>
-          }
 
-          @if (isMobile()) {
+          </div>
+          <p-toggleSwitch [formControl]="returnChargeControl"></p-toggleSwitch>
+        </div>
+      }
 
-            <div class="flex gap-4 justify-between">
-              <div class="flex gap-4">
-                <img src="shared/images/return-icon1.svg" alt="Ícono de devolución" class="w-6" />
-                <div class="flex flex-col gap-1">
-                  <span class="font-semibold">Retorno de cargo</span>
-                  <span>Envío de cargo al remitente</span>
-                </div>
-
-              </div>
-              <p-toggleSwitch formControlName="returnChargeControl"></p-toggleSwitch>
-            </div>
-          }
-
-          @if (showDetail) {
-            <div class="flex items-center gap-2 shrink-0 w-full sm:w-auto sm:ml-auto justify-end ">
+      @if (returnChargeControl.value) {
+        <div class="flex items-center gap-2 shrink-0 w-full sm:w-auto sm:ml-auto justify-end ">
           <span class="text-sm font-semibold whitespace-nowrap">
             {{ 'shipmentRecord.returnCharge.foliosShortLabel' | translate }}
           </span>
-              <p-inputnumber
-                [inputId]="'return-charge-folios-' + itemIndex"
-                formControlName="folio"
-                [min]="1"
-                [max]="3"
-                [useGrouping]="false"
-                [showButtons]="true"
-                [minFractionDigits]="0"
-                [maxFractionDigits]="0"
-                class="return-charge-folios w-full sm:w-32"
-                [buttonLayout]="isMobile()?'horizontal':'stacked'"
-              >
-                @if (isMobile()) {
-                  <ng-template #decrementbuttonicon>
-                    <span class="pi pi-chevron-left text-white bg-theme-ultramarine"></span>
-                  </ng-template>
-                  <ng-template #incrementbuttonicon>
-                    <span class="pi  pi-chevron-right text-white"></span>
-                  </ng-template>
-                }
-              </p-inputnumber>
-            </div>
+          <p-inputnumber
+            [inputId]="'return-charge-folios-' + itemIndex"
+            [formControl]="foliosControl"
+            [min]="1"
+            [max]="3"
+            [useGrouping]="false"
+            [showButtons]="true"
+            [minFractionDigits]="0"
+            [maxFractionDigits]="0"
+            styleClass="return-charge-folios w-full sm:w-32"
+            [buttonLayout]="isMobile()?'horizontal':'stacked'"
+          >
+            @if (isMobile()) {
+              <ng-template #decrementbuttonicon>
+                <span class="pi pi-chevron-left text-white bg-theme-ultramarine"></span>
+              </ng-template>
+              <ng-template #incrementbuttonicon>
+                <span class="pi  pi-chevron-right text-white"></span>
+              </ng-template>
+            }
+          </p-inputnumber>
+        </div>
+      }
+    </div>
+  </div>
+
+  @if (returnChargeControl.value) {
+    <button
+      type="button"
+      class="flex items-center justify-between gap-3 border rounded-lg p-3 bg-white border-highlight-focus-background"
+      (click)="openReturnChargeModal()"
+    >
+      <div class="flex items-center gap-2 min-w-0">
+        <span class="pi pi-map-marker text-lg text-color-secondary"></span>
+        <div class="flex flex-wrap items-center gap-1 min-w-0 text-sm">
+          @if (!returnChargePayload) {
+            <span class="font-semibold">
+              {{ 'shipmentRecord.returnCharge.selectAddressLabel' | translate }}
+            </span>
+          } @else {
+
+            <span class="font-semibold">
+              @if (returnChargePayload?.delivery_type === DELIVERY_TYPE.HOME) {
+                {{ 'shipmentRecord.returnCharge.homePrefix' | translate }}
+              } @else {
+                Tienda {{ findStoreById.headquarter_name | titlecase }}:
+              }
+            </span>
+            <span class="text-theme-text-800">
+               @if (returnChargePayload?.delivery_type === DELIVERY_TYPE.HOME) {
+                 {{ returnChargePayload.address?.trim() }}
+               } @else {
+                 {{ findStoreById.headquarter_address }}
+               }
+            </span>
+            @if (returnChargePayload?.reference) {
+              <span class="text-theme-text-800">
+                - {{ 'shipmentRecord.returnCharge.referencesLabel' | translate }} {{ returnChargePayload.reference?.trim() }}
+              </span>
+            }
           }
         </div>
       </div>
-
-      @if (showDetail) {
-        <button
-          type="button"
-          class="flex items-center justify-between gap-3 border rounded-lg p-3 bg-white border-highlight-focus-background"
-          (click)="openReturnChargeModal()"
-        >
-          <div class="flex items-center gap-2 min-w-0">
-            <span class="pi pi-map-marker text-lg text-color-secondary"></span>
-            <div class="flex flex-wrap items-center gap-1 min-w-0 text-sm">
-              @if (returnChargePayload?.returnChargeControl && (!returnChargePayload.ubigeo_id && !returnChargePayload.office_id)) {
-                <span class="font-semibold">¿A dónde retornamos el cargo?</span>
-              } @else {
-
-                <span class="font-semibold">
-                @if (returnChargePayload.ubigeo_id) {
-                  Domicilio:
-                }
-                  @if (returnChargePayload.office_id) {
-                    Tienda:
-                  }
-                </span>
-
-                <span class="text-theme-text-800">
-                @if (returnChargePayload.ubigeo_id) {
-                  {{ returnChargePayload.address_card?.trim() }}
-                }
-                  @if (returnChargePayload.office_id) {
-                    {{ findStoreById.office_name | titlecase }}
-                  }
-                </span>
-
-                <!--                <span class="font-semibold">-->
-                  <!--              @if (returnChargePayload?.delivery_type === DELIVERY_TYPE.HOME) {-->
-                  <!--                Domicilio-->
-                  <!--              } @else {-->
-                  <!--                Tienda:-->
-                  <!--              }-->
-                  <!--            </span>-->
-                  <!--                <span class="text-theme-text-800">-->
-                  <!--               @if (returnChargePayload?.delivery_type === DELIVERY_TYPE.HOME) {-->
-                  <!--                 {{ returnChargePayload.address_card?.trim() }}-->
-                  <!--               } @else {-->
-                  <!--                 {{ findStoreById.office_name | titlecase }}-->
-                  <!--               }-->
-                  <!--            </span>-->
-                @if (returnChargePayload?.reference) {
-                  <span class="text-theme-text-800">
-                - {{ 'shipmentRecord.returnCharge.referencesLabel' | translate }} {{ returnChargePayload.reference?.trim() }}
-              </span>
-                }
-              }
-            </div>
-          </div>
-          <span class="pi pi-pencil border border-gray-200 rounded-md p-2 text-theme-text-800"></span>
-        </button>
-      }
-    </div>
-  </form>
-}
+      <span class="pi pi-pencil border border-gray-200 rounded-md p-2 text-theme-text-800"></span>
+    </button>
+  }
+</div>

@@ -10,11 +10,10 @@ import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { jwtInterceptor } from '@shared/interceptors/jwt.interceptor';
 import { loadingHandlerInterceptor } from '@shared/interceptors/loading-handler.interceptor';
-import { errorHandlerInterceptor } from '@shared/interceptors/error-handler.interceptor';
 
 export const appConfig: ApplicationConfig = {
     providers: [
-        provideHttpClient(withInterceptors([loadingHandlerInterceptor, jwtInterceptor, errorHandlerInterceptor])),
+        provideHttpClient(withInterceptors([loadingHandlerInterceptor,  jwtInterceptor])),
 
         provideBrowserGlobalErrorListeners(),
         provideZoneChangeDetection({ eventCoalescing: true }),

@@ -2,10 +2,9 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from '@env/environment';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { CartEntityResponse, CartNiubizSessionEntityResponse, CartPayload, CartPresaleLabelEntityResponse, PersonPayload } from '@shipment-record/models/cart.model';
+import { CartEntityResponse, CartPayload, PersonPayload } from '@shipment-record/models/cart.model';
 import { HeadquartersEntityResponse } from '@shipment-record/models/headquarters.model';
 import { CartItemPayload } from '@shipment-record/models/cart-item.model';
-import { CouponService } from '@shipment-record/services/coupon.service';
 
 @Injectable({
     providedIn: 'root'
@@ -13,7 +12,6 @@ import { CouponService } from '@shipment-record/services/coupon.service';
 export class CartService {
     private readonly baseUrl = environment.shippingRecords.api;
     private readonly http: HttpClient = inject(HttpClient);
-    private readonly couponService = inject(CouponService);
 
     private readonly cartStore = new BehaviorSubject<any>(null);
     public cartStore$ = this.cartStore.asObservable();
@@ -48,28 +46,9 @@ export class CartService {
         });
     }
 
-    setItems(items: any[]) {
-        const currentCart = this.cartStore.getValue() || {};
-        this.cartStore.next({
-            ...currentCart,
-            items: items
-        });
-    }
-
     getByUuid(sessionUuid: string): Observable<CartEntityResponse> {
         const endpoint = `${this.baseUrl}/v1/cart/${sessionUuid}`;
         return this.http.get<CartEntityResponse>(endpoint);
-    }
-
-    validateCoupon(code: string) {
-        return this.couponService.validateCoupon(code);
-    }
-
-    // applyCoupon(sessionUuid: string): Observable<CartEntityResponse> {
-    //     return this.couponService.applyCoupon(sessionUuid);
-    // }
-    applyCoupon(sessionUuid: string, code: string): Observable<CartEntityResponse> {
-        return this.couponService.applyCoupon(sessionUuid, code);
     }
 
     updateCart() {
@@ -101,40 +80,8 @@ export class CartService {
         return this.http.patch<any>(endpoint, payload);
     }
 
-    cloneItem(sessionUuid: string, itemUuid: string): Observable<any> {
-        const endpoint = `${this.baseUrl}/v1/cart/${sessionUuid}/item/${itemUuid}/clone`;
-        return this.http.post<any>(endpoint, {});
-    }
     deleteItem(sessionUuid: string, itemUuid: string): Observable<any> {
         const endpoint = `${this.baseUrl}/v1/cart/${sessionUuid}/item/${itemUuid}`;
         return this.http.delete<any>(endpoint);
-    }
-
-    createPin(sessionUuid: string, pin: string): Observable<any> {
-        const endpoint = `${this.baseUrl}/v1/shipping-records/cart/${sessionUuid}/pin`;
-        return this.http.put<any>(endpoint, {
-            pin
-        });
-    }
-
-    createPaymentNiubizSession(sessionUuid: string): Observable<CartNiubizSessionEntityResponse> {
-        const endpoint = `${this.baseUrl}/v1/cart/${sessionUuid}/payment/niubiz/session`;
-        return this.http.post<CartNiubizSessionEntityResponse>(endpoint, {});
-    }
-
-    createPESession(sessionUuid: string): Observable<any> {
-        const endpoint = `${this.baseUrl}/v1/cart/${sessionUuid}/payment/pagoefectivo`;
-        return this.http.post<any>(endpoint, {
-            email: 'correo@gmail.com'
-        });
-    }
-    createOfflinePayment(sessionUuid: string): Observable<any> {
-        // {{url}}/v1/cart/{{session_id}}/payment/tienda
-        const endpoint = `${this.baseUrl}/v1/cart/${sessionUuid}/payment/tienda`;
-        return this.http.post<any>(endpoint, {});
-    }
-    downloadLabelPdf(sessionUuid: string): Observable<CartPresaleLabelEntityResponse> {
-        const endpoint = `${this.baseUrl}/v1/shipping-records/cart/${sessionUuid}/label`;
-        return this.http.get<CartPresaleLabelEntityResponse>(endpoint);
     }
 }

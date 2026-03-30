@@ -1,24 +1,22 @@
-import { Injectable, signal, Signal } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { Observable, Subject } from 'rxjs';
 import { Toast } from '@shared/models/toast.model';
 
 @Injectable({
     providedIn: 'root'
 })
 export class ToastService {
-    // Señal interna que mantiene el estado actual del toast
-    private readonly _toast = signal<Toast | null>(null);
+    private readonly toastSubject = new Subject<Toast | null>();
 
-    // API pública basada en Signal (readonly)
-    get toastSignal(): Signal<Toast | null> {
-        return this._toast.asReadonly();
+    get toast$(): Observable<Toast | null> {
+        return this.toastSubject.asObservable();
     }
 
     showToast(detail: string, severity: 'success' | 'error' | 'info' | 'warn', summary = 'Alerta de Sistema') {
-        const toast: Toast = { detail, severity, summary };
-        this._toast.set(toast);
+        this.toastSubject.next({ detail, severity, summary });
     }
 
     clearToast() {
-        this._toast.set(null);
+        this.toastSubject.next(null);
     }
 }

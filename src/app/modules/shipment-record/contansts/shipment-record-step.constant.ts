@@ -79,8 +79,8 @@ export const STANDARD_SIZES: StandardSize[] = [
 ];
 
 export const VALIDATION_LIMITS = {
-    ARTICLE_VALUE_DEFAULT: 10000000,
-    ARTICLE_VALUE_DESTINATION: 1500,
+    ARTICLE_VALUE_DEFAULT: 10000,
+    ARTICLE_VALUE_DESTINATION: 500,
     MIN_ARTICLE_VALUE: 0.0101,
     MAX_DIMENSION: 110,
     MIN_DIMENSION: 1,
@@ -92,38 +92,3 @@ export enum DELIVERY_TYPE {
     HOME = 'D',
     OFFICE = 'O'
 }
-
-export enum PAYMENT_TYPES_CODES {
-    ONLINE = 'ONLINE',
-    STORE = 'STORE',
-    DESTINATION = 'DESTINATION'
-}
-
-export const PAYMENT_TYPES = [
-    {
-        code: 'ONLINE',
-        title: 'Pago en línea',
-        description: 'Pago con tarjeta de débito/crédito o PagoEfectivo.',
-        icon_name: 'shared/images/credit-card.svg',
-        sort_order: 1,
-        requires_payment_method: true
-    },
-    {
-        code: 'STORE',
-        title: 'Pago en tienda',
-        description: 'Pago al entregar en tienda.',
-        icon_name: 'shared/images/safe-delivery-01.svg',
-        sort_order: 2,
-        requires_payment_method: false,
-        payment_methods: []
-    },
-    {
-        code: 'DESTINATION',
-        title: 'Pago en destino',
-        description: 'Pago del envío contra entrega.',
-        icon_name: 'shared/images/store-04-icon.svg',
-        sort_order: 3,
-        requires_payment_method: false,
-        payment_methods: []
-    }
-];

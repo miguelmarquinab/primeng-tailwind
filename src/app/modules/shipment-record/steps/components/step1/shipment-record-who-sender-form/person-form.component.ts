@@ -8,7 +8,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { DocumentType } from '@shared/models/document-type.model';
 import { NgClass } from '@angular/common';
 import { OnlyNumberDirective } from '@shared/directives/only-number.directive';
-import { PersonFormData, WhoSenderFormData } from '@shipment-record/models/who-sender-form.model';
+import { WhoSenderFormData } from '@shipment-record/models/who-sender-form.model';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ShipmentRecordPersonValidateModalComponent } from '@shipment-record/steps/components/step1/shipment-record-person-validate-modal/shipment-record-person-validate-modal.component';
 import { PersonService } from '@/modules/people/person/services/person.service';
@@ -36,7 +36,6 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     @Input() whoSenderData!: any;
     @Input() enableEmailField = true;
     @Input() documentTypes: DocumentType[] = AppConstant.DOCUMENT_TYPES_WITH_INVOICE_TYPES;
-    // @Input() person!: PersonEntityResponse;
     peopleForm!: FormGroup;
     currentDocumentType: DocumentType = {
         value: '',
@@ -52,9 +51,6 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     @Input() documentTypeLabel = 'Tipo de documento y comprobante';
     @Output() submitWhoSenderForm = new EventEmitter<WhoSenderFormData>();
     @Output() documentNumberChanged = new EventEmitter<boolean>();
-
-    ////
-    @Input() personData!: PersonFormData;
 
     ref: DynamicDialogRef<any> | null = null;
     isClient = false;
@@ -137,23 +133,6 @@ export class PersonFormComponent implements OnInit, OnDestroy {
         }
         this.documentTypeEventHandler();
         this.documentNumberFormHandler();
-
-        if (this.personData) {
-            this.peopleForm.get('documentType')?.patchValue(this.personData.document_type);
-            this.peopleForm.patchValue(
-                {
-                    documentNumber: this.personData.document_number,
-                    firstName: this.personData.first_names,
-                    lastName: this.personData.last_name,
-                    cellPhone: this.personData.phone
-                },
-                {
-                    emitEvent: false
-                }
-            );
-            this.enableCellPhone();
-            this.onSubmitHandler();
-        }
     }
 
     isNeedOpenPersonValidateModal(documentTypeCode: string) {
@@ -378,7 +357,6 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     onSubmitHandler() {
         let firstName = this.peopleForm.get('firstName')?.value || '';
         let lastName = this.peopleForm.get('lastName')?.value || '';
-        const documentType = this.peopleForm.get('documentType')?.value || '';
         const documentNumber = this.peopleForm.get('documentNumber')?.value || '';
         const emailAddress = this.peopleForm.get('emailAddress')?.value || '';
         const cellPhone = this.peopleForm.get('cellPhone')?.value || '';
@@ -390,7 +368,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
             first_names: firstName,
             last_name: lastName,
             document_number: documentNumber,
-            document_type: documentType,
+            document_type: this.personResponse?.document_type,
             email: emailAddress,
             phone: cellPhone,
             person_legal_area: this.personResponse?.juridical_area_id,
@@ -408,8 +386,6 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     documentNumberChangedHandler(change: boolean) {
         this.documentNumberChanged.emit(change);
         this.personExist = true;
-        // this.cellphone = '';
-        // this.documentNumber = '';
         this.disableFirstName();
         this.disableLastName();
         this.disableCellPhone();

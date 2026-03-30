@@ -3,7 +3,7 @@
   <div class="flex flex-col gap-4  md:overflow-y-auto h-full md:h-153" #accordionScrollContainer>
     <p-accordion [value]="currentAccordionIndex" (onOpen)="onAccordionChange($event)">
       <p-accordion-panel [value]="0">
-        <p-accordion-header>¿Quién recibe? (Destinatario)</p-accordion-header>
+        <p-accordion-header>¿Quien recibe?</p-accordion-header>
         <p-accordion-content>
           <app-person-form
             [documentTypes]="AppConstant.DOCUMENT_TYPES_WITHOUT_INVOICE_TYPES"
@@ -13,9 +13,7 @@
             [enableSetPersonData]="true"
             [enableBlur]="false"
             documentTypeLabel="Tipo de documento"
-            (submitWhoSenderForm)="submitWhoSenderForm($event)"
-            [personData]="currentWhoReceiveFormData"
-          ></app-person-form>
+            (submitWhoSenderForm)="submitWhoSenderForm($event)"></app-person-form>
         </p-accordion-content>
       </p-accordion-panel>
 
@@ -26,7 +24,6 @@
             [articleCategories]="articleCategories"
             [cartData]="cartData"
             (submitForm)="submitWhatSenderForm($event)"
-            [cartItemWhatSendEntityResponse]="currentCartItem?.what_send"
           ></app-shipment-record-what-send>
 
         </p-accordion-content>
@@ -37,7 +34,6 @@
           <app-shipment-record-destination
             (returnChargeChanged)="onReturnChargeChanged($event)"
             (submitDestination)="submitDestinationForm($event)"
-            [currentItem]="currentCartItem"
           >
           </app-shipment-record-destination>
         </p-accordion-content>

@@ -1,8 +1,7 @@
 export const environment = {
     production: false,
     environment: 'localhost',
-    shippingRecords: {
-        // api: 'http://localhost:8000',
+    shippingRecords:{
         api: 'https://registrodeenvios-dev.olvaexpress.pe',
         public: {
             config: {
@@ -11,17 +10,5 @@ export const environment = {
                 client_secret: '123456'
             }
         }
-    },
-    paymentGateway: {
-        niubiz: {
-            assets: {
-                scriptCheckout: 'https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true'
-            }
-        },
-        assets: {
-            olvaLogo: 'https://res.cloudinary.com/marmotahosting/image/upload/v1772646298/olva_logo_mp_ituzls.png'
-        },
-        callback: 'http://localhost:4700/shipment-record/finish',
-        callbackError: 'http://localhost:4700/shipment-record/step/3'
     }
 };
