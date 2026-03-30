@@ -3,23 +3,17 @@ import { AccordionModule } from 'primeng/accordion';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
-import {
-    PersonFormComponent
-} from '@shipment-record/steps/components/step1/shipment-record-who-sender-form/person-form.component';
-import {
-    ShipmentRecordOriginFormComponent
-} from '@shipment-record/steps/components/step1/shipment-record-origin-form/shipment-record-origin-form.component';
+import { PersonFormComponent } from '@shipment-record/steps/components/step1/shipment-record-who-sender-form/person-form.component';
+import { ShipmentRecordOriginFormComponent } from '@shipment-record/steps/components/step1/shipment-record-origin-form/shipment-record-origin-form.component';
 import { WhoSenderFormData } from '@shipment-record/models/who-sender-form.model';
 import { CartSessionStorageService } from '@shipment-record/services/cart-session-storage.service';
 import { CartService } from '@shipment-record/services/cart.service';
 import { HeadquartersEntityResponse } from '@shipment-record/models/headquarters.model';
 import { HeadquartersService } from '@shipment-record/services/headquarters.service';
-import { OriginPayload, PersonPayload } from '@shipment-record/models/cart.model';
+import { CreateCartPayload, OriginPayload, PersonPayload } from '@shipment-record/models/cart.model';
 import { PersonConstant } from '@shipment-record/contansts/person.constant';
 import { Subject, takeUntil } from 'rxjs';
-import {
-    ShipmentRecordWhoPayFormComponent
-} from '@shipment-record/steps/components/step1/shipment-record-who-pay-form/shipment-record-who-pay-form.component';
+import { ShipmentRecordWhoPayFormComponent } from '@shipment-record/steps/components/step1/shipment-record-who-pay-form/shipment-record-who-pay-form.component';
 
 @Component({
     selector: 'app-shipment-record-step1',
@@ -61,13 +55,19 @@ export class ShipmentRecordStep1Component implements OnInit {
         this.panelsDisabled[1] = false;
         this.cartSessionService.setHeaderWhoSender(this.buildPersonPayload());
         this.cartService
-            .create()
+            .create(this.buildCreateCartBody())
             .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (response) => {
                     this.cartSessionService.setCardId(response.session_id);
                 }
             });
+    }
+
+    buildCreateCartBody(): CreateCartPayload {
+        return {
+            person: this.buildPersonPayload()
+        };
     }
 
     buildPersonPayload(): PersonPayload {
@@ -85,7 +85,7 @@ export class ShipmentRecordStep1Component implements OnInit {
             rounding_factor: this.whoSend.rounding_factor,
             package_headquarter_code: this.whoSend.package_headquarter_code,
             tax_affectation_type_id: this.whoSend.tax_affectation_type_id,
-            person_legal_area: this.whoSend.person_legal_area,
+            person_legal_area: this.whoSend.person_legal_area
         };
     }
 
@@ -110,9 +110,13 @@ export class ShipmentRecordStep1Component implements OnInit {
             if (!sessionUuid) {
                 return;
             }
-            const payload = this.cartSessionService.buildCartPayload();
+            const payload = this.cartSessionService.buildCartPayload().origin;
 
-            this.cartService.update(sessionUuid, payload).subscribe({
+            if (!payload) {
+                return;
+            }
+
+            this.cartService.setOrigin(sessionUuid, payload).subscribe({
                 next: (response) => {
                     this.currentAccordionIndex = 2;
                     this.panelsDisabled[2] = false;
@@ -122,15 +126,25 @@ export class ShipmentRecordStep1Component implements OnInit {
         }
     }
 
-    submitWhoPayForm(event:any){
+    submitWhoPayForm(event: any) {
         console.log('submitWhoPayForm', event);
         console.log('whoPay', event.whoPay.paymentType);
         console.log('whoPay', event.detail);
         const paymentType = event.whoPay.paymentType;
         const whoPayDetail = event.detail;
-        this.cartSessionService.setWhoPay(paymentType, whoPayDetail);
-        this.cartService.setStepNumber(2);
-    };
+        const sessionUuid = this.cartSessionService.getCartId();
+
+        if (!sessionUuid) {
+            return;
+        }
+
+        this.cartService.setWhoPays(sessionUuid, { who_pays: paymentType }).subscribe({
+            next: () => {
+                this.cartSessionService.setWhoPay(paymentType, whoPayDetail);
+                this.cartService.setStepNumber(2);
+            }
+        });
+    }
     getHeadquarterById(headquarterId: number): HeadquartersEntityResponse {
         return (
             this.headquarters.find((headquarter) => headquarter.headquarter_id === headquarterId) || {

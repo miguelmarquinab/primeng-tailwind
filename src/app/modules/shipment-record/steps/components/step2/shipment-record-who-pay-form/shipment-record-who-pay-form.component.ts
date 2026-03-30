@@ -31,7 +31,7 @@ export class ShipmentRecordWhoPayFormComponent implements OnInit, OnDestroy {
 
     handleSubmit() {
         if (this.whoPayForm.valid) {
-            const sessionUuid = this.cartSessionService.getCardId();
+            const sessionUuid = this.cartSessionService.getCartId();
             if (!sessionUuid) {
                 return;
             }

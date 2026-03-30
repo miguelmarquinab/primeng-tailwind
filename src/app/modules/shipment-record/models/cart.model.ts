@@ -10,6 +10,10 @@ export interface CartPayload {
     pricing?: any;
 }
 
+export interface CreateCartPayload {
+    person: PersonPayload;
+}
+
 export interface OriginPayload {
     headquarter_id?: number;
     ubigeo_id?: string | number;
@@ -17,6 +21,10 @@ export interface OriginPayload {
     headquarter_name?: string;
     ubigeo?: string;
     office_code?: number;
+}
+
+export interface WhoPaysPayload {
+    who_pays: string;
 }
 
 export interface PersonPayload {

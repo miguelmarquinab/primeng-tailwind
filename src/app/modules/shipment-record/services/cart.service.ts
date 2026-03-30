@@ -1,8 +1,10 @@
 import { inject, Injectable } from '@angular/core';
-import { environment } from '@env/environment';
 import { HttpClient } from '@angular/common/http';
+
 import { BehaviorSubject, Observable } from 'rxjs';
-import { CartEntityResponse, CartPayload, PersonPayload } from '@shipment-record/models/cart.model';
+
+import { environment } from '@env/environment';
+import { CartEntityResponse, CartPayload, CreateCartPayload, OriginPayload, PersonPayload, WhoPaysPayload } from '@shipment-record/models/cart.model';
 import { HeadquartersEntityResponse } from '@shipment-record/models/headquarters.model';
 import { CartItemPayload } from '@shipment-record/models/cart-item.model';
 
@@ -16,9 +18,25 @@ export class CartService {
     private readonly cartStore = new BehaviorSubject<any>(null);
     public cartStore$ = this.cartStore.asObservable();
 
-    create(): Observable<any> {
+    create(body: CreateCartPayload): Observable<any> {
         const endpoint = `${this.baseUrl}/v1/cart`;
-        return this.http.post<any>(endpoint, {});
+        return this.http.post<any>(endpoint, body);
+    }
+
+    /**
+     * Persist origin data for the cart
+     */
+    setOrigin(sessionUuid: string, body: OriginPayload): Observable<any> {
+        const endpoint = `${this.baseUrl}/v1/cart/${sessionUuid}/origin`;
+        return this.http.put<any>(endpoint, body);
+    }
+
+    /**
+     * Persist who pays selection in cart
+     */
+    setWhoPays(sessionUuid: string, body: WhoPaysPayload): Observable<any> {
+        const endpoint = `${this.baseUrl}/v1/cart/${sessionUuid}/who-pays`;
+        return this.http.put<any>(endpoint, body);
     }
 
     update(sessionUuid: string, payload: CartPayload): Observable<any> {
