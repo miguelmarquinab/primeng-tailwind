@@ -1,0 +1,18 @@
+@if (loading()) {
+  <app-loading></app-loading>
+}
+@if (cart) {
+
+  <div class="bg-theme-surface-200 lg:min-h-screen flex items-center justify-center lg:px-4 lg:py-8">
+    <div
+      class="w-full bg-white rounded-none p-4 flex flex-col min-h-[calc(100dvh-2.75rem)] lg:h-auto lg:min-h-0 lg:rounded-2xl lg:p-8 lg:max-w-199.5 lg:max-h-156">
+      <div class="flex flex-col flex-1 gap-8 items-center justify-center">
+        {{ cart.payment?.niubiz?.reason }}
+
+        <br>
+        {{ cart.payment?.niubiz?.card }}
+      </div>
+    </div>
+  </div>
+
+}

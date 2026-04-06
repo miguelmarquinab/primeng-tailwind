@@ -1,0 +1,101 @@
+<div class="flex flex-col justify-between items-stretch gap-8 bg-white ">
+  <!--<div class="box-border flex flex-col justify-between items-stretch p-8 gap-8 w-[627px] h-[643.5px] bg-white border border-[#E3E9F7] rounded-[26px] shadow-[4px_2px_24.6px_rgba(157,164,191,0.21)]">-->
+  <div class="flex flex-col gap-6 w-full flex-1 min-h-0 mx-auto max-w-[563px]">
+    <!--    <div class="flex flex-col gap-6 w-full flex-none">-->
+    <!--      <div class="flex flex-row justify-end items-start gap-6 w-full">-->
+    <!--        <h2 class="m-0 flex-1 font-bold text-2xl leading-[29px] text-[#494949]">Pasos finales</h2>-->
+
+    <!--        <p-button-->
+    <!--          icon="pi pi-times"-->
+    <!--          severity="secondary"-->
+    <!--          [text]="true"-->
+    <!--          [rounded]="true"-->
+    <!--          ariaLabel="Cerrar"-->
+    <!--          (click)="close()"-->
+    <!--        />-->
+    <!--      </div>-->
+
+    <!--      <div class="flex flex-row gap-3 w-full">-->
+    <!--        <div class="flex-1 h-2 rounded-full bg-[#FCB414]"></div>-->
+    <!--        <div class="flex-1 h-2 rounded-full bg-[#FCB414]"></div>-->
+    <!--        <div class="flex-1 h-2 rounded-full bg-[#D9D9D9]"></div>-->
+    <!--      </div>-->
+    <!--    </div>-->
+
+    <div class="flex flex-col gap-6 w-full flex-1 min-h-0">
+      <h3 class="m-0 w-full font-bold text-xl leading-6 text-[#494949]">
+        Envíos que superan los S/500
+      </h3>
+
+      <p class="m-0 text-sm leading-[17px] text-[#494949]">
+        Superaste los S/500.00 en envíos. Para finalizar, acepta la regulación y completa tu declaración jurada.
+        <a class="text-blue-700 font-semibold underline cursor-pointer">Ver detalles.</a>
+      </p>
+
+      <div class="flex flex-col w-full flex-none border border-gray-100 rounded-xl shadow-sm overflow-hidden bg-white">
+        <div class="px-3 py-2 text-sm font-bold text-[#334155] bg-gray-50">
+          Envíos a declarar
+        </div>
+
+        <div class="max-h-[223.5px] overflow-auto w-full">
+          <table class="w-full border-collapse text-sm text-[#334155]">
+            <thead class="sticky top-0 bg-white">
+            <tr class="border-b border-[#E2E8F0]">
+              <th class="py-2.5 px-3.5 font-semibold text-left text-[14px] leading-[17px] text-[#334155] w-12">
+                Item
+              </th>
+              <th class="py-2.5 px-3.5 font-semibold text-left text-[14px] leading-[17px] text-[#334155]">
+                Contenido
+              </th>
+              <th class="py-2.5 px-3.5 font-semibold text-right text-[14px] leading-[17px] text-[#334155] w-24">
+                Valor
+              </th>
+            </tr>
+            </thead>
+
+            <tbody>
+              @for (s of shipmentsToDeclare; track s.uuid; let i = $index) {
+                <tr class="border-b border-gray-50">
+                  <td class="py-2.5 px-3.5 text-[14px] leading-[17px]">
+                    {{ i + 1 }}
+                  </td>
+                  <td class="py-2.5 px-3.5 text-[14px] leading-[17px]">
+                    {{ s.what_send?.article_category?.description }}
+                  </td>
+                  <td class="py-2.5 px-3.5 text-right text-[14px] leading-[17px]">
+                    {{ s.what_send?.declared_value }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <label class="flex items-start gap-2 text-sm leading-[17px] text-[#334155] cursor-pointer">
+        <input type="checkbox" [(ngModel)]="checkRegulation" class="mt-0.5" />
+        <span>
+          He leído la <span class="text-blue-700 font-semibold underline">regulación de envíos</span>
+          y la <span class="text-blue-700 font-semibold underline">declaración jurada</span>.
+        </span>
+      </label>
+
+      <label class="flex items-start gap-2 text-sm leading-[17px] text-[#334155] cursor-pointer">
+        <input type="checkbox" [(ngModel)]="checkAffidavit" class="mt-0.5" />
+        <span>
+          Declaro bajo juramento los productos escritos en el registro de envíos.
+        </span>
+      </label>
+
+      <div class="w-full flex-none mt-auto pt-2">
+        <p-button
+          label="Siguiente"
+          severity="primary"
+          styleClass="w-full h-11 py-2 px-4 bg-[#2546BB] border border-[#3657A2] shadow-[4px_2px_24.6px_rgba(157,164,191,0.21)] rounded-[28px] text-white font-bold text-[15.75px] leading-[19px]"
+          [disabled]="!(checkRegulation && checkAffidavit)"
+          (click)="next()"
+        />
+      </div>
+    </div>
+  </div>
+</div>

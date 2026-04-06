@@ -16,6 +16,10 @@
   --color-theme-ligth-coral: #F87171;
   --color-theme-light-gray: var(--p-inputtext-border-color);
   --color-theme-ultramarine: var(--theme-ultramarine-color);
+  --color-theme-surface-200: var(--theme-surface-200);
+  --color-theme-dim-gray: #6B6B6B;
+  --color-theme-surface-50: #F8FAFC;
+  --color-theme-primary-500: #10B981;
   --font-montserrat: "Montserrat", sans-serif;
   --font-inter: "Inter", sans-serif;
 
@@ -26,6 +30,7 @@
   --default-font-size: 0.875rem;
 
   --shadow-theme-who-pay-card: 0px 1px 3px 0px #0000001A;
+  --text-tiny: 10px;
 }
 
 

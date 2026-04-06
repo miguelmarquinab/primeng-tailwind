@@ -95,6 +95,8 @@ export class ShipmentRecordWhoPayFormComponent implements OnInit, OnChanges, OnD
             // this.cartService.setStepNumber(2);
             //     }
             // });
+
+
             this.submitWhoPayForm.emit({
                 whoPay: this.whoPayForm.value,
                 detail: this.currentHeadquarter

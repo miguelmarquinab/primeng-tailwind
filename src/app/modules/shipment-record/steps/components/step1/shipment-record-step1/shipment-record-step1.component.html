@@ -1,9 +1,16 @@
 <div class="flex flex-col gap-6">
 
   <div class="flex flex-col gap-4 overflow-y-scroll lg:overflow-y-auto flex-1">
-    <p-accordion [value]="currentAccordionIndex" (onOpen)="onAccordionChange($event)">
+    <p-accordion [(value)]="currentAccordionIndex" (onOpen)="onAccordionChange($event)">
       <p-accordion-panel [value]="0">
-        <p-accordion-header>¿Quién envía? (Remitente)</p-accordion-header>
+        <p-accordion-header>
+          <div class="flex gap-3 items-center">
+            <span>¿Quién envía? (Remitente)</span>
+            @if (whoSend) {
+              <i class="pi pi-check text-theme-primary-500"></i>
+            }
+          </div>
+        </p-accordion-header>
         <p-accordion-content>
           <app-person-form
             [personConfig]="PersonConstant.DEFAULT_CONFIG"
@@ -15,7 +22,14 @@
       </p-accordion-panel>
 
       <p-accordion-panel [value]="1" [disabled]="panelsDisabled[1]">
-        <p-accordion-header>¿Desde donde envía? (Origen)</p-accordion-header>
+        <p-accordion-header>
+          <div class="flex gap-3 items-center">
+            <span>¿Desde dónde envía? (Origen)</span>
+            @if (currentHeadquarter) {
+              <i class="pi pi-check text-theme-primary-500"></i>
+            }
+          </div>
+        </p-accordion-header>
         <p-accordion-content>
           <app-shipment-record-origin-form
             [headquarters]="headquarters"
@@ -24,7 +38,14 @@
       </p-accordion-panel>
 
       <p-accordion-panel [value]="2" [disabled]="panelsDisabled[2]">
-        <p-accordion-header>¿Quién paga?</p-accordion-header>
+        <p-accordion-header>
+          <div class="flex gap-3 items-center">
+            <span>¿Quién paga?</span>
+            @if (whoPay) {
+              <i class="pi pi-check text-theme-primary-500"></i>
+            }
+          </div>
+        </p-accordion-header>
         <p-accordion-content>
 
           <app-shipment-record-who-pay-form

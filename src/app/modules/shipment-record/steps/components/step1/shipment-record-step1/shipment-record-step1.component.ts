@@ -14,7 +14,7 @@ import { CartSessionStorageService } from '@shipment-record/services/cart-sessio
 import { CartService } from '@shipment-record/services/cart.service';
 import { HeadquartersEntityResponse } from '@shipment-record/models/headquarters.model';
 import { HeadquartersService } from '@shipment-record/services/headquarters.service';
-import { OriginPayload, PersonPayload } from '@shipment-record/models/cart.model';
+import { CreateCartPayload, OriginPayload, PersonPayload } from '@shipment-record/models/cart.model';
 import { PersonConstant } from '@shipment-record/contansts/person.constant';
 import { Subject, takeUntil } from 'rxjs';
 import {
@@ -43,6 +43,7 @@ export class ShipmentRecordStep1Component implements OnInit {
     headquarters: HeadquartersEntityResponse[] = [];
     person!: PersonPayload;
     whoSend!: WhoSenderFormData;
+    whoPay!:any;
     currentHeadquarter!: HeadquartersEntityResponse;
     protected readonly PersonConstant = PersonConstant;
     private readonly cartSessionService = inject(CartSessionStorageService);
@@ -61,7 +62,8 @@ export class ShipmentRecordStep1Component implements OnInit {
         this.panelsDisabled[1] = false;
         this.cartSessionService.setHeaderWhoSender(this.buildPersonPayload());
         this.cartService
-            .create()
+            //.create()
+            .create(this.buildCreateCartBody())
             .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: (response) => {
@@ -110,9 +112,17 @@ export class ShipmentRecordStep1Component implements OnInit {
             if (!sessionUuid) {
                 return;
             }
-            const payload = this.cartSessionService.buildCartPayload();
 
-            this.cartService.update(sessionUuid, payload).subscribe({
+            /* Refactory */
+            // const payload = this.cartSessionService.buildCartPayload();
+            const payload = this.cartSessionService.buildCartPayload().origin;
+            if (!payload) {
+                return;
+            }
+
+            /* Refactory */
+            //this.cartService.update(sessionUuid, payload).subscribe({
+            this.cartService.setOrigin(sessionUuid, payload).subscribe({
                 next: (response) => {
                     this.currentAccordionIndex = 2;
                     this.panelsDisabled[2] = false;
@@ -122,15 +132,37 @@ export class ShipmentRecordStep1Component implements OnInit {
         }
     }
 
-    submitWhoPayForm(event:any){
+    submitWhoPayForm(event: any) {
         console.log('submitWhoPayForm', event);
         console.log('whoPay', event.whoPay.paymentType);
         console.log('whoPay', event.detail);
         const paymentType = event.whoPay.paymentType;
         const whoPayDetail = event.detail;
+
+        /* Start Refactory */
+        // this.cartSessionService.setWhoPay(paymentType, whoPayDetail);
+        // this.cartService.setStepNumber(2);
+
+        const sessionUuid = this.cartSessionService.getCartId();
+
+        if (!sessionUuid) {
+            return;
+        }
+
+        this.cartService.setWhoPays(sessionUuid, { who_pays: paymentType }).subscribe({
+            next: () => {
+                this.cartSessionService.setWhoPay(paymentType, whoPayDetail);
+                this.cartService.setStepNumber(2);
+            }
+        });
+
+        /* End Refactory */      
+        this.whoPay = event;
         this.cartSessionService.setWhoPay(paymentType, whoPayDetail);
         this.cartService.setStepNumber(2);
-    };
+
+    }
+
     getHeadquarterById(headquarterId: number): HeadquartersEntityResponse {
         return (
             this.headquarters.find((headquarter) => headquarter.headquarter_id === headquarterId) || {
@@ -160,5 +192,11 @@ export class ShipmentRecordStep1Component implements OnInit {
         if (event) {
             this.panelsDisabled[1] = true;
         }
+    }
+
+    buildCreateCartBody(): CreateCartPayload {
+        return {
+            person: this.buildPersonPayload()
+        };
     }
 }

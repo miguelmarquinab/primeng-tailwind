@@ -21,7 +21,7 @@
 
     @if (isMobile()) {
       @if (!modalVisible) {
-        @if (currentDestination) {
+        @if (currentDestination.ubigeo_id) {
           <app-shipment-record-destination-card
             [destination]="currentDestination"
             [selected]="currentDestination.ubigeo_id === currentDestination.ubigeo_id"
@@ -60,14 +60,28 @@
 
 
 <ng-template #destinationsContainer>
-  <div class="flex flex-col overflow-y-auto gap-2 h-32 md:h-80">
-    @for (storeDestination of storeDestinationFiltered; track storeDestination) {
-      <app-shipment-record-destination-card
-        [destination]="storeDestination"
-        (click)="selectDestination(storeDestination)"
-        (keydown.enter)="selectDestination(storeDestination)"
-        [selected]="currentDestination.ubigeo_id === storeDestination.ubigeo_id"
-      ></app-shipment-record-destination-card>
+  <div class="flex flex-col overflow-y-auto gap-2 h-32 md:h-40">
+    @if (storeDestinationFiltered.length > 0) {
+      @for (storeDestination of storeDestinationFiltered; track storeDestination) {
+        <app-shipment-record-destination-card
+          [destination]="storeDestination"
+          (click)="selectDestination(storeDestination)"
+          (keydown.enter)="selectDestination(storeDestination)"
+          [selected]="currentDestination.ubigeo_id === storeDestination.ubigeo_id"
+        ></app-shipment-record-destination-card>
+      }
+    } @else {
+      <div class="flex flex-col gap-2  ">
+        <div class="flex gap-2 items-center justify-center">
+          <img src="shared/images/destinations-not-found.svg" alt="" />
+        </div>
+        <div class="text-sm font-bold text-center">
+          ¡Ups! No encontramos resultados
+        </div>
+        <div class="text-sm  font-medium text-center">
+          Intenta ajustar los filtros o selecciona otra zona.
+        </div>
+      </div>
     }
   </div>
 </ng-template>
@@ -81,7 +95,7 @@
       <input
         pInputText
         id="destination"
-        placeholder="Busca un distrito o departamento"
+        placeholder="Busca un distrito o departamento (*)"
         class="w-full"
         formControlName="destination"
         [ngClass]="
@@ -92,19 +106,19 @@
       />
     </div>
 
-    @if (storeDestinationFiltered.length === 0) {
+    @if (form.invalid && !currentItem) {
       <ng-container
         [ngTemplateOutlet]="searchEmptyTpl"
       ></ng-container>
     } @else {
-      @if (storeDestinationsData) {
-        <div class="flex flex-col gap-2 h-48">
+      @if (form.get('destination')) {
+        <div class="flex flex-col gap-2 md:h-48">
           @if (!isMobile()) {
             <ng-container
               [ngTemplateOutlet]="addressTabsContainerTpl"
             ></ng-container>
-
           }
+
           @if (isMobile() && modalVisible) {
 
             <ng-container
@@ -112,10 +126,16 @@
             ></ng-container>
 
             <div class="w-full">
-              <p-button severity="primary" label="Confirmar dirección" styleClass="w-full"
-                        (click)="modalVisible=false"></p-button>
+              <p-button severity="primary"
+                        label="Confirmar tienda"
+                        styleClass="w-full"
+                        (click)="modalVisible=false"
+                        [disabled]="!currentDestination?.office_id"
+              >
+              </p-button>
             </div>
           }
+
         </div>
       }
     }
@@ -127,25 +147,29 @@
 <ng-template #addressTabsContainerTpl>
   <p-tabs [value]="currentTab">
     <p-tablist>
-      <p-tab [value]="0"
-             (click)="changeTab(0)"
-             (keydown.enter)="changeTab(0)"
-      >
-        <div class="flex items-center justify-center gap-2">
-          <span class="pi pi-home"></span>
-          <span>Todo</span>
-        </div>
-      </p-tab>
-      <p-tab [value]="1"
-             (click)="changeTab(1)"
-             (keydown.enter)="changeTab(1)"
-      >
-        <div class="flex items-center justify-center gap-2 ">
-          <span class="pi pi-shop"></span>
-          <span>Tienda</span>
-        </div>
-      </p-tab>
-      @if (!(cartData?.header?.whoPay === 'DESTINATION')) {
+      @if (tabsEnabled[0]) {
+        <p-tab [value]="0"
+               (click)="changeTab(0)"
+               (keydown.enter)="changeTab(0)"
+        >
+          <div class="flex items-center justify-center gap-2">
+            <span class="pi pi-home"></span>
+            <span>Todo</span>
+          </div>
+        </p-tab>
+      }
+      @if (tabsEnabled[1]) {
+        <p-tab [value]="1"
+               (click)="changeTab(1)"
+               (keydown.enter)="changeTab(1)"
+        >
+          <div class="flex items-center justify-center gap-2 ">
+            <span class="pi pi-shop"></span>
+            <span>Tienda</span>
+          </div>
+        </p-tab>
+      }
+      @if (tabsEnabled[2]) {
         <p-tab [value]="2"
                (click)="changeTab(2)"
                (keydown.enter)="changeTab(2)"
@@ -159,13 +183,19 @@
     </p-tablist>
     <p-tabpanels style="padding: 8px;">
 
-      <p-tabpanel [value]="0">
-        <ng-container *ngTemplateOutlet="destinationsContainer"></ng-container>
-      </p-tabpanel>
-      <p-tabpanel [value]="1">
-        <ng-container *ngTemplateOutlet="destinationsContainer"></ng-container>
-      </p-tabpanel>
-      @if (!(cartData?.header?.whoPay === 'DESTINATION')) {
+      @if (tabsEnabled[0]) {
+        <p-tabpanel [value]="0">
+          <ng-container *ngTemplateOutlet="destinationsContainer"></ng-container>
+        </p-tabpanel>
+      }
+
+      @if (tabsEnabled[1]) {
+        <p-tabpanel [value]="1">
+          <ng-container *ngTemplateOutlet="destinationsContainer"></ng-container>
+        </p-tabpanel>
+      }
+
+      @if (tabsEnabled[2]) {
         <p-tabpanel [value]="2">
           <ng-container *ngTemplateOutlet="destinationsContainer"></ng-container>
         </p-tabpanel>

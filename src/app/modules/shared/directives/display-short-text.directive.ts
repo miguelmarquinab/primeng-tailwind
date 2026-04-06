@@ -16,13 +16,13 @@ export class DisplayShortTextDirective implements OnInit, OnDestroy {
      * When set to false the directive will restore the full value and remove readonly.
      */
     @Input()
-    set enable(value: boolean) {
+    set enableDisplayShortText(value: boolean) {
         this._enable = !!value;
         // sync immediately when input changes
         this.syncState();
     }
 
-    get enable(): boolean {
+    get enableDisplayShortText(): boolean {
         return this._enable;
     }
 
@@ -67,7 +67,7 @@ export class DisplayShortTextDirective implements OnInit, OnDestroy {
 
     private syncState() {
         // if directive is globally disabled via Input, ensure full value is restored and readonly cleared
-        if (!this.enable) {
+        if (!this.enableDisplayShortText) {
             this.setReadOnlyIfNeeded(false);
             this.restoreFull();
             return;
@@ -142,7 +142,7 @@ export class DisplayShortTextDirective implements OnInit, OnDestroy {
     @HostListener('blur')
     onBlur() {
         // only act when the feature is enabled and the field is disabled
-        if (!this.enable || !this.isDisabled()) return;
+        if (!this.enableDisplayShortText || !this.isDisabled()) return;
         const full = this.getFullValue();
         const abbr = this.abbreviate(full);
         this.renderer.setAttribute(this.native, 'data-full-name', full);
@@ -151,7 +151,7 @@ export class DisplayShortTextDirective implements OnInit, OnDestroy {
 
     @HostListener('focus')
     onFocus() {
-        if (!this.enable || !this.isDisabled()) return;
+        if (!this.enableDisplayShortText || !this.isDisabled()) return;
         const full = this.getFullValue() || this.native.getAttribute('data-full-name') || '';
         this.setDisplayedValue(full);
     }

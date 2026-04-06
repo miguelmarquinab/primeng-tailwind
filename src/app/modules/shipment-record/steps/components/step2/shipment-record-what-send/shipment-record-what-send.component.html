@@ -110,7 +110,6 @@
                 ></ng-container>
 
               </div>
-
             }
           </div>
         </p-tabpanel>
@@ -118,12 +117,12 @@
 
           <div class="flex flex-col gap-4">
             <div class="flex items-center justify-center gap-4">
-              <div class="grid lg:grid-cols-4 gap-4 min-w-0 w-full">
+              <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 min-w-0 w-full">
 
                 <div class="flex flex-col gap-2">
                   <label for="large"
                          [pTooltip]="'Mide el lado más largo de tu paquete. (Generalmente, es la medida mayor)'"
-                         tooltipPosition="right" placeholder="Right">Largo (cm)</label>
+                         tooltipPosition="right" placeholder="Right">Largo (cm) (*)</label>
                   <p-inputnumber
                     inputId="large"
                     placeholder="cm"
@@ -144,7 +143,7 @@
                 <div class="flex flex-col gap-2">
                   <label for="width" [pTooltip]="'Mide el lado más corto de la base. (Debe ser menor o igual al Largo)'"
                          tooltipPosition="right" placeholder="Right"
-                  >Ancho (cm)</label>
+                  >Ancho (cm) (*)</label>
                   <p-inputnumber
                     inputId="width"
                     placeholder="cm"
@@ -166,7 +165,7 @@
                   <label for="height"
                          [pTooltip]="'Mide la distancia de la base a la tapa (la altura total del paquete)'"
                          tooltipPosition="right" placeholder="Right"
-                  >Alto (cm)</label>
+                  >Alto (cm) (*)</label>
                   <p-inputnumber
                     inputId="height"
                     placeholder="cm"
@@ -185,7 +184,7 @@
 
                 </div>
                 <div class="flex flex-col gap-2">
-                  <label for="weight">Peso (kg)</label>
+                  <label for="weight">Peso (kg) (*)</label>
                   <p-inputnumber
                     inputId="weight"
                     placeholder="kg"
@@ -211,8 +210,30 @@
 
 
             <p-message severity="secondary" icon="pi pi-info-circle" styleClass="mb-2">
-              Si el peso o medidas ingresadas no coinciden con tu paquete, <span class="font-bold text-theme-secondary">se podría requerir que pagues un ajuste a la tarifa</span>.
+              <div class="text-tiny md:text-sm">Si el peso o medidas ingresadas no coinciden con tu paquete, <span class="font-bold text-theme-secondary">se podría requerir que pagues un ajuste a la tarifa</span>.</div>
             </p-message>
+
+            @if (isMobile()) {
+              <div class="flex md:hidden">
+                <ng-container
+                  *ngTemplateOutlet="articleCategoryTpl; context: { whatSendForm: whatSendForm }"
+                ></ng-container>
+              </div>
+
+
+              <div class="flex md:hidden">
+                <ng-container
+                  *ngTemplateOutlet="confidentialInfoTpl"
+                ></ng-container>
+              </div>
+              <div class="flex md:hidden">
+
+                <ng-container
+                  [ngTemplateOutlet]="nextButtonTpl"
+                ></ng-container>
+
+              </div>
+            }
 
           </div>
 
@@ -277,7 +298,7 @@
 <ng-template #articleCategoryTpl let-whatSendForm="whatSendForm">
   <div class="grid lg:grid-cols-2 gap-4 min-w-0 w-full" [formGroup]="whatSendForm">
     <div class="flex flex-col gap-2 min-w-0">
-      <label for="category">Categoría</label>
+      <label for="category">Categoría (*)</label>
 
       <p-select
         [ngClass]="
@@ -299,7 +320,7 @@
     </div>
 
     <div class="flex flex-col gap-2">
-      <label for="articleValue">¿Cuál es el valor de tu artículo?</label>
+      <label for="articleValue">¿Cuál es el valor de tu artículo? (*)</label>
       <p-inputnumber
         inputId="articleValue"
         mode="currency"
@@ -320,13 +341,13 @@
 
     </div>
 
-    <div class="flex items-center">
-      <p-checkbox inputId="isFragile" name="isFragile" [binary]="true" formControlName="isFragile"
-                  [trueValue]="1"
-                  [falseValue]="0"
-      />
-      <label for="isFragile" class="font-normal ml-2"> Producto frágil </label>
-    </div>
+<!--    <div class="flex items-center">-->
+<!--      <p-checkbox inputId="isFragile" name="isFragile" [binary]="true" formControlName="isFragile"-->
+<!--                  [trueValue]="1"-->
+<!--                  [falseValue]="0"-->
+<!--      />-->
+<!--      <label for="isFragile" class="font-normal ml-2"> Producto frágil </label>-->
+<!--    </div>-->
 
   </div>
 </ng-template>

@@ -16,43 +16,28 @@ describe('ToastService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should emit a toast when showToast is called', (done) => {
+    it('should set a toast when showToast is called', () => {
         const expected: Toast = {
             detail: 'Mensaje',
             severity: 'success',
             summary: 'Alerta de Sistema'
         };
-        service.toast$.subscribe((toast) => {
-            if (toast) {
-                expect(toast).toEqual(expected);
-                done();
-            }
-        });
         service.showToast('Mensaje', 'success');
+        expect(service.toastSignal()).toEqual(expected);
     });
 
-    it('should emit a toast with custom summary', (done) => {
+    it('should set a toast with custom summary', () => {
         const expected: Toast = {
             detail: 'Mensaje',
             severity: 'info',
             summary: 'Personalizado'
         };
-        service.toast$.subscribe((toast) => {
-            if (toast) {
-                expect(toast).toEqual(expected);
-                done();
-            }
-        });
         service.showToast('Mensaje', 'info', 'Personalizado');
+        expect(service.toastSignal()).toEqual(expected);
     });
 
-    it('should emit null when clearToast is called', (done) => {
-        service.toast$.subscribe((toast) => {
-            if (toast === null) {
-                expect(toast).toBeNull();
-                done();
-            }
-        });
+    it('should be null when clearToast is called', () => {
         service.clearToast();
+        expect(service.toastSignal()).toBeNull();
     });
 });

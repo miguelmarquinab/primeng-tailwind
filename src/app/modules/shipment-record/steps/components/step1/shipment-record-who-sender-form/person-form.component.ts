@@ -8,11 +8,11 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { DocumentType } from '@shared/models/document-type.model';
 import { NgClass } from '@angular/common';
 import { OnlyNumberDirective } from '@shared/directives/only-number.directive';
-import { WhoSenderFormData } from '@shipment-record/models/who-sender-form.model';
+import { PersonFormData, WhoSenderFormData } from '@shipment-record/models/who-sender-form.model';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ShipmentRecordPersonValidateModalComponent } from '@shipment-record/steps/components/step1/shipment-record-person-validate-modal/shipment-record-person-validate-modal.component';
 import { PersonService } from '@/modules/people/person/services/person.service';
-import { catchError, debounceTime, EMPTY, filter, Subject, switchMap, takeUntil, tap } from 'rxjs';
+import { catchError, debounceTime, EMPTY, filter, Subject, Subscription, switchMap, takeUntil, tap } from 'rxjs';
 import { PersonEntityResponse } from '@/modules/people/models/person.model';
 import { Message } from 'primeng/message';
 import { InputRegexDirective } from '@shared/directives/input-regex.directive';
@@ -24,6 +24,10 @@ import { PersonFormConfig } from '@shipment-record/models/person.modal';
 import { PersonConstant } from '@shipment-record/contansts/person.constant';
 import { DisplayShortTextDirective } from '@shared/directives/display-short-text.directive';
 
+interface PersonValidateModalData {
+    person: PersonEntityResponse;
+}
+
 @Component({
     selector: 'app-person-form',
     imports: [AccordionModule, ButtonModule, InputTextModule, SelectModule, ReactiveFormsModule, OnlyNumberDirective, NgClass, Message, InputRegexDirective, RestrictCharsDirective, InputErrorMessageComponent, DisplayShortTextDirective],
@@ -33,7 +37,6 @@ import { DisplayShortTextDirective } from '@shared/directives/display-short-text
     providers: [DialogService]
 })
 export class PersonFormComponent implements OnInit, OnDestroy {
-    @Input() whoSenderData!: any;
     @Input() enableEmailField = true;
     @Input() documentTypes: DocumentType[] = AppConstant.DOCUMENT_TYPES_WITH_INVOICE_TYPES;
     peopleForm!: FormGroup;
@@ -47,13 +50,13 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     @Input() personConfig!: PersonFormConfig;
     @Input() enablePersonValidation = true;
     @Input() enableSetPersonData = true;
-    @Input() enableBlur = false;
     @Input() documentTypeLabel = 'Tipo de documento y comprobante';
     @Output() submitWhoSenderForm = new EventEmitter<WhoSenderFormData>();
     @Output() documentNumberChanged = new EventEmitter<boolean>();
 
-    ref: DynamicDialogRef<any> | null = null;
-    isClient = false;
+    @Input() personData!: PersonFormData;
+
+    ref: DynamicDialogRef | null = null;
     personExist = true;
     personIsLoading = false;
     personResponse!: PersonEntityResponse;
@@ -63,20 +66,36 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     private readonly dialogService = inject(DialogService);
     private readonly personService = inject(PersonService);
 
+    private documentTypeSubscription: Subscription | null = null;
+    private documentNumberSubscription: Subscription | null = null;
+    private modalCloseSubscription: Subscription | null = null;
+
+    private readonly requiredFieldsConfig: Record<string, string[]> = {
+        default: ['documentNumber', 'cellPhone'],
+        [AppConstant.DOCUMENT_TYPE_RUC]: ['documentNumber', 'cellPhone'],
+        [AppConstant.DOCUMENT_TYPE_RUC + '_new']: ['documentNumber', 'firstName', 'cellPhone']
+    };
+
     get isFormReady(): boolean {
         const form = this.peopleForm;
-        let requiredFields = ['documentNumber', 'cellPhone'];
+        let configKey = this.currentDocumentType.value || 'default';
+
         if (this.currentDocumentType.value === AppConstant.DOCUMENT_TYPE_RUC) {
-            requiredFields = ['documentNumber', 'firstName', 'cellPhone'];
-            if (this.personExist) {
-                requiredFields = ['documentNumber', 'cellPhone'];
-            }
+            configKey = this.personExist ? AppConstant.DOCUMENT_TYPE_RUC : AppConstant.DOCUMENT_TYPE_RUC + '_new';
         } else if (!this.personExist) {
+            configKey = 'new_person';
+        }
+
+        let requiredFields = this.requiredFieldsConfig[configKey] || this.requiredFieldsConfig['default'];
+
+        if (!this.personExist) {
             requiredFields = ['documentNumber', 'firstName', 'lastName', 'cellPhone'];
         }
+
         if (this.enableEmailField) {
-            requiredFields.push('emailAddress');
+            requiredFields = [...requiredFields, 'emailAddress'];
         }
+
         return requiredFields.every((field) => {
             const control = form.get(field);
             return control?.enabled && control?.valid;
@@ -133,22 +152,29 @@ export class PersonFormComponent implements OnInit, OnDestroy {
         }
         this.documentTypeEventHandler();
         this.documentNumberFormHandler();
+
+        if (this.personData) {
+            this.peopleForm.get('documentType')?.patchValue(this.personData.document_type);
+            this.peopleForm.patchValue(
+                {
+                    documentNumber: this.personData.document_number,
+                    firstName: this.personData.first_names,
+                    lastName: this.personData.last_name,
+                    cellPhone: this.personData.phone
+                },
+                {
+                    emitEvent: false
+                }
+            );
+            this.enableField('cellPhone');
+            this.onSubmitHandler();
+        }
     }
 
     isNeedOpenPersonValidateModal(documentTypeCode: string) {
         return [AppConstant.DOCUMENT_TYPE_DNI].includes(documentTypeCode);
     }
 
-    setFormData() {
-        this.peopleForm.patchValue({
-            documentType: this.whoSenderData.documentType,
-            documentNumber: this.whoSenderData.documentNumber,
-            firstName: this.whoSenderData.firstName,
-            lastName: this.whoSenderData.lastName,
-            cellPhone: this.whoSenderData.cellPhone,
-            emailAddress: this.whoSenderData.emailAddress
-        });
-    }
     setDocumentNumberValidation(documentType: DocumentType) {
         const documentNumber = this.peopleForm.get('documentNumber');
         const documentNumberValidators = [Validators.required, Validators.minLength(documentType.minLength), Validators.maxLength(documentType.maxLength), Validators.pattern(documentType.documentNumberPattern)];
@@ -168,6 +194,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     }
 
     openPersonValidateModal(documentNumber: string, person?: PersonEntityResponse) {
+        this.modalCloseSubscription?.unsubscribe();
         this.ref = this.dialogService.open(ShipmentRecordPersonValidateModalComponent, {
             height: 'auto',
             width: '340px',
@@ -182,170 +209,153 @@ export class PersonFormComponent implements OnInit, OnDestroy {
                 person
             }
         });
-        this.ref?.onClose.pipe(takeUntil(this.destroy$)).subscribe((data: any) => {
-            if (data) {
-                this.setPersonDataForm(data.person);
-            }
-        });
+        this.modalCloseSubscription =
+            this.ref?.onClose.pipe(takeUntil(this.destroy$)).subscribe((data: PersonValidateModalData | null) => {
+                if (data?.person) {
+                    this.setPersonDataForm(data.person);
+                }
+            }) ?? null;
     }
 
     documentTypeEventHandler() {
-        this.peopleForm
-            .get('documentType')
-            ?.valueChanges.pipe(takeUntil(this.destroy$))
-            .subscribe((documentTypeId: string) => {
-                this.disableAllFields();
-                this.personExist = true;
-                this.personIsLoading = false;
+        this.documentTypeSubscription?.unsubscribe();
+        this.documentTypeSubscription =
+            this.peopleForm
+                .get('documentType')
+                ?.valueChanges.pipe(takeUntil(this.destroy$))
+                .subscribe((documentTypeId: string) => {
+                    this.disableAllFields();
+                    this.personExist = true;
+                    this.personIsLoading = false;
 
-                if (documentTypeId === '') {
-                    this.peopleForm.get('documentNumber')?.disable();
-                    return;
-                }
-                if (documentTypeId !== '') {
+                    if (!documentTypeId) {
+                        this.peopleForm.get('documentNumber')?.disable();
+                        return;
+                    }
                     this.peopleForm.get('documentNumber')?.enable();
                     this.currentDocumentType = this.getDocumentType(documentTypeId);
                     this.setDocumentNumberValidation(this.currentDocumentType);
-                }
-            });
+                }) ?? null;
     }
 
     documentNumberFormHandler() {
+        this.documentNumberSubscription?.unsubscribe();
         let debounceTimeMs = 3000;
         if (this.currentDocumentType.value === AppConstant.DOCUMENT_TYPE_RUC || this.currentDocumentType.value === AppConstant.DOCUMENT_TYPE_DNI) {
             debounceTimeMs = 10;
         }
-        this.peopleForm
-            .get('documentNumber')
-            ?.valueChanges.pipe(
-                tap({
-                    next: (documentNumber: string) => {
-                        this.documentNumberChangedHandler(true);
-                    }
-                }),
-                debounceTime(debounceTimeMs),
-                filter((documentNumber: string) => {
-                    const control = this.peopleForm.get('documentNumber')!;
-                    return !!documentNumber && control.enabled && control.valid;
-                }),
-                switchMap((documentNumber) => {
-                    this.personIsLoading = true;
+        this.documentNumberSubscription =
+            this.peopleForm
+                .get('documentNumber')
+                ?.valueChanges.pipe(
+                    tap({
+                        next: () => {
+                            this.documentNumberChangedHandler(true);
+                        }
+                    }),
+                    debounceTime(debounceTimeMs),
+                    filter((documentNumber: string) => {
+                        const control = this.peopleForm.get('documentNumber')!;
+                        return !!documentNumber && control.enabled && control.valid;
+                    }),
+                    switchMap((documentNumber) => {
+                        this.personIsLoading = true;
 
-                    const docType = this.peopleForm.get('documentType')?.value;
-                    return this.personService.getPerson(docType, documentNumber).pipe(
-                        catchError((error) => {
-                            if (error?.status === 404 || error?.status === 422) {
-                                this.personIsLoading = false;
-                                this.personExist = false;
-                                this.peopleForm.get('firstName')?.enable();
-                                if (this.currentDocumentType.value === AppConstant.DOCUMENT_TYPE_RUC) {
-                                    this.peopleForm.get('lastName')?.disable();
+                        const docType = this.peopleForm.get('documentType')?.value;
+                        return this.personService.getPerson(docType, documentNumber).pipe(
+                            catchError((error) => {
+                                if (error?.status === 404 || error?.status === 422) {
+                                    this.personIsLoading = false;
+                                    this.personExist = false;
+                                    this.peopleForm.get('firstName')?.enable();
+                                    if (this.currentDocumentType.value === AppConstant.DOCUMENT_TYPE_RUC) {
+                                        this.peopleForm.get('lastName')?.disable();
+                                    } else {
+                                        this.peopleForm.get('lastName')?.enable();
+                                    }
+
+                                    this.peopleForm.get('cellPhone')?.enable();
+                                    this.enableField('emailAddress');
+                                    this.peopleForm.patchValue(
+                                        {
+                                            firstName: '',
+                                            lastName: '',
+                                            cellPhone: '',
+                                            emailAddress: ''
+                                        },
+                                        {
+                                            emitEvent: false
+                                        }
+                                    );
                                 } else {
-                                    this.peopleForm.get('lastName')?.enable();
+                                    console.error(error);
                                 }
 
-                                this.peopleForm.get('cellPhone')?.enable();
-                                this.enableEmail();
-                                this.peopleForm.patchValue(
-                                    {
-                                        firstName: '',
-                                        lastName: '',
-                                        cellPhone: '',
-                                        emailAddress: ''
-                                    },
-                                    {
-                                        emitEvent: false
-                                    }
-                                );
-                            } else {
-                                console.error(error);
+                                return EMPTY;
+                            })
+                        );
+                    }),
+                    takeUntil(this.destroy$)
+                )
+                .subscribe({
+                    next: (person: PersonEntityResponse) => {
+                        this.personIsLoading = false;
+                        this.personResponse = person;
+                        const documentNumber = person.document_number;
+                        this.personExist = true;
+                        const documentTypeCode = this.peopleForm.get('documentType')?.value;
+                        if (this.enablePersonValidation) {
+                            if (this.isNeedOpenPersonValidateModal(documentTypeCode)) {
+                                this.openPersonValidateModal(documentNumber, person);
                             }
-
-                            return EMPTY;
-                        })
-                    );
-                }),
-                takeUntil(this.destroy$)
-            )
-            .subscribe({
-                next: (person: PersonEntityResponse) => {
-                    this.personIsLoading = false;
-                    this.personResponse = person;
-                    const documentNumber = person.document_number;
-                    this.personExist = true;
-                    const documentTypeCode = this.peopleForm.get('documentType')?.value;
-                    if (this.enablePersonValidation) {
-                        if (this.isNeedOpenPersonValidateModal(documentTypeCode)) {
-                            this.openPersonValidateModal(documentNumber, person);
                         }
-                    }
-                    console.log(this.enableSetPersonData);
-                    if (this.enableSetPersonData) {
-                        this.setPersonDataForm(person);
-                    }
-                    if (this.currentDocumentType.value === AppConstant.DOCUMENT_TYPE_RUC) {
-                        if (person.contributor_status === PersonConstant.PERSON_DOWN_STATE) {
-                            // @TODO que se tiene que hacer?
-                        }
-                        this.peopleForm.get('firstName')?.patchValue(person.full_name);
-                        this.peopleForm.get('firstName')?.disable();
-                        this.enableCellPhone();
-                        this.enableEmail();
-                    }
-                    if (!this.enableSetPersonData) {
-                        if (this.currentDocumentType.value === AppConstant.DOCUMENT_TYPE_CARNET) {
+                        if (this.enableSetPersonData) {
                             this.setPersonDataForm(person);
                         }
-                        if (this.currentDocumentType.value === AppConstant.DOCUMENT_TYPE_PASSPORT) {
-                            this.setPersonDataForm(person);
+                        if (this.currentDocumentType.value === AppConstant.DOCUMENT_TYPE_RUC) {
+                            if (person.contributor_status === PersonConstant.PERSON_DOWN_STATE) {
+                                // @TODO que se tiene que hacer?
+                            }
+                            this.peopleForm.get('firstName')?.patchValue(person.full_name);
+                            this.peopleForm.get('firstName')?.disable();
+                            this.enableField('cellPhone');
+                            this.enableField('emailAddress');
                         }
+                        if (!this.enableSetPersonData) {
+                            if (this.currentDocumentType.value === AppConstant.DOCUMENT_TYPE_CARNET) {
+                                this.setPersonDataForm(person);
+                            }
+                            if (this.currentDocumentType.value === AppConstant.DOCUMENT_TYPE_PASSPORT) {
+                                this.setPersonDataForm(person);
+                            }
+                        }
+                    },
+                    complete: () => {
+                        this.personIsLoading = false;
                     }
-                },
-                complete: () => {
-                    this.personIsLoading = false;
-                }
-            });
+                }) ?? null;
     }
 
     disableAllFields() {
         this.peopleForm.get('documentNumber')?.reset('');
-        this.disableFirstName();
-        this.disableLastName();
-        this.disableCellPhone();
-        this.disableEmail();
+        this.disableFields('firstName', 'lastName', 'cellPhone', 'emailAddress');
     }
 
-    disableFirstName() {
-        this.peopleForm.get('firstName')?.reset('');
-        this.peopleForm.get('firstName')?.disable();
-    }
-    disableLastName() {
-        this.peopleForm.get('lastName')?.reset('');
-        this.peopleForm.get('lastName')?.disable();
+    disableFields(...fields: string[]) {
+        fields.forEach((field) => {
+            this.peopleForm.get(field)?.reset('');
+            this.peopleForm.get(field)?.disable();
+        });
     }
 
-    disableCellPhone() {
-        this.peopleForm.get('cellPhone')?.reset('');
-        this.peopleForm.get('cellPhone')?.disable();
-    }
-
-    disableEmail() {
-        this.peopleForm.get('emailAddress')?.reset('');
-        this.peopleForm.get('emailAddress')?.disable();
-    }
-
-    enableCellPhone() {
-        this.peopleForm.get('cellPhone')?.enable();
-    }
-    enableEmail() {
-        if (this.enableEmailField) {
-            this.peopleForm.get('emailAddress')?.enable();
-        }
+    enableField(field: string) {
+        if (field === 'emailAddress' && !this.enableEmailField) return;
+        this.peopleForm.get(field)?.enable();
     }
 
     setPersonDataForm(person: PersonEntityResponse) {
-        this.enableCellPhone();
-        this.enableEmail();
+        this.enableField('cellPhone');
+        this.enableField('emailAddress');
         this.peopleForm.patchValue({
             firstName: person.first_names,
             lastName: `${person.last_name_paternal} ${person.last_name_maternal}`,
@@ -357,6 +367,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     onSubmitHandler() {
         let firstName = this.peopleForm.get('firstName')?.value || '';
         let lastName = this.peopleForm.get('lastName')?.value || '';
+        const documentType = this.peopleForm.get('documentType')?.value || '';
         const documentNumber = this.peopleForm.get('documentNumber')?.value || '';
         const emailAddress = this.peopleForm.get('emailAddress')?.value || '';
         const cellPhone = this.peopleForm.get('cellPhone')?.value || '';
@@ -368,7 +379,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
             first_names: firstName,
             last_name: lastName,
             document_number: documentNumber,
-            document_type: this.personResponse?.document_type,
+            document_type: documentType,
             email: emailAddress,
             phone: cellPhone,
             person_legal_area: this.personResponse?.juridical_area_id,
@@ -379,22 +390,21 @@ export class PersonFormComponent implements OnInit, OnDestroy {
             employee_id: this.personResponse?.employee_id,
             personResponse: this.personResponse
         };
-        console.log('onSubmitHandler', dataToEmit);
         this.submitWhoSenderForm.emit(dataToEmit);
     }
 
     documentNumberChangedHandler(change: boolean) {
         this.documentNumberChanged.emit(change);
         this.personExist = true;
-        this.disableFirstName();
-        this.disableLastName();
-        this.disableCellPhone();
-        this.disableEmail();
+        this.disableFields('firstName', 'lastName', 'cellPhone', 'emailAddress');
     }
 
     ngOnDestroy() {
         this.destroy$.next();
         this.destroy$.complete();
+        this.documentTypeSubscription?.unsubscribe();
+        this.documentNumberSubscription?.unsubscribe();
+        this.modalCloseSubscription?.unsubscribe();
         if (this.ref) {
             this.ref.close();
             this.ref = null;

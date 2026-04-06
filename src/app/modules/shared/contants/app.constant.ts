@@ -5,6 +5,8 @@ export class AppConstant {
     static readonly NAME_REGEX_PATTERN = '^[a-zA-ZáéíóúÁÉÍÓÚñÑ][a-zA-ZáéíóúÁÉÍÓÚñÑ ]*$';
     // static readonly COMPANY_REGEX_PATTERN = '^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ \\-&.,()]*$';
     static readonly COMPANY_REGEX_PATTERN = String.raw`^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ \-&.,()]*$`;
+    static readonly ADDRESS_REGEX_PATTERN = String.raw`^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ \-&.,()]*$`;
+    static readonly UBIGEO_REGEX_PATTERN = String.raw`^[a-zA-ZáéíóúÁÉÍÓÚñÑ \-]*$`;
     // static readonly EMAIL_REGEX_PATTERN = '[a-zA-Z0-9á-úÁ-Ú._@-]'
     // Regex de correo que acepta letras Unicode (incluye acentos), dígitos y signos permitidos
     static readonly EMAIL_REGEX_PATTERN = '[a-zA-Z0-9á-úÁ-Ú._@-]';

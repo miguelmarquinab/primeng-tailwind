@@ -1,10 +1,10 @@
 import { Component, Input } from '@angular/core';
 import { DestinationEntityResponse } from '@shipment-record/models/destination.model';
-import { NgClass } from '@angular/common';
+import { NgClass, TitleCasePipe } from '@angular/common';
 
 @Component({
     selector: 'app-shipment-record-destination-card',
-    imports: [NgClass],
+    imports: [NgClass, TitleCasePipe],
     templateUrl: './shipment-record-destination-card.component.html',
     styleUrl: './shipment-record-destination-card.component.scss'
 })

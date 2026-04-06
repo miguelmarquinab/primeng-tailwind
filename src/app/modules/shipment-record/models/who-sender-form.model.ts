@@ -17,3 +17,11 @@ export interface WhoSenderFormData {
     employee_id?: number;
     personResponse?: PersonEntityResponse;
 }
+
+export interface PersonFormData extends WhoSenderFormData {
+    // document_number?: string;
+    // document_type?: string;
+    // first_names?: string;
+    // last_name?: string;
+    // phone?: string;
+}

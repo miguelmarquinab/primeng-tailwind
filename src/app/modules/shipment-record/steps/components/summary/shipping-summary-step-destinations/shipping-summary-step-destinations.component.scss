@@ -1,0 +1,30 @@
+:host {
+  display: block;
+}
+
+/* CLONE BUTTON */
+
+:host ::ng-deep app-cart-item-clone-button .p-button {
+  height: 25px !important;
+  padding: 0 6px !important;
+  font-size: 11px !important;
+  border-radius: 3px !important;
+  box-shadow: none !important;
+}
+
+/* DELETE BUTTON */
+
+:host ::ng-deep app-cart-item-delete-button .p-button {
+  height: 25px !important;
+  padding: 0 6px !important;
+  font-size: 11px !important;
+  border-radius: 3px !important;
+  box-shadow: none !important;
+}
+
+/* ICON SIZE */
+
+:host ::ng-deep app-cart-item-clone-button .p-button .pi,
+:host ::ng-deep app-cart-item-delete-button .p-button .pi {
+  font-size: 11px !important;
+}

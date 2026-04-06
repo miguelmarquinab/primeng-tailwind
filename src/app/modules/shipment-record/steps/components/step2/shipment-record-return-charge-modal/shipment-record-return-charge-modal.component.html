@@ -9,11 +9,12 @@
   </div>
 
   <div class="flex flex-col gap-3">
+
+<!--    <pre>{{ currentItem|json }}</pre>-->
     <p-tabs [value]="currentTab">
       <p-tablist>
         <p-tab [value]="0" (click)="changeTab(0)"
                (keydown.enter)="changeTab(0)"
-
         >
           <div class="flex items-center justify-center gap-2">
             <span class="pi pi-home"></span>
@@ -36,6 +37,8 @@
               #homeReturnForm
               [homeDestinations]="homeDestinationsData"
               (formChanged)="onHomeAddressChanged($event)"
+              [currentItem]="currentItem"
+              [changeReturnForm]="true"
             ></app-shipment-record-destination-address-form>
           }
         </p-tabpanel>
@@ -45,6 +48,8 @@
               #storeReturnForm
               [storeDestinationsData]="storeDestinationsData"
               (formChanged)="onStoreDestinationChanged($event)"
+              [currentItem]="currentItem"
+              [changeReturnForm]="true"
             ></app-shipment-record-destination-storage-form>
           }
         </p-tabpanel>
@@ -62,7 +67,6 @@
       (keydown.enter)="confirmReturnCharge()"
     />
     <button type="button" class="text-sm text-color-ultramarine underline" (click)="cancel()"
-
             (keydown.enter)="cancel()"
     >
       {{ 'shipmentRecord.returnCharge.cancel' | translate }}
