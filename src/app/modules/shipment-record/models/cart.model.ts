@@ -12,7 +12,7 @@ export interface CartPayload {
 }
 
 export interface OriginPayload {
-    headquarter_id?: number;
+    headquarter_id?: string;
     ubigeo_id?: string | number;
     address?: string;
     headquarter_name?: string;
@@ -127,7 +127,6 @@ export interface CartPEEntityResponse {
     nroPedidoPreventa?: string;
 }
 
-
 export interface CartPresaleLabelEntityResponse {
     filename?: string;
     mime_type?: string;
@@ -149,7 +148,6 @@ export interface CartItemPayload {
     address?: CartItemAddressPayload;
 }
 
-
 export type CartItemDestinationType = 'home' | 'store';
 export type ShipmentType = 'D' | 'O';
 
@@ -157,14 +155,6 @@ export interface CartItemDestinationPayload {
     type: CartItemDestinationType;
     address?: DestinationAddressFormState;
     store?: DestinationStoreFormState;
-}
-
-export interface CartItemOriginPayload {
-    headquarter_id?: number;
-    ubigeo_id?: string | number;
-    headquarter_name?: string;
-    address?: string;
-    ubigeo?: string;
 }
 
 export interface CartItemAddressPayload {

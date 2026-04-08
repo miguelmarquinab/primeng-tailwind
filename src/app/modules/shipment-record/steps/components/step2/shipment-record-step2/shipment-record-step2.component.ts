@@ -1,18 +1,12 @@
-import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Accordion, AccordionContent, AccordionHeader, AccordionPanel } from 'primeng/accordion';
-import {
-    PersonFormComponent
-} from '@shipment-record/steps/components/step1/shipment-record-who-sender-form/person-form.component';
-import { ShipmentRecordStepsConstant } from '@shipment-record/contansts/shipment-record-step.constant';
-import {
-    ShipmentRecordWhatSendComponent
-} from '@shipment-record/steps/components/step2/shipment-record-what-send/shipment-record-what-send.component';
+import { PersonFormComponent } from '@shipment-record/steps/components/step1/shipment-record-who-sender-form/person-form.component';
+import { ACCORDION_SCROLL, SHIPMENT_TYPE, ShipmentRecordStepsConstant } from '@shipment-record/contansts/shipment-record-step.constant';
+import { ShipmentRecordWhatSendComponent } from '@shipment-record/steps/components/step2/shipment-record-what-send/shipment-record-what-send.component';
 import { ArticleCategoriesService } from '@shipment-record/services/article-categories.service';
 import { Subject, takeUntil } from 'rxjs';
 import { ArticleCategoriesEntityResponse } from '@shipment-record/models/article-categories.model';
-import {
-    ShipmentRecordDestinationComponent
-} from '@shipment-record/steps/components/step2/shipment-record-destination/shipment-record-destination.component';
+import { ShipmentRecordDestinationComponent } from '@shipment-record/steps/components/step2/shipment-record-destination/shipment-record-destination.component';
 import { AppConstant } from '@shared/contants/app.constant';
 import { CartSessionStorageService } from '@shipment-record/services/cart-session-storage.service';
 import { PersonFormData, WhoSenderFormData } from '@shipment-record/models/who-sender-form.model';
@@ -20,31 +14,29 @@ import { PersonFormData, WhoSenderFormData } from '@shipment-record/models/who-s
 import { NgClass } from '@angular/common';
 import { CartService } from '@shipment-record/services/cart.service';
 import { CartSessionStorage } from '@shipment-record/models/cart-session-storage.model';
-import {
-    CartItemDestinationPayload,
-    CartItemEntityResponse,
-    CartItemPayload,
-    CartItemReturnChargePayload,
-    CartItemWhatSendPayload,
-    CartItemWhoPersonReceivesPayload
-} from '@shipment-record/models/cart-item.model';
+import { CartItemDestinationPayload, CartItemEntityResponse, CartItemPayload, CartItemReturnChargePayload, CartItemWhatSendPayload, CartItemWhoPersonReceivesPayload } from '@shipment-record/models/cart-item.model';
 import { LocalStorageService } from '@shared/services/storage/local-storage.service';
+import { StandardSizeService } from '@shipment-record/services/standard-size.service';
+import { StandardSizeEntityResponse } from '@shipment-record/models/standard-size.model';
+import { HeadquartersEntityResponse } from '@shipment-record/models/headquarters.model';
 
 @Component({
     selector: 'app-shipment-record-step2',
-    imports: [Accordion, AccordionContent, AccordionHeader, AccordionPanel, PersonFormComponent, ShipmentRecordWhatSendComponent, ShipmentRecordDestinationComponent, NgClass],
+    imports: [
+        Accordion, AccordionContent, AccordionHeader, AccordionPanel, PersonFormComponent,
+        ShipmentRecordWhatSendComponent, ShipmentRecordDestinationComponent, NgClass
+    ],
     templateUrl: './shipment-record-step2.component.html',
-    styleUrls: ['./shipment-record-step2.component.scss'],
     encapsulation: ViewEncapsulation.None
 })
 export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
-    //// default
-    panelsDisabled: boolean[] = [false, true, true, true]; // panel 0 habilitado, panel 1 deshabilitado
-    protected currentAccordionIndex = 0;
-    // panelsDisabled: boolean[] = [false, false, false, false]; // panel 0 habilitado, panel 1 deshabilitado
-    // protected currentAccordionIndex = 1;
+    protected panelsDisabled = signal<boolean[]>([false, true, true]);
+    protected currentAccordionIndex = signal(0);
 
-    articleCategories: ArticleCategoriesEntityResponse[] = [];
+    // protected panelsDisabled = signal<boolean[]>([false, false, false]);
+    // protected currentAccordionIndex = signal(2);
+
+    articleCategories = signal<ArticleCategoriesEntityResponse[]>([]);
 
     returnChargePayload!: CartItemReturnChargePayload | undefined;
     protected readonly ShipmentRecordStepsConstant = ShipmentRecordStepsConstant;
@@ -53,6 +45,7 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
     private readonly cartSessionService = inject(CartSessionStorageService);
     private readonly localStorageService = inject(LocalStorageService);
     private readonly cartService = inject(CartService);
+    private readonly standardSizeService = inject(StandardSizeService);
     private readonly destroy$ = new Subject<void>();
     @ViewChild('accordionScrollContainer', { static: false }) accordionScrollContainer?: ElementRef<HTMLElement>;
 
@@ -60,27 +53,29 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
     cartItem!: CartItemPayload;
     currentItemUuid!: string;
     currentCartItem!: CartItemEntityResponse;
-    currentWhoReceiveFormData!: PersonFormData;
+    recipientFormData!: PersonFormData;
+    standardSizes = signal<StandardSizeEntityResponse[]>([]);
+    currentOrigin = signal<HeadquartersEntityResponse>({ headquarter_id: '0' });
 
     ngOnInit() {
         this.getArticleCategories();
+        this.getStandardSizes();
         this.cartItem = {};
         this.cartData = this.cartSessionService.getCartData();
         this.currentItemUuid = this.cartSessionService.getCurrentItemUuid() ?? '';
+
+        this.currentOrigin.set(<HeadquartersEntityResponse>this.cartSessionService.getOrigin());
         if (this.currentItemUuid) {
             this.currentCartItem = this.getCurrentCartItemByUuid(this.currentItemUuid);
         }
 
         if (this.currentCartItem) {
-            this.currentWhoReceiveFormData = this.buildCurrentWhoReceiveFormData();
-            console.log(this.currentCartItem.what_send);
-            this.panelsDisabled = [false, false, false]; // panel 0 habilitado, panel 1 deshabilitado
-            this.currentAccordionIndex = 2;
+            this.recipientFormData = this.buildRecipientFormData();
+            this.changeCurrentAccordion(0);
         }
-        console.log('Step2', this.currentItemUuid, this.currentCartItem);
     }
 
-    buildCurrentWhoReceiveFormData(): WhoSenderFormData {
+    buildRecipientFormData(): WhoSenderFormData {
         return {
             document_type: this.currentCartItem.who_receive?.document_type ?? '',
             document_number: this.currentCartItem.who_receive?.document_number ?? '',
@@ -100,50 +95,33 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
         this.scrollAccordionToTop(index);
     }
 
-    private scrollAccordionToTop(index: number = 0) {
+    private scrollAccordionToTop(index: number) {
         setTimeout(() => {
             const container = this.accordionScrollContainer?.nativeElement;
             if (!container) return;
-            const newTop = 54 * index;
+            const newTop = ACCORDION_SCROLL.OFFSET_PER_PANEL * index;
             container.scrollTo({ top: newTop, behavior: 'smooth' });
-        }, 500);
+        }, ACCORDION_SCROLL.DELAY_MS);
     }
 
-    submitWhoSenderForm(event: WhoSenderFormData) {
-        this.cartItem.who_receive = this.buildPersonWhoReceive(event);
-        this.enablePanel(1);
-        this.currentAccordionIndex = 1;
-        this.scrollAccordionToTop(1);
-        console.log(this.cartItem);
+    submitRecipientForm(event: WhoSenderFormData) {
+        this.cartItem.who_receive = this.buildRecipientPayload(event);
+        this.changeCurrentAccordion(1);
     }
 
     submitWhatSenderForm(event: CartItemWhatSendPayload) {
-        console.log('submitWhatSenderForm');
-        console.log(event);
-        this.currentAccordionIndex = 2;
-        this.enablePanel(2);
-        this.scrollAccordionToTop(2);
         this.cartItem.what_send = this.buildWhatSendPayload(event);
-        console.log(this.cartItem);
+        const cartSessionUuid = this.cartSessionService.getCartId() ?? '';
+        if (this.currentCartItem) {
+            this.updateItem(cartSessionUuid);
+            return;
+        }
+
+        this.createItem(cartSessionUuid);
     }
 
-    submitDestinationForm(event: any) {
-        console.log('submitDestinationForm', event);
-        console.log('this.returnChargePayload', this.returnChargePayload);
-
-        // if(!this.returnChargePayload) {
-        //     this.returnChargePayload = {
-        //         address_card: this.currentCartItem.return_charge?.address_card,
-        //         address: this.currentCartItem.return_charge?.address_card,
-        //         longitude: this.currentCartItem.return_charge?.latitude,
-        //         latitude: this.currentCartItem.return_charge?.longitude,
-        //         office_id: this.currentCartItem.return_charge?.office_id,
-        //         reference: this.currentCartItem.return_charge?.reference ?? '',
-        //         polygon: this.currentCartItem.return_charge?.polygon,
-        //     };
-        // }
-        this.cartItem.destination = this.buildDestinationPayload(event);
-        console.log(this.cartItem?.destination?.delivery_type);
+    submitDestinationForm(event: CartItemDestinationPayload) {
+        this.cartItem.destination = event;
         this.cartItem.service = {
             return_charge: false,
             delivery_type: this.cartItem?.destination?.delivery_type
@@ -154,52 +132,20 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
             this.cartItem.return_charge = this.returnChargePayload;
         }
 
-        console.log(this.cartItem);
+        this.changeCurrentAccordion(2);
+    }
 
-        // return;
-
-        const cartSessionUuid = this.cartSessionService.getCartId() ?? '';
-        if (this.currentCartItem) {
-            this.cartService.updateItem(cartSessionUuid, this.currentCartItem.uuid ?? '', this.cartItem).subscribe({
-                next: (response) => {
-                    console.log('Item Updated:', response);
-
-                    // const appliedCouponCode = this.cartSessionService.getAppliedCouponCode();
-                    //
-                    // const loadCart$ = appliedCouponCode ? this.cartService.applyCoupon(cartSessionUuid, appliedCouponCode) : this.cartService.getByUuid(cartSessionUuid);
-                    //
-                    // loadCart$.subscribe({
-                    //     next: (response) => {
-                    //         this.cartSessionService.setItems(response.data?.items ?? []);
-                    //         this.cartSessionService.setPricing(response.data?.pricing ?? {});
-                    //         this.cartService.setStepNumber(3);
-                    //     }
-                    // });
-                },
-                complete: () => {
-                    this.updateCartSession();
-                }
-            });
-
-            return;
-        }
-
+    createItem(cartSessionUuid: string) {
         this.cartService.createItem(cartSessionUuid, this.cartItem).subscribe({
-            next: (response) => {
-                console.log('Item creado:', response);
+            next: () => {
+                this.updateCartSession();
+            }
+        });
+    }
 
-                // const appliedCouponCode = this.cartSessionService.getAppliedCouponCode();
-                //
-                // const loadCart$ = appliedCouponCode ? this.cartService.applyCoupon(cartSessionUuid, appliedCouponCode) : this.cartService.getByUuid(cartSessionUuid);
-                //
-                // loadCart$.subscribe({
-                //     next: (response) => {
-                //
-                //         this.cartSessionService.setItems(response.data?.items ?? []);
-                //         this.cartSessionService.setPricing(response.data?.pricing ?? {});
-                //         this.cartService.setStepNumber(3);
-                //     }
-                // });
+    updateItem(cartSessionUuid: string) {
+        this.cartService.updateItem(cartSessionUuid, this.currentCartItem.uuid ?? '', this.cartItem).subscribe({
+            complete: () => {
                 this.updateCartSession();
             }
         });
@@ -217,25 +163,27 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
         });
     }
 
-    buildDestinationPayload(event: any): CartItemDestinationPayload {
-        console.log('buildDestinationPayload', event);
-        return event;
+    changeCurrentAccordion(accordionIndex: number) {
+        this.currentAccordionIndex.set(accordionIndex);
+        this.enablePanel(accordionIndex);
+        this.scrollAccordionToTop(accordionIndex);
+    }
+
+    private enablePanel(index: number) {
+        const current = this.panelsDisabled();
+        current[index] = false;
+        this.panelsDisabled.set([...current]);
     }
 
     onReturnChargeChanged(payload?: CartItemReturnChargePayload | null) {
         this.returnChargePayload = payload ?? undefined;
-        console.log('Return charge changed:', payload);
-    }
-
-    enablePanel(index: number) {
-        this.panelsDisabled[index] = false;
     }
 
     getArticleCategories() {
         const articleCategoriesCacheKey = 'articleCategories';
         const cachedCategories = this.localStorageService.get(articleCategoriesCacheKey);
         if (cachedCategories) {
-            this.articleCategories = cachedCategories;
+            this.articleCategories.set(cachedCategories);
             return;
         }
 
@@ -243,8 +191,27 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
             .getAll()
             .pipe(takeUntil(this.destroy$))
             .subscribe((response) => {
-                this.articleCategories = response.data ?? [];
-                this.localStorageService.set(articleCategoriesCacheKey, this.articleCategories);
+                const categories = response.data ?? [];
+                this.articleCategories.set(categories);
+                this.localStorageService.set(articleCategoriesCacheKey, categories);
+            });
+    }
+
+    getStandardSizes() {
+        const standardSizesCacheKey = 'standardSizes';
+        const cachedStandardSizes = this.localStorageService.get(standardSizesCacheKey);
+        if (cachedStandardSizes) {
+            this.standardSizes.set(cachedStandardSizes);
+            return;
+        }
+
+        this.standardSizeService
+            .getAll()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((response) => {
+                const sizes = response.data ?? [];
+                this.standardSizes.set(sizes);
+                this.localStorageService.set(standardSizesCacheKey, sizes);
             });
     }
 
@@ -253,7 +220,7 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
         this.destroy$.complete();
     }
 
-    buildPersonWhoReceive(event: WhoSenderFormData): CartItemWhoPersonReceivesPayload {
+    buildRecipientPayload(event: WhoSenderFormData): CartItemWhoPersonReceivesPayload {
         return {
             document_type: event.document_type ?? undefined,
             document_number: event.document_number ?? undefined,
@@ -265,7 +232,7 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
 
     buildWhatSendPayload(event: any): CartItemWhatSendPayload {
         return {
-            shipment_type: 2,
+            shipment_type: SHIPMENT_TYPE.STANDARD,
             weight: event.weight,
             fragile: event.fragile,
             height: event.height,

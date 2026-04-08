@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { SessionStorageService } from '@shared/services/storage/session-storage.service';
 import { CartSessionStorage } from '@shipment-record/models/cart-session-storage.model';
-import { CartPayload, CartPricingEntityResponse, OriginPayload, PersonPayload} from '@shipment-record/models/cart.model';
+import { CartPayload, CartPricingEntityResponse, OriginPayload, PersonPayload } from '@shipment-record/models/cart.model';
 import { CartItemEntityResponse } from '@shipment-record/models/cart-item.model';
 
 @Injectable({
@@ -37,6 +37,11 @@ export class CartSessionStorageService {
         const cartData = this.getCartData();
         cartData.header.origin = header;
         this.setCartData(cartData);
+    }
+
+    getOrigin() {
+        const cartData = this.getCartData();
+        return cartData.header.origin;
     }
 
     setWhoPay(whoPay: string, detail: any) {

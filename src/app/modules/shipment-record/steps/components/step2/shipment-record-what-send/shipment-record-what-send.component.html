@@ -1,10 +1,10 @@
 <form [formGroup]="whatSendForm">
   <div class="flex flex-col gap-4">
-
     <p-tabs [value]="currentTab" class="tab-border-square">
       <p-tablist>
         <p-tab [value]="WhatsSendTabIndex.STANDARD" (click)="changeTab(WhatsSendTabIndex.STANDARD)"
                (keydown.enter)="changeTab(WhatsSendTabIndex.STANDARD)"
+               [disabled]="tabStandardDisabled"
         >
           <div class="flex items-center justify-center gap-2">
             <span class="pi pi-box"></span>
@@ -29,7 +29,8 @@
 
               @for (item of standardSizes; track item.value) {
                 <div
-                  class="flex flex-col items-center justify-center gap-2 border border-gray-300 rounded-md p-3 cursor-pointer hover:shadow-lg hover:border-highlight-focus-background w-32"
+                  class="flex flex-col items-center justify-center gap-2 border border-gray-300 rounded-lg p-3 cursor-pointer
+                   hover:shadow-lg hover:border-highlight-focus-background w-32 h-45.25"
                   [ngClass]="
                   {
                     'shadow-lg bg-primary-sutile border-highlight-focus-background': currentSize === item.value
@@ -38,10 +39,12 @@
                   (keydown.enter)="selectStandardSize(item.value??'')"
                 >
 
-                  <img [src]="item.imgSrc" alt="{{item.label}}" class="w-max-24 object-contain" />
-                  <span class="m-0 text-center text-[14px]">{{ item.label }}</span>
+                  <div class="flex items-center justify-center w-full h-25">
+                    <img [src]="item.imgSrc" alt="{{item.label}}" class="w-max-24 object-contain" />
+                  </div>
+                  <span class="m-0 text-center text-sm">{{ item.label }}</span>
 
-                  <div class="flex justify-between text-[10px] gap-2">
+                  <div class="flex justify-between w-full text-tiny gap-2">
                     @if (item.dimensions) {
                       <div class="flex flex-col justify-start">
                         <span>Hasta</span>
@@ -55,6 +58,21 @@
                   </div>
                 </div>
               }
+
+              <div
+                class="flex flex-col items-center justify-center gap-2 border border-gray-300 rounded-lg p-3 cursor-pointer
+                   hover:shadow-lg hover:border-highlight-focus-background w-32 h-45.25"
+                (click)="changeTab(WhatsSendTabIndex.CUSTOM)"
+                (keydown.enter)="changeTab(WhatsSendTabIndex.CUSTOM)"
+              >
+                <img src="shared/images/plus.svg" alt="" class="w-max-24 object-contain" />
+                <span class="m-0 text-center text-sm">
+                  ¿Tu paquete es más grande?
+                </span>
+                <span class="m-0 text-center text-tiny">
+                  Usa medidas personalizadas
+                </span>
+              </div>
             </div>
             <div class="flex md:hidden items-center justify-center gap-4">
               <div class="flex flex-col gap-2 w-full">
@@ -210,7 +228,9 @@
 
 
             <p-message severity="secondary" icon="pi pi-info-circle" styleClass="mb-2">
-              <div class="text-tiny md:text-sm">Si el peso o medidas ingresadas no coinciden con tu paquete, <span class="font-bold text-theme-secondary">se podría requerir que pagues un ajuste a la tarifa</span>.</div>
+              <div class="text-tiny md:text-sm">Si el peso o medidas ingresadas no coinciden con tu paquete, <span
+                class="font-bold text-theme-secondary">se podría requerir que pagues un ajuste a la tarifa</span>.
+              </div>
             </p-message>
 
             @if (isMobile()) {
@@ -281,13 +301,13 @@
     </div>
     <div class="flex gap-3 items-center">
       @if (item.dimensions) {
-        <div class="flex flex-col text-[10px]">
+        <div class="flex flex-col text-tiny">
           <span>Hasta</span>
           <span class="font-bold">{{ item.dimensions }}</span>
         </div>
 
       }
-      <div class="flex flex-col text-[10px]">
+      <div class="flex flex-col text-tiny">
         <span>Hasta</span>
         <span class="font-bold">{{ item.maxWeight }}</span>
       </div>
@@ -341,20 +361,20 @@
 
     </div>
 
-<!--    <div class="flex items-center">-->
-<!--      <p-checkbox inputId="isFragile" name="isFragile" [binary]="true" formControlName="isFragile"-->
-<!--                  [trueValue]="1"-->
-<!--                  [falseValue]="0"-->
-<!--      />-->
-<!--      <label for="isFragile" class="font-normal ml-2"> Producto frágil </label>-->
-<!--    </div>-->
+    <!--    <div class="flex items-center">-->
+    <!--      <p-checkbox inputId="isFragile" name="isFragile" [binary]="true" formControlName="isFragile"-->
+    <!--                  [trueValue]="1"-->
+    <!--                  [falseValue]="0"-->
+    <!--      />-->
+    <!--      <label for="isFragile" class="font-normal ml-2"> Producto frágil </label>-->
+    <!--    </div>-->
 
   </div>
 </ng-template>
 
 <ng-template #confidentialInfoTpl>
   <p-message severity="secondary" icon="pi pi-info-circle" [ngClass]="'mb-2 w-full'">
-    <div class="text-[10px] md:text-sm  w-full">
+    <div class="text-tiny md:text-sm  w-full">
       Esta información es confidencial y se utilizará únicamente como respaldo en caso de que surja algún inconveniente
       con tu envío.
     </div>

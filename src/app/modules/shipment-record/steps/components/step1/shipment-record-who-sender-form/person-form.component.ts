@@ -51,7 +51,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     @Input() enablePersonValidation = true;
     @Input() enableSetPersonData = true;
     @Input() documentTypeLabel = 'Tipo de documento y comprobante';
-    @Output() submitWhoSenderForm = new EventEmitter<WhoSenderFormData>();
+    @Output() submitPersonForm = new EventEmitter<WhoSenderFormData>();
     @Output() documentNumberChanged = new EventEmitter<boolean>();
 
     @Input() personData!: PersonFormData;
@@ -167,7 +167,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
                 }
             );
             this.enableField('cellPhone');
-            this.onSubmitHandler();
+            // this.onSubmitHandler();
         }
     }
 
@@ -390,7 +390,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
             employee_id: this.personResponse?.employee_id,
             personResponse: this.personResponse
         };
-        this.submitWhoSenderForm.emit(dataToEmit);
+        this.submitPersonForm.emit(dataToEmit);
     }
 
     documentNumberChangedHandler(change: boolean) {

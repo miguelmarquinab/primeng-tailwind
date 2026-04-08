@@ -9,7 +9,7 @@ export interface HeadquartersEntityResponse {
     ubigeo_concatenated?: string;
     name?: string;
     representative_id?: string;
-    headquarter_id: number;
+    headquarter_id: string;
     headquarter_name?: string;
     affectation_type?: null;
     address?: string;

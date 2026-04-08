@@ -1,5 +1,4 @@
 import { StepConfig } from '@shipment-record/models/steps.modal';
-import { StandardSize } from '@shipment-record/models/standard-size.model';
 
 export class ShipmentRecordStepsConstant {
     static readonly STEP1_CONFIG: StepConfig = {
@@ -70,14 +69,6 @@ export enum WhatsSendTabIndex {
     CUSTOM = 1
 }
 
-export const STANDARD_SIZES: StandardSize[] = [
-    { label: 'Sobre', value: 'letter', dimensions: '', maxWeight: '500g', imgSrc: 'shared/images/letter-1.svg', large: 0, width: 0, height: 0, weight: 0.5 },
-    { label: 'Pequeño', value: 'small', dimensions: '20X20X19 cm', maxWeight: '500g', imgSrc: 'shared/images/box-1.svg', large: 20, width: 20, height: 19, weight: 0.5 },
-    { label: 'Mediano', value: 'middle', dimensions: '25X25X22 cm', maxWeight: '500g', imgSrc: 'shared/images/box-1.svg', large: 25, width: 25, height: 22, weight: 0.5 },
-    { label: 'Grande', value: 'big', dimensions: '28X28X25 cm', maxWeight: '3kg', imgSrc: 'shared/images/box-1.svg', large: 28, width: 28, height: 25, weight: 3 },
-    { label: 'Extra Grande', value: 'extra-big', dimensions: '30X30X30 cm', maxWeight: '4 Kg', imgSrc: 'shared/images/box-1.svg', large: 30, width: 30, height: 30, weight: 4 }
-];
-
 export const VALIDATION_LIMITS = {
     ARTICLE_VALUE_DEFAULT: 10000000,
     ARTICLE_VALUE_DESTINATION: 1500,
@@ -85,7 +76,14 @@ export const VALIDATION_LIMITS = {
     MAX_DIMENSION: 110,
     MIN_DIMENSION: 1,
     MAX_WEIGHT: 25,
-    MIN_WEIGHT: 0.1
+    MIN_WEIGHT: 0.1,
+    MIN_CATEGORY_ID: 1,
+    DEFAULT_CATEGORY_ID: 0
+};
+
+export const HEADQUARTERS = {
+    LIMA_ID: 43,
+    DEFAULT_ID: '0'
 };
 
 export enum DELIVERY_TYPE {
@@ -127,3 +125,12 @@ export const PAYMENT_TYPES = [
         payment_methods: []
     }
 ];
+
+export const ACCORDION_SCROLL = {
+    OFFSET_PER_PANEL: 54,
+    DELAY_MS: 500
+};
+
+export enum SHIPMENT_TYPE {
+    STANDARD = 2
+}

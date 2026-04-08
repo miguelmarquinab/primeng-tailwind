@@ -1,71 +1,63 @@
 <div class="flex flex-col gap-3">
-
-  <div class="flex flex-col gap-4  md:overflow-y-auto h-full md:h-153" #accordionScrollContainer>
-    <p-accordion [(value)]="currentAccordionIndex" (onOpen)="onAccordionChange($event)">
-      <p-accordion-panel [value]="0">
-        <p-accordion-header>
-          <div class="flex gap-3 items-center">
-            <span>¿Quién recibe? (Destinatario) </span>
-            @if (cartItem?.who_receive) {
-              <i class="pi pi-check text-theme-primary-500"></i>
-            }
-          </div>
-        </p-accordion-header>
-        <p-accordion-content>
-          <app-person-form
-            [documentTypes]="AppConstant.DOCUMENT_TYPES_WITHOUT_INVOICE_TYPES"
-            [enableEmailField]="false"
-            [personConfig]="ShipmentRecordStepsConstant.STEP2_CONFIG.person"
-            [enablePersonValidation]="false"
-            [enableSetPersonData]="true"
-            documentTypeLabel="Tipo de documento"
-            (submitWhoSenderForm)="submitWhoSenderForm($event)"
-            [personData]="currentWhoReceiveFormData"
-          ></app-person-form>
-        </p-accordion-content>
-      </p-accordion-panel>
-
-      <p-accordion-panel [value]="1" [disabled]="panelsDisabled[1]">
-        <p-accordion-header>
-
-          <div class="flex gap-3 items-center">
-            <span>¿Qué deseas enviar?</span>
-            @if (cartItem?.what_send) {
-              <i class="pi pi-check text-theme-primary-500"></i>
-            }
-          </div>
-        </p-accordion-header>
-        <p-accordion-content [ngClass]="'accordioncontent-without-padding'">
-          <app-shipment-record-what-send
-            [articleCategories]="articleCategories"
-            [cartData]="cartData"
-            (submitForm)="submitWhatSenderForm($event)"
-            [cartItemWhatSendEntityResponse]="currentCartItem?.what_send"
-          ></app-shipment-record-what-send>
-
-        </p-accordion-content>
-      </p-accordion-panel>
-      <p-accordion-panel [value]="2" [disabled]="panelsDisabled[2]">
-        <p-accordion-header>
-
-          <div class="flex gap-3 items-center">
-            <span>¿A dónde quieres enviar? (Destino)</span>
-            @if (cartItem?.destination || currentItemUuid) {
-              <i class="pi pi-check text-theme-primary-500"></i>
-            }
-          </div>
-
-        </p-accordion-header>
-        <p-accordion-content [ngClass]="'accordioncontent-without-padding'">
-          <app-shipment-record-destination
-            (returnChargeChanged)="onReturnChargeChanged($event)"
-            (submitDestination)="submitDestinationForm($event)"
-            [currentItem]="currentCartItem"
-          >
-          </app-shipment-record-destination>
-        </p-accordion-content>
-      </p-accordion-panel>
-    </p-accordion>
-  </div>
-
+    <div class="flex flex-col gap-4 md:overflow-y-auto h-full md:h-153" #accordionScrollContainer>
+        <p-accordion [value]="currentAccordionIndex()" (onOpen)="onAccordionChange($event)">
+            <p-accordion-panel [value]="0">
+                <p-accordion-header>
+                    <div class="flex gap-3 items-center">
+                        <span>¿Quién recibe? (Destinatario) </span>
+                        @if (cartItem?.who_receive) {
+                            <i class="pi pi-check text-theme-primary-500"></i>
+                        }
+                    </div>
+                </p-accordion-header>
+                <p-accordion-content>
+                    <app-person-form
+                        [documentTypes]="AppConstant.DOCUMENT_TYPES_WITHOUT_INVOICE_TYPES"
+                        [enableEmailField]="false"
+                        [personConfig]="ShipmentRecordStepsConstant.STEP2_CONFIG.person"
+                        [enablePersonValidation]="false"
+                        [enableSetPersonData]="true"
+                        documentTypeLabel="Tipo de documento"
+                        (submitPersonForm)="submitRecipientForm($event)"
+                        [personData]="recipientFormData"
+                    ></app-person-form>
+                </p-accordion-content>
+            </p-accordion-panel>
+            <p-accordion-panel [value]="1" [disabled]="panelsDisabled()[1]">
+                <p-accordion-header>
+                    <div class="flex gap-3 items-center">
+                        <span>¿A dónde quieres enviar? (Destino)</span>
+                        @if (cartItem?.destination || currentItemUuid) {
+                            <i class="pi pi-check text-theme-primary-500"></i>
+                        }
+                    </div>
+                </p-accordion-header>
+                <p-accordion-content [ngClass]="'accordioncontent-without-padding'">
+                    <app-shipment-record-destination (returnChargeChanged)="onReturnChargeChanged($event)" (submitDestination)="submitDestinationForm($event)" [currentItem]="currentCartItem"></app-shipment-record-destination>
+                </p-accordion-content>
+            </p-accordion-panel>
+            <p-accordion-panel [value]="2" [disabled]="panelsDisabled()[2]">
+                <p-accordion-header>
+                    <div class="flex gap-3 items-center">
+                        <span>¿Qué deseas enviar?</span>
+                        @if (cartItem?.what_send) {
+                            <i class="pi pi-check text-theme-primary-500"></i>
+                        }
+                    </div>
+                </p-accordion-header>
+                <p-accordion-content [ngClass]="'accordioncontent-without-padding'">
+                    @if (standardSizes().length > 0) {
+                        <app-shipment-record-what-send
+                            [articleCategories]="articleCategories()"
+                            [standardSizes]="standardSizes()"
+                            [cartData]="cartData"
+                            (submitForm)="submitWhatSenderForm($event)"
+                            [cartItemWhatSendEntityResponse]="currentCartItem?.what_send"
+                            [currentOrigin]="currentOrigin()"
+                        ></app-shipment-record-what-send>
+                    }
+                </p-accordion-content>
+            </p-accordion-panel>
+        </p-accordion>
+    </div>
 </div>

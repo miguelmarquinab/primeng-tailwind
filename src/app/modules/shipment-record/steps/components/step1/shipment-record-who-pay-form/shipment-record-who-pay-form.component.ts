@@ -49,6 +49,7 @@ export class ShipmentRecordWhoPayFormComponent implements OnInit, OnChanges, OnD
     }
 
     ngOnChanges(changes: SimpleChanges) {
+        console.log(changes['currentHeadquarter']);
         if (changes['currentHeadquarter'] && changes['currentHeadquarter'].currentValue) {
             const headquarter: HeadquartersEntityResponse = changes['currentHeadquarter'].currentValue;
             // this.whoPayTypeEnabled = this.buildWhoPayTypeEnabled(headquarter);
