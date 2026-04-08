@@ -146,6 +146,7 @@ export class ShipmentRecordStep1Component implements OnInit {
         this.cartService.setWhoPays(sessionUuid, { who_pays: paymentType }).subscribe({
             next: () => {
                 this.cartSessionService.setWhoPay(paymentType, whoPayDetail);
+                this.cartSessionService.setAddingNewItemFromStep3(false);
                 this.cartService.setStepNumber(2);
             }
         });
@@ -153,12 +154,13 @@ export class ShipmentRecordStep1Component implements OnInit {
         /* End Refactory */
         this.whoPay = event;
         this.cartSessionService.setWhoPay(paymentType, whoPayDetail);
+        this.cartSessionService.setAddingNewItemFromStep3(false);
         this.cartService.setStepNumber(2);
     }
 
     getHeadquarterById(headquarterId: string): HeadquartersEntityResponse {
-        console.log(headquarterId)
-        console.log(typeof headquarterId)
+        console.log(headquarterId);
+        console.log(typeof headquarterId);
         return (
             this.headquarters.find((headquarter) => headquarter.headquarter_id === headquarterId) || {
                 headquarter_id: '0',

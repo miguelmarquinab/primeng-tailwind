@@ -68,12 +68,14 @@ export class ShipmentRecordStep3Component implements OnInit {
 
     editShipment(itemUuid: string): void {
         console.log('Editar envío:', itemUuid);
+        this.cartSessionService.setAddingNewItemFromStep3(false);
         this.cartSessionService.setCurrentItemUuid(itemUuid);
         this.cartService.setStepNumber(2);
     }
 
     openModal(): void {
         this.cartSessionService.setCurrentItemUuid('');
+        this.cartSessionService.setAddingNewItemFromStep3(true);
         this.cartService.setStepNumber(2);
     }
 }

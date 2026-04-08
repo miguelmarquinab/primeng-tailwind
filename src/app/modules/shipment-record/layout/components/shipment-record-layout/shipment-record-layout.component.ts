@@ -208,6 +208,7 @@ export class ShipmentRecordLayoutComponent implements OnInit, OnDestroy {
 
     addAdditionalShipment(): void {
         this.cartSessionStorageService.setCurrentItemUuid('');
+        this.cartSessionStorageService.setAddingNewItemFromStep3(true);
         this.cartService.setStepNumber(2);
     }
 }

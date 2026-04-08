@@ -1,5 +1,6 @@
 import { Component, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Accordion, AccordionContent, AccordionHeader, AccordionPanel } from 'primeng/accordion';
+import { Button } from 'primeng/button';
 import { PersonFormComponent } from '@shipment-record/steps/components/step1/shipment-record-who-sender-form/person-form.component';
 import { ACCORDION_SCROLL, SHIPMENT_TYPE, ShipmentRecordStepsConstant } from '@shipment-record/contansts/shipment-record-step.constant';
 import { ShipmentRecordWhatSendComponent } from '@shipment-record/steps/components/step2/shipment-record-what-send/shipment-record-what-send.component';
@@ -22,10 +23,7 @@ import { HeadquartersEntityResponse } from '@shipment-record/models/headquarters
 
 @Component({
     selector: 'app-shipment-record-step2',
-    imports: [
-        Accordion, AccordionContent, AccordionHeader, AccordionPanel, PersonFormComponent,
-        ShipmentRecordWhatSendComponent, ShipmentRecordDestinationComponent, NgClass
-    ],
+    imports: [Accordion, AccordionContent, AccordionHeader, AccordionPanel, Button, PersonFormComponent, ShipmentRecordWhatSendComponent, ShipmentRecordDestinationComponent, NgClass],
     templateUrl: './shipment-record-step2.component.html',
     encapsulation: ViewEncapsulation.None
 })
@@ -56,6 +54,7 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
     recipientFormData!: PersonFormData;
     standardSizes = signal<StandardSizeEntityResponse[]>([]);
     currentOrigin = signal<HeadquartersEntityResponse>({ headquarter_id: '0' });
+    protected readonly addingNewItemFromStep3 = signal(false);
 
     ngOnInit() {
         this.getArticleCategories();
@@ -63,6 +62,7 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
         this.cartItem = {};
         this.cartData = this.cartSessionService.getCartData();
         this.currentItemUuid = this.cartSessionService.getCurrentItemUuid() ?? '';
+        this.addingNewItemFromStep3.set(this.cartSessionService.isAddingNewItemFromStep3());
 
         this.currentOrigin.set(<HeadquartersEntityResponse>this.cartSessionService.getOrigin());
         if (this.currentItemUuid) {
@@ -156,11 +156,18 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
         this.cartService.getByUuid(cartSessionUuid).subscribe({
             next: (response) => {
                 this.cartSessionService.setCurrentItemUuid('');
+                this.cartSessionService.setAddingNewItemFromStep3(false);
                 this.cartSessionService.setItems(response.data?.items ?? []);
                 this.cartSessionService.setPricing(response.data?.pricing ?? {});
                 this.cartService.setStepNumber(3);
             }
         });
+    }
+
+    returnToStep3Summary(): void {
+        this.cartSessionService.setAddingNewItemFromStep3(false);
+        this.cartSessionService.setCurrentItemUuid('');
+        this.cartService.setStepNumber(3);
     }
 
     changeCurrentAccordion(accordionIndex: number) {
