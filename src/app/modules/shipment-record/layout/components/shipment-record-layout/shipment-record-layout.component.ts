@@ -1,3 +1,4 @@
+import { NgClass } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { ShipmentRecordStepsComponent } from '@shipment-record/steps/components/shipment-record-steps/shipment-record-steps.component';
 import { ActivatedRoute } from '@angular/router';
@@ -25,7 +26,10 @@ import { CartEntityDataResponse, CartEntityResponse } from '@shipment-record/mod
 
 @Component({
     selector: 'app-shipment-record-layout',
-    imports: [ShipmentRecordStepsComponent, ShipmentRecordStep1Component, ShipmentRecordStep2Component, ShipmentRecordStep3Component, ShippingSummaryComponent, Button, Drawer, LoadingComponent, ConfirmDialogModule],
+    host: {
+        class: 'flex min-h-0 flex-1 flex-col w-full'
+    },
+    imports: [NgClass, ShipmentRecordStepsComponent, ShipmentRecordStep1Component, ShipmentRecordStep2Component, ShipmentRecordStep3Component, ShippingSummaryComponent, Button, Drawer, LoadingComponent, ConfirmDialogModule],
     templateUrl: './shipment-record-layout.component.html',
     styleUrl: './shipment-record-layout.component.scss',
     encapsulation: ViewEncapsulation.None,
@@ -200,5 +204,10 @@ export class ShipmentRecordLayoutComponent implements OnInit, OnDestroy {
 
     goToPayment(): void {
         this.showSummary();
+    }
+
+    addAdditionalShipment(): void {
+        this.cartSessionStorageService.setCurrentItemUuid('');
+        this.cartService.setStepNumber(2);
     }
 }
