@@ -70,7 +70,11 @@ export class ShippingSummaryStepDestinationsComponent implements OnChanges {
 
     editItem(cartItemUuid: string): void {
         console.log('Editar item desde resumen step 2:', cartItemUuid);
+        if (!cartItemUuid) {
+            return;
+        }
         this.cartSessionService.setAddingNewItemFromStep3(false);
+        this.cartSessionService.setCurrentItemUuid(cartItemUuid);
         this.cartService.setStepNumber(2);
     }
 

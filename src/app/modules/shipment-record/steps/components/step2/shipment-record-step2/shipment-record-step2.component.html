@@ -17,16 +17,18 @@
                     </div>
                 </p-accordion-header>
                 <p-accordion-content>
-                    <app-person-form
-                        [documentTypes]="AppConstant.DOCUMENT_TYPES_WITHOUT_INVOICE_TYPES"
-                        [enableEmailField]="false"
-                        [personConfig]="ShipmentRecordStepsConstant.STEP2_CONFIG.person"
-                        [enablePersonValidation]="false"
-                        [enableSetPersonData]="true"
-                        documentTypeLabel="Tipo de documento"
-                        (submitPersonForm)="submitRecipientForm($event)"
-                        [personData]="recipientFormData"
-                    ></app-person-form>
+                    @for (formKey of [step2FormInstanceKey()]; track formKey) {
+                        <app-person-form
+                            [documentTypes]="AppConstant.DOCUMENT_TYPES_WITHOUT_INVOICE_TYPES"
+                            [enableEmailField]="false"
+                            [personConfig]="ShipmentRecordStepsConstant.STEP2_CONFIG.person"
+                            [enablePersonValidation]="false"
+                            [enableSetPersonData]="true"
+                            documentTypeLabel="Tipo de documento"
+                            (submitPersonForm)="submitRecipientForm($event)"
+                            [personData]="recipientFormData"
+                        ></app-person-form>
+                    }
                 </p-accordion-content>
             </p-accordion-panel>
             <p-accordion-panel [value]="1" [disabled]="panelsDisabled()[1]">
@@ -39,7 +41,9 @@
                     </div>
                 </p-accordion-header>
                 <p-accordion-content [ngClass]="'accordioncontent-without-padding'">
-                    <app-shipment-record-destination (returnChargeChanged)="onReturnChargeChanged($event)" (submitDestination)="submitDestinationForm($event)" [currentItem]="currentCartItem"></app-shipment-record-destination>
+                    @for (formKey of [step2FormInstanceKey()]; track formKey) {
+                        <app-shipment-record-destination (returnChargeChanged)="onReturnChargeChanged($event)" (submitDestination)="submitDestinationForm($event)" [currentItem]="currentCartItem"></app-shipment-record-destination>
+                    }
                 </p-accordion-content>
             </p-accordion-panel>
             <p-accordion-panel [value]="2" [disabled]="panelsDisabled()[2]">
@@ -53,14 +57,16 @@
                 </p-accordion-header>
                 <p-accordion-content [ngClass]="'accordioncontent-without-padding'">
                     @if (standardSizes().length > 0) {
-                        <app-shipment-record-what-send
-                            [articleCategories]="articleCategories()"
-                            [standardSizes]="standardSizes()"
-                            [cartData]="cartData"
-                            (submitForm)="submitWhatSenderForm($event)"
-                            [cartItemWhatSendEntityResponse]="currentCartItem?.what_send"
-                            [currentOrigin]="currentOrigin()"
-                        ></app-shipment-record-what-send>
+                        @for (formKey of [step2FormInstanceKey()]; track formKey) {
+                            <app-shipment-record-what-send
+                                [articleCategories]="articleCategories()"
+                                [standardSizes]="standardSizes()"
+                                [cartData]="cartData"
+                                (submitForm)="submitWhatSenderForm($event)"
+                                [cartItemWhatSendEntityResponse]="currentCartItem?.what_send"
+                                [currentOrigin]="currentOrigin()"
+                            ></app-shipment-record-what-send>
+                        }
                     }
                 </p-accordion-content>
             </p-accordion-panel>
