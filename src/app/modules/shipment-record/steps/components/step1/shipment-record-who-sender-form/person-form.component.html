@@ -37,19 +37,11 @@
             [regexPatternAllowed]="currentDocumentType.documentNumberPattern"
             [readOnly]="personIsLoading"
           />
-          @if (!rucIsDownState) {
-            <app-input-error-message
-              errorText="No ingresaste un número válido."
-              [control]="peopleForm.get('documentNumber')"
-            ></app-input-error-message>
-          }
-          @if (rucIsDownState) {
+          <app-input-error-message
+            errorText="No ingresaste un número válido."
+            [control]="peopleForm.get('documentNumber')"
+          ></app-input-error-message>
 
-            <app-input-error-custom-message
-              [errorText]="'RUC no habilitado. Estado: ' + contributorDisabledMessage"
-              [control]="peopleForm.get('documentNumber')"
-            ></app-input-error-custom-message>
-          }
         </div>
 
         @if (!personExist) {
@@ -188,10 +180,11 @@
         }
       </div>
 
+
       <div class="grid w-full">
 
         <p-button label="Siguiente" severity="primary" styleClass="w-full"
-                  [disabled]="!isFormReady || peopleForm.invalid || currentDocumentType.value === '' || rucIsDownState"
+                  [disabled]="!isFormReady || peopleForm.invalid || currentDocumentType.value === ''"
                   (click)="onSubmitHandler()"
                   (keydown.enter)="onSubmitHandler()"
         />

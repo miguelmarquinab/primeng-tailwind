@@ -1,6 +1,6 @@
-<div class="h-screen flex flex-col">
+<div class="flex min-h-0 flex-col" [ngClass]="lockShipmentStep3OuterScroll() ? 'h-dvh max-h-dvh overflow-hidden' : 'min-h-dvh'">
     <app-public-layout-header> </app-public-layout-header>
-    <div class="flex-1 min-h-0">
+    <div class="public-layout-outlet flex min-h-0 flex-1 flex-col" [ngClass]="lockShipmentStep3OuterScroll() ? 'overflow-hidden' : ''">
         <router-outlet></router-outlet>
     </div>
 </div>

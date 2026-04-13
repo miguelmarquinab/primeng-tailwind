@@ -55,7 +55,6 @@ export interface CartItemDestinationFormState extends CartItemDestinationPayload
     // type: string;
     valid?: boolean;
     cargo_flag?: string;
-    dangerous?: boolean;
     // reference?: string; //???
 }
 

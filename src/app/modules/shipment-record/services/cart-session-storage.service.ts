@@ -51,15 +51,6 @@ export class CartSessionStorageService {
         this.setCartData(cartData);
     }
 
-    getWhoPay() {
-        const cartData = this.getCartData();
-        return {
-            whoPay: cartData.header.whoPay,
-            whoPayDetail: cartData.header.whoPayDetail
-        };
-    }
-
-
     setCurrentItemUuid(currentItemUuid: string) {
         const cartData = this.getCartData();
         cartData.header.currentItemUuid = currentItemUuid;
@@ -69,6 +60,16 @@ export class CartSessionStorageService {
     getCurrentItemUuid() {
         const cartData = this.getCartData();
         return cartData.header.currentItemUuid;
+    }
+
+    setAddingNewItemFromStep3(value: boolean) {
+        const cartData = this.getCartData();
+        cartData.header.addingNewItemFromStep3 = value;
+        this.setCartData(cartData);
+    }
+
+    isAddingNewItemFromStep3(): boolean {
+        return !!this.getCartData().header.addingNewItemFromStep3;
     }
 
     // setCartData(data: CartSessionStorage) {

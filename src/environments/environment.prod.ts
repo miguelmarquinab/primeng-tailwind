@@ -14,8 +14,7 @@ export const environment = {
     paymentGateway: {
         niubiz: {
             assets: {
-                // scriptCheckout: 'https://static-content.vnforapps.com/v2/js/checkout.js',
-                scriptCheckout: 'https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true'
+                scriptCheckout: 'https://static-content.vnforapps.com/v2/js/checkout.js'
             }
         },
         assets: {

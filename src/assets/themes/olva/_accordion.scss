@@ -11,13 +11,8 @@
     //height: 45px;
   }
 
-  &:not(.p-disabled).p-accordionpanel-active > .p-accordionheader{
-    @include rounded-bottom(12px);
-
-  }
-
   .p-accordionpanel:first-child > .p-accordionheader {
-    //@include rounded-bottom(12px);
+    @include rounded-bottom(12px);
   }
 
 

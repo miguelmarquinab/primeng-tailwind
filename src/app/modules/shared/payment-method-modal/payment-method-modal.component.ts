@@ -57,30 +57,9 @@ export class PaymentMethodModalComponent implements OnInit {
     cartData = this.cartSessionService.getCartData();
     cartNiubizSession?: CartNiubizSessionEntityResponse;
 
-    paymentMethodsEnabled: string[] = [];
-
     ngOnInit(): void {
         this.loadInputData();
         this.resolvePaymentAmount();
-        this.enablePaymentsMethods();
-    }
-
-    enablePaymentsMethods() {
-        const whoPay = this.cartSessionService.getWhoPay();
-
-        console.log(whoPay);
-
-        const whoPayDetail = whoPay.whoPayDetail;
-        const paymentModalities = whoPayDetail?.payment_modalities || [];
-        const paymentModality = paymentModalities.find((item: any) => {
-            return (item.code = whoPay.whoPay);
-        });
-
-        const paymentMethods = paymentModality?.payment_methods || [];
-        console.log(paymentMethods);
-        paymentMethods.forEach((item: any) => {
-            this.paymentMethodsEnabled.push(item?.code.toUpperCase());
-        });
     }
 
     private loadInputData(): void {

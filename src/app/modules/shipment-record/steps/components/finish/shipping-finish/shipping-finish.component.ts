@@ -14,6 +14,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'app-shipping-finish',
+    host: {
+        class: 'flex min-h-0 flex-1 flex-col'
+    },
     imports: [Button, ConfirmDialog, LoadingComponent],
     templateUrl: './shipping-finish.component.html',
     styleUrl: './shipping-finish.component.scss',

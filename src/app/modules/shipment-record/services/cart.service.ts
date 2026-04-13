@@ -1,11 +1,13 @@
 import { inject, Injectable } from '@angular/core';
 import { environment } from '@env/environment';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';import { CartEntityResponse, CartPayload, CartPresaleLabelEntityResponse, PersonPayload, CreateCartPayload, WhoPaysPayload, OriginPayload, CartNiubizSessionEntityResponse } from '@shipment-record/models/cart.model';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { CartEntityResponse, CartPayload, CartPresaleLabelEntityResponse, PersonPayload, CreateCartPayload, WhoPaysPayload, OriginPayload, CartNiubizSessionEntityResponse } from '@shipment-record/models/cart.model';
 import { HeadquartersEntityResponse } from '@shipment-record/models/headquarters.model';
 import { CartItemPayload } from '@shipment-record/models/cart-item.model';
 import { CouponService } from '@shipment-record/services/coupon.service';
 import { CouponEntityResponse } from '../models/coupon.model';
+import { PriceEntityResponse } from '../models/price.model';
 
 @Injectable({
     providedIn: 'root'
@@ -81,6 +83,15 @@ export class CartService {
     getByUuid(sessionUuid: string): Observable<CartEntityResponse> {
         const endpoint = `${this.baseUrl}/v1/cart/${sessionUuid}`;
         return this.http.get<CartEntityResponse>(endpoint);
+    }
+
+    /**
+     * Forces backend price recalculation for the current session/cart.
+     * Used after coupon changes to ensure totals are recomputed.
+     */
+    refreshPrice(sessionUuid: string): Observable<PriceEntityResponse> {
+        const endpoint = `${this.baseUrl}/v1/price/${sessionUuid}`;
+        return this.http.get<PriceEntityResponse>(endpoint);
     }
 
     validateCoupon(code: string) {

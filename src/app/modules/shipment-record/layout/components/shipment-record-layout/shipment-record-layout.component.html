@@ -2,14 +2,14 @@
     <app-loading></app-loading>
 }
 @if (!tokenIsLoading) {
-    <div class="flex flex-col h-full">
+    <div class="flex min-h-0 flex-1 flex-col" [ngClass]="stepNumber === 3 ? 'max-lg:overflow-hidden' : ''">
         <app-shipment-record-steps (stepChanged)="setCurrentStep($event)" [stepNumber]="stepNumber"></app-shipment-record-steps>
 
-        <div class="bg-slate-200 flex-1 flex flex-col items-center">
-            <div class="flex flex-col lg:flex-row w-full h-full gap-4 lg:p-6">
-                <div class="flex flex-col w-full lg:flex-1 h-full">
-                    <div class="flex flex-col gap-3 bg-white lg:rounded-4xl h-full p-3 md:p-6 shadow-lg">
-                        <div class="flex">
+        <div class="bg-slate flex-1 min-h-0 flex flex-col items-center w-full" [ngClass]="stepNumber === 3 ? 'max-lg:overflow-hidden max-lg:min-h-0' : ''">
+            <div class="flex flex-col lg:flex-row w-full flex-1 min-h-0 gap-4 lg:p-6" [ngClass]="stepNumber === 3 ? 'max-lg:overflow-hidden' : ''">
+                <div class="flex flex-col content-center w-full lg:flex-1" [ngClass]="stepNumber === 3 ? 'max-lg:flex-1 max-lg:min-h-0 max-lg:overflow-hidden' : 'h-full'">
+                    <div class="flex flex-col gap-3 bg-white lg:rounded-4xl p-3 md:p-6 shadow-lg" [ngClass]="stepNumber === 3 ? 'max-lg:min-h-0 max-lg:flex-1 max-lg:overflow-hidden lg:h-12/12' : 'h-12/12'">
+                        <div class="flex lg:static" [ngClass]="stepNumber === 3 ? 'max-lg:sticky max-lg:top-0 max-lg:z-30 max-lg:bg-white max-lg:pt-1 max-lg:-mt-1 max-lg:pb-2' : ''">
                             <div class="flex flex-col gap-1 w-2/3 md:w-full border-r border-slate-200 pr-6 mr-6 md:border-r-0 md:pr-0 md:mr-0">
                                 <span class="text-base md:text-2xl font-montserrat font-bold text-center lg:text-left text-button-text-plain">Registra tu envío </span>
                                 <span class="text-sm md:text-lg font-bold md:font-normal text-center text-button-text-plain lg:text-left">
@@ -22,11 +22,9 @@
                             </div>
                         </div>
 
-                        <div class="flex-1">
+                        <div [ngClass]="stepNumber === 3 ? 'flex-1 min-h-0 overflow-hidden' : 'flex-1'">
                             @if (stepNumber === 1) {
-                                <app-shipment-record-step1
-                                  [headquarters]="headquarters()"
-                                ></app-shipment-record-step1>
+                                <app-shipment-record-step1></app-shipment-record-step1>
                             }
 
                             @if (stepNumber === 2) {
@@ -46,7 +44,11 @@
                     }
 
                     @if (stepNumber === 3) {
-                        <div class="flex flex-col lg:hidden w-full sticky bottom-0 bg-white p-6 z-1000 gap-6">
+                        <div class="flex flex-col lg:hidden w-full sticky bottom-0 bg-white p-6 z-1000 gap-4">
+                            <p-button class="w-full" styleClass="w-full" outlined severity="secondary" (onClick)="addAdditionalShipment()">
+                                <i class="pi pi-plus"></i>
+                                Agrega envío adicional
+                            </p-button>
                             <button type="button" class="w-full flex items-center justify-between rounded-full border border-surface-300 px-5 py-3 bg-white" (click)="showSummary()">
                                 <div class="flex items-center gap-3">
                                     <span class="text-base text-color-main font-medium">Total pago</span>
@@ -59,8 +61,8 @@
                         </div>
                     }
                 </div>
-                <div class="hidden lg:flex flex-col w-full lg:w-95 h-full shrink-0">
-                    <div class="bg-white rounded-4xl h-full p-6 shadow-lg">
+                <div class="hidden lg:flex flex-col w-full lg:w-95 h-12/12 shrink-0">
+                    <div class="bg-white rounded-4xl h-12/12 p-6 shadow-lg">
                         @if (!isMobile()) {
                             <app-shipping-summary [stepNumber]="stepNumber"></app-shipping-summary>
                         }

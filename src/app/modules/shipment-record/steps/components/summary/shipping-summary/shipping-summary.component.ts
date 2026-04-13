@@ -5,7 +5,7 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ShippingSummaryStepOriginComponent } from '@shipment-record/steps/components/summary/shipping-summary-step-origin/shipping-summary-step-origin.component';
 import { ShippingSummaryStepDestinationsComponent } from '@shipment-record/steps/components/summary/shipping-summary-step-destinations/shipping-summary-step-destinations.component';
 import { CartService } from '@shipment-record/services/cart.service';
-import { debounceTime, distinctUntilChanged, filter, shareReplay, skip, Subject, Subscription, switchMap, takeUntil, throwError } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, filter, of, shareReplay, skip, Subject, Subscription, switchMap, takeUntil, throwError } from 'rxjs';
 import { CartEntityDataResponse, CartEntityResponse, CartOriginEntityResponse, CartPersonEntityResponse, CartState } from '@shipment-record/models/cart.model';
 import { CartSessionStorageService } from '@shipment-record/services/cart-session-storage.service';
 import { SessionStorageService } from '@shared/services/storage/session-storage.service';
@@ -138,7 +138,7 @@ export class ShippingSummaryComponent implements OnInit, OnChanges, OnDestroy {
 
         this.cartData = this.cartSessionService.getCartData();
 
-        if (this.stepNumber === 3){
+        if (this.stepNumber === 3) {
             if (this.cart?.payment?.status === 'denied') {
                 this.openPaymentDeniedModal();
             }
@@ -261,10 +261,43 @@ export class ShippingSummaryComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     private resetCouponState(): void {
+        const cartId = this.cartSessionService.getCartId();
+        const hadAppliedCoupon = Boolean(this.couponAppliedCode);
+
         this.cartSessionService.setAppliedCouponCode(null);
         this.couponAppliedCode = null;
         this.lastProcessedCouponCode = '';
-        this.getLatestCart();
+
+        if (!cartId) {
+            return;
+        }
+
+        // If there was no coupon applied, avoid unnecessary calls.
+        if (!hadAppliedCoupon) {
+            this.getLatestCart();
+            return;
+        }
+
+        this.couponApplying = true;
+
+        this.cartService
+            .refreshPrice(cartId)
+            .pipe(
+                catchError(() => of(null)),
+                switchMap(() => this.cartService.getByUuid(cartId)),
+                takeUntilDestroyed(this.destroyRef)
+            )
+            .subscribe({
+                next: (response) => {
+                    this.applyCartResponse(response);
+                    this.couponApplying = false;
+                },
+                error: () => {
+                    this.couponApplying = false;
+                    // As a fallback, at least refresh latest cart.
+                    this.getLatestCart();
+                }
+            });
     }
 
     private showInvalidCouponModal(): void {
@@ -335,7 +368,6 @@ export class ShippingSummaryComponent implements OnInit, OnChanges, OnDestroy {
         this.ref?.onClose.subscribe({
             next: (data) => {
                 console.log('Modal closed with data:', data);
-                console.log('Modal closed this.cartData?.header', this.cartData?.header);
 
                 const pinValue = typeof data === 'string' ? data : data?.pin;
 
@@ -348,8 +380,8 @@ export class ShippingSummaryComponent implements OnInit, OnChanges, OnDestroy {
                     return;
                 }
 
-                if (this.cartData?.header?.whoPay === PAYMENT_TYPES_CODES.DESTINATION || this.cartData?.header?.whoPay === PAYMENT_TYPES_CODES.STORE) {
-                    // @TODO CREATE DESTINATION PAYMENT
+                if (this.cartData?.header?.whoPay === PAYMENT_TYPES_CODES.DESTINATION) {
+                    // @TODO CREATE DESTIONATION PAYMENT
                     this.createOfflinePayment();
                     return;
                 }

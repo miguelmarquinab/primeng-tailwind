@@ -19,6 +19,5 @@ export class PersonConstant {
         }
     };
 
-    static readonly PERSON_DOWN_STATE = 'BAJA DE OFICIO - NO HALLADO DESTINATA';
-    static readonly PERSON_ACTIVE_STATE = 'ACTIVO';
+    static readonly PERSON_DOWN_STATE = 'BAJA DE OFICIO - HABIDO';
 }
