@@ -1,15 +1,24 @@
-<div class="p-4 flex flex-col gap-3 border bg-surface-50 border-secondary-sutile rounded-xl w-full h-full min-h-0 lg:max-h-[calc(100vh-220px)]">
-    <div class="flex flex-col gap-3 flex-1 min-h-0 overflow-y-auto lg:overflow-y-auto">
-        @if (cartData) {
-            @for (item of cartData.items; track item.uuid; let i = $index) {
-                <app-shipment-card [index]="i + 1" [cartUuid]="this.cartData.cardId ?? ''" [cartItem]="item" [cartItemUuid]="item.uuid ?? ''" (shipmentChanged)="refreshItems($event)" (editRequested)="editShipment(item.uuid ?? '')" />
-            }
-        }
-    </div>
-    <div class="hidden w-full lg:block">
-        <p-button class="w-full" styleClass="w-full" outlined severity="secondary" (click)="openModal()">
-            <i class="pi pi-plus"></i>
-            Agrega envío adicional
-        </p-button>
-    </div>
+<div
+  class="p-4 flex flex-col gap-3 border bg-surface-50 border-secondary-sutile rounded-xl w-full max-h-[calc(100vh-220px)]">
+  <div class="flex flex-col gap-3 flex-1 overflow-y-auto">
+    @if (cartData) {
+      @for (item of cartData.items; track item.uuid; let i = $index) {
+        <app-shipment-card
+          [index]="i + 1"
+          [cartUuid]="this.cartData.cardId??''"
+          [cartItem]="item"
+          [cartItemUuid]="item.uuid??''"
+          (shipmentChanged)="refreshItems($event)"
+          (editRequested)="editShipment(item.uuid??'')"
+        />
+      }
+
+    }
+  </div>
+  <div class="w-full">
+    <p-button class="w-full" styleClass="w-full" outlined severity="secondary" (click)="openModal()">
+      <i class="pi pi-plus"></i>
+      Agrega envío adicional
+    </p-button>
+  </div>
 </div>

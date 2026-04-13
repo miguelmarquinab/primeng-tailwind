@@ -1,6 +1,5 @@
-import { Component, DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Accordion, AccordionContent, AccordionHeader, AccordionPanel } from 'primeng/accordion';
-import { Button } from 'primeng/button';
 import { PersonFormComponent } from '@shipment-record/steps/components/step1/shipment-record-who-sender-form/person-form.component';
 import { ACCORDION_SCROLL, SHIPMENT_TYPE, ShipmentRecordStepsConstant } from '@shipment-record/contansts/shipment-record-step.constant';
 import { ShipmentRecordWhatSendComponent } from '@shipment-record/steps/components/step2/shipment-record-what-send/shipment-record-what-send.component';
@@ -20,20 +19,19 @@ import { LocalStorageService } from '@shared/services/storage/local-storage.serv
 import { StandardSizeService } from '@shipment-record/services/standard-size.service';
 import { StandardSizeEntityResponse } from '@shipment-record/models/standard-size.model';
 import { HeadquartersEntityResponse } from '@shipment-record/models/headquarters.model';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'app-shipment-record-step2',
-    imports: [Accordion, AccordionContent, AccordionHeader, AccordionPanel, Button, PersonFormComponent, ShipmentRecordWhatSendComponent, ShipmentRecordDestinationComponent, NgClass],
+    imports: [Accordion, AccordionContent, AccordionHeader, AccordionPanel, PersonFormComponent, ShipmentRecordWhatSendComponent, ShipmentRecordDestinationComponent, NgClass],
     templateUrl: './shipment-record-step2.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
     protected panelsDisabled = signal<boolean[]>([false, true, true]);
-    protected currentAccordionIndex = signal(0);
+    currentAccordionIndex = 0;
 
     // protected panelsDisabled = signal<boolean[]>([false, false, false]);
-    // protected currentAccordionIndex = signal(2);
+    // currentAccordionIndex = 2;
 
     articleCategories = signal<ArticleCategoriesEntityResponse[]>([]);
 
@@ -45,7 +43,6 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
     private readonly localStorageService = inject(LocalStorageService);
     private readonly cartService = inject(CartService);
     private readonly standardSizeService = inject(StandardSizeService);
-    private readonly destroyRef = inject(DestroyRef);
     private readonly destroy$ = new Subject<void>();
     @ViewChild('accordionScrollContainer', { static: false }) accordionScrollContainer?: ElementRef<HTMLElement>;
 
@@ -56,70 +53,23 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
     recipientFormData!: PersonFormData;
     standardSizes = signal<StandardSizeEntityResponse[]>([]);
     currentOrigin = signal<HeadquartersEntityResponse>({ headquarter_id: '0' });
-    protected readonly addingNewItemFromStep3 = signal(false);
-    protected readonly step2FormInstanceKey = signal(0);
-    private step2FormGeneration = 0;
 
     ngOnInit() {
         this.getArticleCategories();
         this.getStandardSizes();
-        this.currentOrigin.set(this.cartSessionService.getOrigin() as HeadquartersEntityResponse);
-
-        const initialUuid = this.cartSessionService.getCurrentItemUuid() ?? '';
-        this.loadStep2ContextFromUuid(initialUuid);
-
-        this.cartSessionService.cartChanged$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((cart) => {
-            const nextUuid = cart.header?.currentItemUuid ?? '';
-            if (nextUuid === this.currentItemUuid) {
-                return;
-            }
-            this.loadStep2ContextFromUuid(nextUuid);
-        });
-    }
-
-    private loadStep2ContextFromUuid(uuid: string): void {
-        this.step2FormGeneration += 1;
-        this.step2FormInstanceKey.set(this.step2FormGeneration);
-
-        this.currentItemUuid = uuid;
         this.cartItem = {};
-        this.returnChargePayload = undefined;
         this.cartData = this.cartSessionService.getCartData();
-        this.addingNewItemFromStep3.set(this.cartSessionService.isAddingNewItemFromStep3());
+        this.currentItemUuid = this.cartSessionService.getCurrentItemUuid() ?? '';
 
-        if (!uuid) {
-            this.currentCartItem = undefined as unknown as CartItemEntityResponse;
-            this.recipientFormData = {
-                document_type: '',
-                document_number: '',
-                phone: '',
-                first_names: '',
-                last_name: ''
-            };
-            this.panelsDisabled.set([false, true, true]);
-            this.currentAccordionIndex.set(0);
-            return;
+        this.currentOrigin.set(<HeadquartersEntityResponse>this.cartSessionService.getOrigin());
+        if (this.currentItemUuid) {
+            this.currentCartItem = this.getCurrentCartItemByUuid(this.currentItemUuid);
         }
 
-        const item = this.getCurrentCartItemByUuid(uuid);
-        if (!item) {
-            this.currentCartItem = undefined as unknown as CartItemEntityResponse;
-            this.recipientFormData = {
-                document_type: '',
-                document_number: '',
-                phone: '',
-                first_names: '',
-                last_name: ''
-            };
-            this.panelsDisabled.set([false, true, true]);
-            this.currentAccordionIndex.set(0);
-            return;
+        if (this.currentCartItem) {
+            this.recipientFormData = this.buildRecipientFormData();
+            this.changeCurrentAccordion(0);
         }
-
-        this.currentCartItem = item;
-        this.recipientFormData = this.buildRecipientFormData();
-        this.panelsDisabled.set([false, !item.who_receive, !item.destination]);
-        this.changeCurrentAccordion(0);
     }
 
     buildRecipientFormData(): WhoSenderFormData {
@@ -203,7 +153,6 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
         this.cartService.getByUuid(cartSessionUuid).subscribe({
             next: (response) => {
                 this.cartSessionService.setCurrentItemUuid('');
-                this.cartSessionService.setAddingNewItemFromStep3(false);
                 this.cartSessionService.setItems(response.data?.items ?? []);
                 this.cartSessionService.setPricing(response.data?.pricing ?? {});
                 this.cartService.setStepNumber(3);
@@ -211,14 +160,9 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
         });
     }
 
-    returnToStep3Summary(): void {
-        this.cartSessionService.setAddingNewItemFromStep3(false);
-        this.cartSessionService.setCurrentItemUuid('');
-        this.cartService.setStepNumber(3);
-    }
-
     changeCurrentAccordion(accordionIndex: number) {
-        this.currentAccordionIndex.set(accordionIndex);
+        console.log(accordionIndex);
+        this.currentAccordionIndex = accordionIndex;
         this.enablePanel(accordionIndex);
         this.scrollAccordionToTop(accordionIndex);
     }
@@ -263,7 +207,16 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
             .getAll()
             .pipe(takeUntil(this.destroy$))
             .subscribe((response) => {
-                const sizes = response.data ?? [];
+                let sizes = response.data ?? [];
+                sizes.push({
+                    value: 'custom_sizes',
+
+                })
+                // sizes = sizes.concat(sizes);
+                // sizes = sizes.map((size, index: number) => {
+                //     size.value = `${size.value}-${index}`;
+                //     return { ...size };
+                // });
                 this.standardSizes.set(sizes);
                 this.localStorageService.set(standardSizesCacheKey, sizes);
             });

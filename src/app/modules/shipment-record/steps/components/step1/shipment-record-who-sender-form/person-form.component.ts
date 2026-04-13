@@ -10,7 +10,9 @@ import { NgClass } from '@angular/common';
 import { OnlyNumberDirective } from '@shared/directives/only-number.directive';
 import { PersonFormData, WhoSenderFormData } from '@shipment-record/models/who-sender-form.model';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { ShipmentRecordPersonValidateModalComponent } from '@shipment-record/steps/components/step1/shipment-record-person-validate-modal/shipment-record-person-validate-modal.component';
+import {
+    ShipmentRecordPersonValidateModalComponent
+} from '@shipment-record/steps/components/step1/shipment-record-person-validate-modal/shipment-record-person-validate-modal.component';
 import { PersonService } from '@/modules/people/person/services/person.service';
 import { catchError, debounceTime, EMPTY, filter, Subject, Subscription, switchMap, takeUntil, tap } from 'rxjs';
 import { PersonEntityResponse } from '@/modules/people/models/person.model';
@@ -23,6 +25,9 @@ import { CellphoneValidator } from '@shared/validators/cellphone.validator';
 import { PersonFormConfig } from '@shipment-record/models/person.modal';
 import { PersonConstant } from '@shipment-record/contansts/person.constant';
 import { DisplayShortTextDirective } from '@shared/directives/display-short-text.directive';
+import {
+    InputErrorCustomMessageComponent
+} from '@shared/components/form/input-error-custom-message/input-error-custom-message.component';
 
 interface PersonValidateModalData {
     person: PersonEntityResponse;
@@ -30,7 +35,21 @@ interface PersonValidateModalData {
 
 @Component({
     selector: 'app-person-form',
-    imports: [AccordionModule, ButtonModule, InputTextModule, SelectModule, ReactiveFormsModule, OnlyNumberDirective, NgClass, Message, InputRegexDirective, RestrictCharsDirective, InputErrorMessageComponent, DisplayShortTextDirective],
+    imports: [
+        AccordionModule,
+        ButtonModule,
+        InputTextModule,
+        SelectModule,
+        ReactiveFormsModule,
+        OnlyNumberDirective,
+        NgClass,
+        Message,
+        InputRegexDirective,
+        RestrictCharsDirective,
+        InputErrorMessageComponent,
+        DisplayShortTextDirective,
+        InputErrorCustomMessageComponent
+    ],
     templateUrl: './person-form.component.html',
     styleUrls: ['./person-form.component.scss'],
     standalone: true,
@@ -60,6 +79,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     personExist = true;
     personIsLoading = false;
     personResponse!: PersonEntityResponse;
+    rucIsDownState = false;
     protected readonly AppConstant = AppConstant;
     private readonly destroy$ = new Subject<void>();
     private readonly formBuilder = inject(FormBuilder);
@@ -69,6 +89,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     private documentTypeSubscription: Subscription | null = null;
     private documentNumberSubscription: Subscription | null = null;
     private modalCloseSubscription: Subscription | null = null;
+    contributorDisabledMessage = '';
 
     private readonly requiredFieldsConfig: Record<string, string[]> = {
         default: ['documentNumber', 'cellPhone'],
@@ -313,8 +334,10 @@ export class PersonFormComponent implements OnInit, OnDestroy {
                             this.setPersonDataForm(person);
                         }
                         if (this.currentDocumentType.value === AppConstant.DOCUMENT_TYPE_RUC) {
-                            if (person.contributor_status === PersonConstant.PERSON_DOWN_STATE) {
+                            if (person.contributor_status !== PersonConstant.PERSON_ACTIVE_STATE) {
                                 // @TODO que se tiene que hacer?
+                                this.rucIsDownState = true;
+                                this.contributorDisabledMessage = person?.contributor_status ??'';
                             }
                             this.peopleForm.get('firstName')?.patchValue(person.full_name);
                             this.peopleForm.get('firstName')?.disable();
@@ -396,6 +419,7 @@ export class PersonFormComponent implements OnInit, OnDestroy {
     documentNumberChangedHandler(change: boolean) {
         this.documentNumberChanged.emit(change);
         this.personExist = true;
+        this.rucIsDownState = false;
         this.disableFields('firstName', 'lastName', 'cellPhone', 'emailAddress');
     }
 

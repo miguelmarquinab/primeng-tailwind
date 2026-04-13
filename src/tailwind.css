@@ -4,47 +4,41 @@
 @import 'tailwindcss-primeui';
 
 @theme {
-    --breakpoint-xs: 360px;
-    --color-highlight-focus-background: var(--theme-highlight-focus-background);
-    --color-primary-sutile: var(--theme-primary-sutile);
-    --color-secondary-sutile: #e3e9f7;
-    --color-theme-secondary: var(--theme-color-secondary);
-    --color-button-text-plain: var(--theme-text-color);
-    --color-theme-surface-400: #94a3b8;
-    --color-theme-surface-600: #475569;
-    --color-theme-green-400: #4ade80;
-    --color-theme-ligth-coral: #f87171;
-    --color-theme-light-gray: var(--p-inputtext-border-color);
-    --color-theme-ultramarine: var(--theme-ultramarine-color);
-    --color-theme-surface-200: var(--theme-surface-200);
-    --color-theme-dim-gray: #6b6b6b;
-    --color-theme-surface-50: #f8fafc;
-    --color-theme-primary-500: #10b981;
-    --font-montserrat: 'Montserrat', sans-serif;
-    --font-inter: 'Inter', sans-serif;
+  --breakpoint-xs: 360px;
+  --color-highlight-focus-background: var(--theme-highlight-focus-background);
+  --color-primary-sutile: var(--theme-primary-sutile);
+  --color-secondary-sutile: #E3E9F7;
+  --color-theme-secondary: var(--theme-color-secondary);
+  --color-button-text-plain: var(--theme-text-color);
+  --color-theme-surface-400: #94A3B8;
+  --color-theme-surface-600: #475569;
+  --color-theme-green-400: #4ADE80;
+  --color-theme-ligth-coral: #F87171;
+  --color-theme-light-gray: var(--p-inputtext-border-color);
+  --color-theme-ultramarine: var(--theme-ultramarine-color);
+  --color-theme-surface-200: var(--theme-surface-200);
+  --color-theme-dim-gray: #6B6B6B;
+  --color-theme-surface-50: #F8FAFC;
+  --color-theme-primary-500: #10B981;
+  --font-montserrat: "Montserrat", sans-serif;
+  --font-inter: "Inter", sans-serif;
 
-    /* Definimos que el tamaño base sea 14px (0.875rem) */
-    --font-size-base: 0.875rem;
+  /* Definimos que el tamaño base sea 14px (0.875rem) */
+  --font-size-base: 0.875rem;
 
-    /* Si quieres que TODO el texto por defecto sea 14px */
-    --default-font-size: 0.875rem;
+  /* Si quieres que TODO el texto por defecto sea 14px */
+  --default-font-size: 0.875rem;
 
-    --shadow-theme-who-pay-card: 0px 1px 3px 0px #0000001a;
-    --text-tiny: 10px;
+  --shadow-theme-who-pay-card: 0px 1px 3px 0px #0000001A;
+  --text-tiny: 10px;
 }
 
+
 :root {
-    /* Aseguramos que el HTML tenga la base correcta para rems */
-    font-size: 16px;
+  /* Aseguramos que el HTML tenga la base correcta para rems */
+  font-size: 16px;
 }
 
 body {
-    font-size: 0.875rem; /* 14px */
-}
-
-@layer components {
-    /* La vista activa va como hermano del router-outlet y debe participar del flex (altura + sin scroll extra). */
-    .public-layout-outlet > router-outlet + * {
-        @apply flex flex-1 flex-col min-h-0 min-w-0 w-full;
-    }
+  font-size: 0.875rem; /* 14px */
 }

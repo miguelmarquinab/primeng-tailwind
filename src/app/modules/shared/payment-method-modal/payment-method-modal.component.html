@@ -1,89 +1,99 @@
 @if (!error) {
-    <div class="flex flex-col gap-6 w-full">
-      <h2 class="text-xl font-bold text-[#494949]">Elige tu medio de pago preferido</h2>
+  <div class="flex flex-col gap-6 w-full">
+    <h2 class="text-xl font-bold text-[#494949]">Elige tu medio de pago preferido</h2>
 
-      <div class="flex flex-col gap-4">
-        <a
-          role="button"
-          tabindex="0"
-          (click)="selectPaymentMethod('niubiz')"
-          (keydown.enter)="selectPaymentMethod('niubiz')"
-          class="payment-method-card flex items-start gap-3 p-4 bg-white rounded-xl border cursor-pointer shadow-sm transition-all w-full hover:bg-primary-sutile hover:border-highlight-focus-background hover:shadow-md"
-          [ngClass]="{
+    <div class="flex flex-col gap-4">
+      @for (paymentMethod of paymentMethodsEnabled; track paymentMethod) {
+
+        @if (paymentMethod === 'NIUBIZ') {
+
+          <a
+            role="button"
+            tabindex="0"
+            (click)="selectPaymentMethod('niubiz')"
+            (keydown.enter)="selectPaymentMethod('niubiz')"
+            class="payment-method-card flex items-start gap-3 p-4 bg-white rounded-xl border cursor-pointer shadow-sm transition-all w-full hover:bg-primary-sutile hover:border-highlight-focus-background hover:shadow-md"
+            [ngClass]="{
             'bg-primary-sutile border-highlight-focus-background shadow-md': selectedPaymentMethod === 'niubiz',
             'border-theme-light-gray': selectedPaymentMethod !== 'niubiz'
           }"
-        >
-          <div class="shrink-0">
-            <img src="shared/images/niubiz.png" alt="niubiz logo" class="w-16 lg:w-20 h-auto object-contain" />
-          </div>
-
-          <div class="flex-1 min-w-0 flex flex-col">
-            <div class="font-bold text-sm lg:text-base mb-1">Niubiz</div>
-            <div class="text-xs lg:text-sm text-gray-600 mb-2 leading-snug">
-              Tarjeta de crédito/débito/billetera digital.
+          >
+            <div class="shrink-0">
+              <img src="shared/images/niubiz.png" alt="niubiz logo" class="w-16 lg:w-20 h-auto object-contain" />
             </div>
 
-            <div class="flex gap-1.5 lg:gap-2 flex-wrap">
-              <div class="w-7 h-7 lg:w-8 lg:h-8 flex items-center justify-center">
-                <img src="shared/images/mastercard.png" alt="mastercard" class="w-full h-full object-contain" />
+            <div class="flex-1 min-w-0 flex flex-col">
+              <div class="font-bold text-sm lg:text-base mb-1">Niubiz</div>
+              <div class="text-xs lg:text-sm text-gray-600 mb-2 leading-snug">
+                Tarjeta de crédito/débito/billetera digital.
               </div>
-              <div class="w-7 h-7 lg:w-8 lg:h-8 flex items-center justify-center">
-                <img src="shared/images/yape.png" alt="yape" class="w-full h-full object-contain" />
-              </div>
-              <div class="w-7 h-7 lg:w-8 lg:h-8 flex items-center justify-center">
-                <img src="shared/images/plin.png" alt="plin" class="w-full h-full object-contain" />
-              </div>
-              <div class="w-7 h-7 lg:w-8 lg:h-8 flex items-center justify-center">
-                <img src="shared/images/visa.png" alt="visa" class="w-full h-full object-contain" />
+
+              <div class="flex gap-1.5 lg:gap-2 flex-wrap">
+                <div class="w-7 h-7 lg:w-8 lg:h-8 flex items-center justify-center">
+                  <img src="shared/images/mastercard.png" alt="mastercard" class="w-full h-full object-contain" />
+                </div>
+                <div class="w-7 h-7 lg:w-8 lg:h-8 flex items-center justify-center">
+                  <img src="shared/images/yape.png" alt="yape" class="w-full h-full object-contain" />
+                </div>
+                <div class="w-7 h-7 lg:w-8 lg:h-8 flex items-center justify-center">
+                  <img src="shared/images/plin.png" alt="plin" class="w-full h-full object-contain" />
+                </div>
+                <div class="w-7 h-7 lg:w-8 lg:h-8 flex items-center justify-center">
+                  <img src="shared/images/visa.png" alt="visa" class="w-full h-full object-contain" />
+                </div>
               </div>
             </div>
-          </div>
-        </a>
+          </a>
 
-        <a
-          role="button"
-          tabindex="0"
-          (click)="selectPaymentMethod('pagoefectivo')"
-          (keydown.enter)="selectPaymentMethod('pagoefectivo')"
-          class="payment-method-card flex items-start gap-3 p-4 bg-white rounded-xl border cursor-pointer shadow-sm transition-all w-full hover:bg-primary-sutile hover:border-highlight-focus-background hover:shadow-md"
-          [ngClass]="{
+        }
+        @if (paymentMethod === 'PAGOEFECTIVO') {
+          <a
+            role="button"
+            tabindex="0"
+            (click)="selectPaymentMethod('pagoefectivo')"
+            (keydown.enter)="selectPaymentMethod('pagoefectivo')"
+            class="payment-method-card flex items-start gap-3 p-4 bg-white rounded-xl border cursor-pointer shadow-sm transition-all w-full hover:bg-primary-sutile hover:border-highlight-focus-background hover:shadow-md"
+            [ngClass]="{
             'bg-primary-sutile border-highlight-focus-background shadow-md': selectedPaymentMethod === 'pagoefectivo',
             'border-theme-light-gray': selectedPaymentMethod !== 'pagoefectivo'
           }"
-        >
-          <div class="shrink-0">
-            <img src="shared/images/pago-efectivo.png" alt="pago efectivo logo" class="w-16 lg:w-20 h-auto object-contain" />
-          </div>
-
-          <div class="flex-1 min-w-0 flex flex-col">
-            <div class="font-bold text-sm lg:text-base mb-1">Pagoefectivo</div>
-            <div class="text-xs lg:text-sm text-gray-600 mb-2 leading-snug">
-              Pago en bancos, agentes, billeteras digitales y online.
+          >
+            <div class="shrink-0">
+              <img src="shared/images/pago-efectivo.png" alt="pago efectivo logo"
+                   class="w-16 lg:w-20 h-auto object-contain" />
             </div>
-          </div>
-        </a>
-      </div>
 
-      <div class="flex items-start gap-3">
-        <p-toggleSwitch [(ngModel)]="termsAccepted" class="mt-0.5"></p-toggleSwitch>
-        <span class="text-xs lg:text-sm text-gray-700 leading-relaxed">
+            <div class="flex-1 min-w-0 flex flex-col">
+              <div class="font-bold text-sm lg:text-base mb-1">Pagoefectivo</div>
+              <div class="text-xs lg:text-sm text-gray-600 mb-2 leading-snug">
+                Pago en bancos, agentes, billeteras digitales y online.
+              </div>
+            </div>
+          </a>
+
+        }
+      }
+    </div>
+    <div class="flex items-start gap-3">
+      <p-toggleSwitch [(ngModel)]="termsAccepted" class="mt-0.5"></p-toggleSwitch>
+      <span class="text-xs lg:text-sm text-gray-700 leading-relaxed">
           He leído y acepto los
           <span class="text-color-ultramarine font-semibold underline">
             <a href="#">términos de uso</a> y <a href="#">política de privacidad</a>.
           </span>
         </span>
-      </div>
-
-      <p-button
-        [label]="'Pagar ' + paymentAmount"
-        icon="pi pi-credit-card"
-        [disabled]="!termsAccepted"
-        severity="primary"
-        styleClass="w-full"
-        (click)="pay()"
-      ></p-button>
     </div>
+
+
+    <p-button
+      [label]="'Pagar ' + paymentAmount"
+      icon="pi pi-credit-card"
+      [disabled]="!termsAccepted"
+      severity="primary"
+      styleClass="w-full"
+      (click)="pay()"
+    ></p-button>
+  </div>
 
 } @else {
   <div class="flex flex-col items-center gap-4 lg:gap-6 p-4 lg:p-6 bg-white rounded-lg">
@@ -95,7 +105,8 @@
       No pudimos procesar tu pago
     </h2>
 
-    <div class="w-full flex flex-col items-center bg-[#F8FAFC] border border-[#E3E9F7] rounded-2xl px-4 py-3 lg:px-6 lg:py-4">
+    <div
+      class="w-full flex flex-col items-center bg-[#F8FAFC] border border-[#E3E9F7] rounded-2xl px-4 py-3 lg:px-6 lg:py-4">
       <span class="text-xs lg:text-sm text-gray-700 text-center">
         Tu banco rechazó la operación:
       </span>

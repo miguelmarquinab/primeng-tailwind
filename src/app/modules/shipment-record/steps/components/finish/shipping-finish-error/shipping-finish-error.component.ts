@@ -11,9 +11,6 @@ import { LoadingComponent } from '@shared/components/loading/loading.component';
 
 @Component({
     selector: 'app-shipping-finish-error',
-    host: {
-        class: 'flex min-h-0 flex-1 flex-col'
-    },
     imports: [LoadingComponent],
     templateUrl: './shipping-finish-error.component.html',
     styleUrl: './shipping-finish-error.component.scss',

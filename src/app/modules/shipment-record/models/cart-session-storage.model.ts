@@ -7,7 +7,6 @@ export interface CartSessionStorageHeader {
     whoPay?: string | null;
     whoPayDetail?: any | null;
     currentItemUuid?: string | null;
-    addingNewItemFromStep3?: boolean;
 }
 
 export interface CartSessionStorage {
