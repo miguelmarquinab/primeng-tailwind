@@ -62,16 +62,6 @@ export class CartSessionStorageService {
         return cartData.header.currentItemUuid;
     }
 
-    setAddingNewItemFromStep3(value: boolean) {
-        const cartData = this.getCartData();
-        cartData.header.addingNewItemFromStep3 = value;
-        this.setCartData(cartData);
-    }
-
-    isAddingNewItemFromStep3(): boolean {
-        return !!this.getCartData().header.addingNewItemFromStep3;
-    }
-
     // setCartData(data: CartSessionStorage) {
     //     this.sessionStorage.set(this.CART_KEY, data);
     // }
@@ -161,5 +151,15 @@ export class CartSessionStorageService {
 
     buildPersonCacheKey(documentNumber: string) {
         return `cache_person_${documentNumber}`;
+    }
+
+    setAddingNewItemFromStep3(value: boolean) {
+        const cartData = this.getCartData();
+        cartData.header.addingNewItemFromStep3 = value;
+        this.setCartData(cartData);
+    }
+
+    isAddingNewItemFromStep3(): boolean {
+        return !!this.getCartData().header.addingNewItemFromStep3;
     }
 }

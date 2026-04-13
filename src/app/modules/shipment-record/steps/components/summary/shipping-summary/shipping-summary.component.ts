@@ -298,6 +298,10 @@ export class ShippingSummaryComponent implements OnInit, OnChanges, OnDestroy {
                     this.getLatestCart();
                 }
             });
+
+
+
+        this.getLatestCart();
     }
 
     private showInvalidCouponModal(): void {

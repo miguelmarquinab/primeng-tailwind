@@ -85,10 +85,6 @@ export class CartService {
         return this.http.get<CartEntityResponse>(endpoint);
     }
 
-    /**
-     * Forces backend price recalculation for the current session/cart.
-     * Used after coupon changes to ensure totals are recomputed.
-     */
     refreshPrice(sessionUuid: string): Observable<PriceEntityResponse> {
         const endpoint = `${this.baseUrl}/v1/price/${sessionUuid}`;
         return this.http.get<PriceEntityResponse>(endpoint);

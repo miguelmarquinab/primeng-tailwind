@@ -29,7 +29,7 @@ import { CartEntityDataResponse, CartEntityResponse } from '@shipment-record/mod
     host: {
         class: 'flex min-h-0 flex-1 flex-col w-full'
     },
-    imports: [NgClass, ShipmentRecordStepsComponent, ShipmentRecordStep1Component, ShipmentRecordStep2Component, ShipmentRecordStep3Component, ShippingSummaryComponent, Button, Drawer, LoadingComponent, ConfirmDialogModule],
+    imports: [ShipmentRecordStepsComponent, ShipmentRecordStep1Component, ShipmentRecordStep2Component, ShipmentRecordStep3Component, ShippingSummaryComponent, Button, Drawer, LoadingComponent, ConfirmDialogModule, NgClass],
     templateUrl: './shipment-record-layout.component.html',
     styleUrl: './shipment-record-layout.component.scss',
     encapsulation: ViewEncapsulation.None,

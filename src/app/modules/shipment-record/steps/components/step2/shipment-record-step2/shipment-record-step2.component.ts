@@ -1,4 +1,4 @@
-import { Component, DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component,DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Accordion, AccordionContent, AccordionHeader, AccordionPanel } from 'primeng/accordion';
 import { Button } from 'primeng/button';
 import { PersonFormComponent } from '@shipment-record/steps/components/step1/shipment-record-who-sender-form/person-form.component';
@@ -22,6 +22,7 @@ import { StandardSizeEntityResponse } from '@shipment-record/models/standard-siz
 import { HeadquartersEntityResponse } from '@shipment-record/models/headquarters.model';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
+
 @Component({
     selector: 'app-shipment-record-step2',
     imports: [Accordion, AccordionContent, AccordionHeader, AccordionPanel, Button, PersonFormComponent, ShipmentRecordWhatSendComponent, ShipmentRecordDestinationComponent, NgClass],
@@ -29,11 +30,11 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     encapsulation: ViewEncapsulation.None
 })
 export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
-    protected panelsDisabled = signal<boolean[]>([false, true, true]);
-    protected currentAccordionIndex = signal(0);
+    // protected panelsDisabled = signal<boolean[]>([false, true, true]);
+    // protected currentAccordionIndex = signal(0);
 
-    // protected panelsDisabled = signal<boolean[]>([false, false, false]);
-    // protected currentAccordionIndex = signal(2);
+    protected panelsDisabled = signal<boolean[]>([false, false, false]);
+    protected currentAccordionIndex = signal(2);
 
     articleCategories = signal<ArticleCategoriesEntityResponse[]>([]);
 
@@ -63,6 +64,7 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
     ngOnInit() {
         this.getArticleCategories();
         this.getStandardSizes();
+
         this.currentOrigin.set(this.cartSessionService.getOrigin() as HeadquartersEntityResponse);
 
         const initialUuid = this.cartSessionService.getCurrentItemUuid() ?? '';
@@ -218,6 +220,7 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
     }
 
     changeCurrentAccordion(accordionIndex: number) {
+        console.log(accordionIndex);
         this.currentAccordionIndex.set(accordionIndex);
         this.enablePanel(accordionIndex);
         this.scrollAccordionToTop(accordionIndex);
@@ -263,7 +266,15 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
             .getAll()
             .pipe(takeUntil(this.destroy$))
             .subscribe((response) => {
-                const sizes = response.data ?? [];
+                let sizes = response.data ?? [];
+                sizes.push({
+                    value: 'custom_sizes'
+                });
+                // sizes = sizes.concat(sizes);
+                // sizes = sizes.map((size, index: number) => {
+                //     size.value = `${size.value}-${index}`;
+                //     return { ...size };
+                // });
                 this.standardSizes.set(sizes);
                 this.localStorageService.set(standardSizesCacheKey, sizes);
             });

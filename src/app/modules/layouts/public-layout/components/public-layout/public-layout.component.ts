@@ -2,9 +2,7 @@ import { Component, OnDestroy, effect, EffectRef, computed, inject } from '@angu
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { NgClass } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
-
 import { filter, map, startWith } from 'rxjs';
-
 import { PublicLayoutHeaderComponent } from '../public-layout-header/public-layout-header.component';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';

@@ -130,6 +130,7 @@ export class ShipmentRecordStep1Component implements OnInit {
         console.log('submitWhoPayForm', event);
         console.log('whoPay', event.whoPay.paymentType);
         console.log('whoPay', event.detail);
+
         const paymentType = event.whoPay.paymentType;
         const whoPayDetail = event.detail;
 
@@ -159,8 +160,8 @@ export class ShipmentRecordStep1Component implements OnInit {
     }
 
     getHeadquarterById(headquarterId: string): HeadquartersEntityResponse {
-        console.log(headquarterId);
-        console.log(typeof headquarterId);
+        console.log(headquarterId)
+        console.log(typeof headquarterId)
         return (
             this.headquarters.find((headquarter) => headquarter.headquarter_id === headquarterId) || {
                 headquarter_id: '0',
