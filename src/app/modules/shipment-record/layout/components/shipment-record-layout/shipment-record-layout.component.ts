@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, inject, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal, ViewEncapsulation } from '@angular/core';
 import { ShipmentRecordStepsComponent } from '@shipment-record/steps/components/shipment-record-steps/shipment-record-steps.component';
 import { ActivatedRoute } from '@angular/router';
 import { ShipmentRecordStep1Component } from '@shipment-record/steps/components/step1/shipment-record-step1/shipment-record-step1.component';
@@ -22,7 +22,7 @@ import { HeadquartersService } from '@shipment-record/services/headquarters.serv
 import { HeadquartersEntityResponse } from '@shipment-record/models/headquarters.model';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
-import { CartEntityDataResponse, CartEntityResponse } from '@shipment-record/models/cart.model';
+import { CartEntityDataResponse } from '@shipment-record/models/cart.model';
 
 @Component({
     selector: 'app-shipment-record-layout',
@@ -39,7 +39,7 @@ export class ShipmentRecordLayoutComponent implements OnInit, OnDestroy {
     stepNumber = 1;
     tokenIsLoading = false;
     openSummaryDrawer = false;
-    headquarters: HeadquartersEntityResponse[] = [];
+    headquarters = signal<HeadquartersEntityResponse[]>([]);
     private readonly destroy$ = new Subject<void>();
     private readonly route = inject(ActivatedRoute);
     private readonly cartSessionStorageService = inject(CartSessionStorageService);
@@ -64,6 +64,14 @@ export class ShipmentRecordLayoutComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.getToken();
         this.subscribeToCart();
+        const token = this.getTokenFromCache();
+        if (token) {
+            this.loadHeadquarters();
+        }
+    }
+
+    getTokenFromCache() {
+        return this.sessionStorage.getPlain('token') ?? '';
     }
 
     setCurrentStep(stepNumber: number) {
@@ -96,11 +104,22 @@ export class ShipmentRecordLayoutComponent implements OnInit, OnDestroy {
                 if (response.refresh_token) {
                     this.sessionStorage.setPlain('refresh_token', response.refresh_token);
                 }
-                this.getAllHeadquarters();
+
+                this.loadHeadquarters();
                 if (this.stepNumber > 1) {
                 }
                 this.tokenIsLoading = false;
             });
+    }
+
+    loadHeadquarters() {
+        const hqs = this.sessionStorage.get('headquarters');
+        console.log(hqs);
+        if (hqs) {
+            this.headquarters.set(hqs);
+            return;
+        }
+        this.getAllHeadquartersFromApi();
     }
 
     buildClientToken(): TokenPayload {
@@ -131,12 +150,12 @@ export class ShipmentRecordLayoutComponent implements OnInit, OnDestroy {
         });
     }
 
-    getAllHeadquarters() {
+    getAllHeadquartersFromApi() {
         this.headquartersService.getAll().subscribe({
             next: (headquarters) => {
-                this.headquarters = headquarters.data ?? [];
+                this.headquarters.set(headquarters.data ?? []);
 
-                this.sessionStorage.set('headquarters', this.headquarters);
+                this.sessionStorage.set('headquarters', this.headquarters());
             },
             error: (error) => {
                 console.log(error);

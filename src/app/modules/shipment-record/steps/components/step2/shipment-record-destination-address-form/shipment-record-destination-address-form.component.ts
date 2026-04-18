@@ -65,7 +65,8 @@ export class ShipmentRecordDestinationAddressFormComponent implements OnInit {
         this.storeDestinationForm = this.formBuilder.group({
             ubigeo: [null, [Validators.required, TrimValidator()]],
             street: [null, [Validators.required, TrimValidator()]],
-            references: [null, [Validators.required, TrimValidator()]]
+            references: [null, [Validators.required, TrimValidator()]],
+            dangerous: [false]
         });
     }
 
@@ -126,6 +127,8 @@ export class ShipmentRecordDestinationAddressFormComponent implements OnInit {
     }
 
     selectUbigeo(event: AutoCompleteSelectEvent) {
+        this.resetSearchAddress();
+        this.resetCurrentSearchAddress();
         this.currentSearchAddress.set({
             coordinates: {
                 latitude: parseFloat(event.value.department_latitude ?? '0'),
@@ -133,10 +136,8 @@ export class ShipmentRecordDestinationAddressFormComponent implements OnInit {
             }
         });
 
-        this.resetSearchAddress();
         this.resetReferences();
         this.resetCurrentAutocompletePrediction();
-        this.resetCurrentSearchAddress();
     }
 
     resetSearchAddress() {
@@ -144,8 +145,14 @@ export class ShipmentRecordDestinationAddressFormComponent implements OnInit {
             emitEvent: false
         });
     }
+    // resetReferences() {
+    //     this.storeDestinationForm.get('references')?.enable();
+    // }
 
     resetReferences() {
+        this.storeDestinationForm.get('references')?.enable( {
+            emitEvent: false
+        });
         this.storeDestinationForm.get('references')?.patchValue(null, {
             emitEvent: false
         });
@@ -168,7 +175,7 @@ export class ShipmentRecordDestinationAddressFormComponent implements OnInit {
         }
     }
 
-    destinationInputKeydown(_event: KeyboardEvent) {
+    destinationAddressInputKeydown(_event: KeyboardEvent) {
         this.resetReferences();
         this.resetCurrentSearchAddress();
         this.resetCurrentAutocompletePrediction();
@@ -212,10 +219,15 @@ export class ShipmentRecordDestinationAddressFormComponent implements OnInit {
                     if (currentHomeDestination.length > 0) {
                         this.storeDestinationForm.get('ubigeo')?.setValue(currentHomeDestination[0]);
                     }
-                    this.storeDestinationForm.get('street')?.setValue(event.value?.description ?? '',{
+                    this.storeDestinationForm.get('street')?.setValue(event.value?.description ?? '', {
                         emitEvent: false
                     });
                     this.showMarker.set(true);
+
+                    if (searchAddress.dangerous) {
+                        this.storeDestinationForm.get('references')?.disable();
+                    }
+                    this.storeDestinationForm.get('dangerous')?.patchValue(searchAddress.dangerous ?? false);
                     this.formChanged.emit(this.buildResponse());
                 },
                 error: () => {
@@ -253,7 +265,8 @@ export class ShipmentRecordDestinationAddressFormComponent implements OnInit {
             address_card: searchAddress?.address,
             delivery_type: DELIVERY_TYPE.HOME,
             cargo_flag: ubigeoValue?.cargo_flag ?? '0',
-            polygon: searchAddress?.polygon
+            polygon: searchAddress?.polygon,
+            dangerous: this.storeDestinationForm.get('dangerous')?.value ?? false
         };
     }
 

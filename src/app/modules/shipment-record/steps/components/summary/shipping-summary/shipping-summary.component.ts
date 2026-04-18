@@ -372,6 +372,7 @@ export class ShippingSummaryComponent implements OnInit, OnChanges, OnDestroy {
         this.ref?.onClose.subscribe({
             next: (data) => {
                 console.log('Modal closed with data:', data);
+                console.log('Modal closed this.cartData?.header', this.cartData?.header);
 
                 const pinValue = typeof data === 'string' ? data : data?.pin;
 
@@ -384,8 +385,8 @@ export class ShippingSummaryComponent implements OnInit, OnChanges, OnDestroy {
                     return;
                 }
 
-                if (this.cartData?.header?.whoPay === PAYMENT_TYPES_CODES.DESTINATION) {
-                    // @TODO CREATE DESTIONATION PAYMENT
+                if (this.cartData?.header?.whoPay === PAYMENT_TYPES_CODES.DESTINATION || this.cartData?.header?.whoPay === PAYMENT_TYPES_CODES.STORE) {
+                    // @TODO CREATE DESTINATION PAYMENT
                     this.createOfflinePayment();
                     return;
                 }

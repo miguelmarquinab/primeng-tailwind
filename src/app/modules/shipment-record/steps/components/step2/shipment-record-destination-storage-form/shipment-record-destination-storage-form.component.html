@@ -18,7 +18,6 @@
       ></app-shipment-record-destination-storage-map>
     }
 
-
     @if (isMobile()) {
       @if (!modalVisible) {
         @if (currentDestination.ubigeo_id) {
@@ -59,30 +58,57 @@
 </div>
 
 
-<ng-template #destinationsContainer>
+<ng-template #destinationsContainer let-form="form">
   <div class="flex flex-col overflow-y-auto gap-2 h-32 md:h-40">
-    @if (storeDestinationFiltered.length > 0) {
-      @for (storeDestination of storeDestinationFiltered; track storeDestination) {
+    @if (!form.get('destination')?.touched && !form.get('destination')?.value) {
+      @if (currentItem) {
         <app-shipment-record-destination-card
-          [destination]="storeDestination"
-          (click)="selectDestination(storeDestination)"
-          (keydown.enter)="selectDestination(storeDestination)"
-          [selected]="currentDestination.ubigeo_id === storeDestination.ubigeo_id"
+          [destination]="currentDestination"
+          (click)="selectDestination(currentDestination)"
+          (keydown.enter)="selectDestination(currentDestination)"
+          [selected]="true"
         ></app-shipment-record-destination-card>
+
+      } @else {
+        <ng-container
+          [ngTemplateOutlet]="searchEmptyTpl"
+        >
+        </ng-container>
       }
     } @else {
-      <div class="flex flex-col gap-2  ">
-        <div class="flex gap-2 items-center justify-center">
-          <img src="shared/images/destinations-not-found.svg" alt="" />
-        </div>
-        <div class="text-sm font-bold text-center">
-          ¡Ups! No encontramos resultados
-        </div>
-        <div class="text-sm  font-medium text-center">
-          Intenta ajustar los filtros o selecciona otra zona.
-        </div>
-      </div>
+      @if (form.valid) {
+        @if (storeDestinationFiltered.length > 0) {
+          @for (storeDestination of storeDestinationFiltered; track storeDestination) {
+            <app-shipment-record-destination-card
+              [destination]="storeDestination"
+              (click)="selectDestination(storeDestination)"
+              (keydown.enter)="selectDestination(storeDestination)"
+              [selected]="currentDestination.ubigeo_id === storeDestination.ubigeo_id"
+            ></app-shipment-record-destination-card>
+          }
+        }
+      } @else {
+
+        <!--        {{ currentDestination|json }}-->
+          <!--        {{ currentItem|json }}-->
+          <!--        @if (currentItem) {-->
+          <!--          <app-shipment-record-destination-card-->
+          <!--            [destination]="currentDestination"-->
+          <!--            (click)="selectDestination(currentDestination)"-->
+          <!--            (keydown.enter)="selectDestination(currentDestination)"-->
+          <!--            [selected]="true"-->
+          <!--          ></app-shipment-record-destination-card>-->
+
+          <!--        } @else {-->
+        <ng-container
+          [ngTemplateOutlet]="searchNotFound"
+        >
+        </ng-container>
+
+        <!--        }-->
+      }
     }
+
   </div>
 </ng-template>
 
@@ -106,45 +132,55 @@
       />
     </div>
 
-    @if (form.invalid && !currentItem) {
-      <ng-container
-        [ngTemplateOutlet]="searchEmptyTpl"
-      ></ng-container>
-    } @else {
-      @if (form.get('destination')) {
-        <div class="flex flex-col gap-2 md:h-48">
-          @if (!isMobile()) {
-            <ng-container
-              [ngTemplateOutlet]="addressTabsContainerTpl"
-            ></ng-container>
-          }
-
-          @if (isMobile() && modalVisible) {
-
-            <ng-container
-              [ngTemplateOutlet]="addressTabsContainerTpl"
-            ></ng-container>
-
-            <div class="w-full">
-              <p-button severity="primary"
-                        label="Confirmar tienda"
-                        styleClass="w-full"
-                        (click)="modalVisible=false"
-                        [disabled]="!currentDestination?.office_id"
-              >
-              </p-button>
-            </div>
-          }
-
-        </div>
+    <!--    @if (form.invalid && !currentItem) {-->
+    <!--      <ng-container-->
+    <!--        [ngTemplateOutlet]="searchEmptyTpl"-->
+    <!--      ></ng-container>-->
+    <!--    } @else {-->
+    <!--      @if (form.get('destination')) {-->
+    <div class="flex flex-col gap-2 md:h-48">
+      @if (!isMobile()) {
+        <ng-container
+          *ngTemplateOutlet="addressTabsContainerTpl; context: { form: form }"
+        ></ng-container>
       }
-    }
+
+      @if (isMobile()) {
+        @if (!modalVisible) {
+          @if (!form?.get('destination')?.value && !currentItem) {
+            <ng-container
+              [ngTemplateOutlet]="searchEmptyTpl"
+            >
+            </ng-container>
+          }
+        }
+        @if (modalVisible) {
+
+          <ng-container
+            *ngTemplateOutlet="addressTabsContainerTpl; context: { form: form }"
+          ></ng-container>
+
+          <div class="w-full">
+            <p-button severity="primary"
+                      label="Confirmar tienda"
+                      styleClass="w-full"
+                      (click)="modalVisible=false"
+                      [disabled]="!currentDestination?.office_id"
+            >
+            </p-button>
+          </div>
+        }
+      }
+    </div>
+    <!--      }-->
+    <!--    }-->
 
 
   </div>
 </ng-template>
 
-<ng-template #addressTabsContainerTpl>
+<ng-template #addressTabsContainerTpl let-form="form">
+
   <p-tabs [value]="currentTab">
     <p-tablist>
       @if (tabsEnabled[0]) {
@@ -185,19 +221,19 @@
 
       @if (tabsEnabled[0]) {
         <p-tabpanel [value]="0">
-          <ng-container *ngTemplateOutlet="destinationsContainer"></ng-container>
+          <ng-container *ngTemplateOutlet="destinationsContainer; context: { form: form }"></ng-container>
         </p-tabpanel>
       }
 
       @if (tabsEnabled[1]) {
         <p-tabpanel [value]="1">
-          <ng-container *ngTemplateOutlet="destinationsContainer"></ng-container>
+          <ng-container *ngTemplateOutlet="destinationsContainer; context: { form: form }"></ng-container>
         </p-tabpanel>
       }
 
       @if (tabsEnabled[2]) {
         <p-tabpanel [value]="2">
-          <ng-container *ngTemplateOutlet="destinationsContainer"></ng-container>
+          <ng-container *ngTemplateOutlet="destinationsContainer; context: { form: form }"></ng-container>
         </p-tabpanel>
       }
     </p-tabpanels>
@@ -212,6 +248,20 @@
     </div>
     <div class="text-sm  font-medium text-center">
       Aquí te mostraremos las tiendas/agentes recomendados
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #searchNotFound>
+  <div class="flex flex-col gap-2  ">
+    <div class="flex gap-2 items-center justify-center">
+      <img src="shared/images/destinations-not-found.svg" alt="" />
+    </div>
+    <div class="text-sm font-bold text-center">
+      ¡Ups! No encontramos resultados
+    </div>
+    <div class="text-sm  font-medium text-center">
+      Intenta ajustar los filtros o selecciona otra zona.
     </div>
   </div>
 </ng-template>

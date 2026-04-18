@@ -1,0 +1,68 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    max-height: 100%;
+}
+
+.step2-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+p-accordion {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+
+    ::ng-deep .p-accordionpanel {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+    }
+
+    ::ng-deep .p-accordioncontent-wrapper {
+        overflow-y: auto !important;
+        flex: 1 !important;
+        min-height: 0 !important;
+        max-height: none !important;
+    }
+
+    ::ng-deep .p-accordioncontent-content {
+        overflow-y: auto;
+        flex: 1;
+        min-height: 0;
+    }
+}
+
+app-person-form {
+    flex-shrink: 0;
+}
+
+app-shipment-record-destination,
+app-shipment-record-what-send {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+    :host {
+        max-height: calc(100vh - 200px);
+    }
+
+    p-accordion {
+        max-height: calc(100vh - 200px);
+    }
+}

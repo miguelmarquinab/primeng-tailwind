@@ -4,18 +4,12 @@ import { ToggleSwitch } from 'primeng/toggleswitch';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { TranslateModule } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
-import {
-    ShipmentRecordReturnChargeModalComponent
-} from '@shipment-record/steps/components/step2/shipment-record-return-charge-modal/shipment-record-return-charge-modal.component';
+import { ShipmentRecordReturnChargeModalComponent } from '@shipment-record/steps/components/step2/shipment-record-return-charge-modal/shipment-record-return-charge-modal.component';
 import { ReturnChargeDetail } from '@shipment-record/models/return-charge.model';
 import { InputNumber } from 'primeng/inputnumber';
 import { BreakpointService } from '@shared/services/breakpoint/breakpoint.service';
 import { DestinationEntityResponse } from '@shipment-record/models/destination.model';
-import {
-    CartItemDestinationFormState,
-    CartItemEntityResponse,
-    CartItemReturnChargePayload
-} from '@shipment-record/models/cart-item.model';
+import { CartItemDestinationFormState, CartItemEntityResponse, CartItemReturnChargePayload } from '@shipment-record/models/cart-item.model';
 import { DELIVERY_TYPE } from '@shipment-record/contansts/shipment-record-step.constant';
 import { TitleCasePipe } from '@angular/common';
 
@@ -194,6 +188,9 @@ export class ShipmentRecordReturnChargeToggleComponent implements OnInit, OnDest
         if (this.returnChargeForm.invalid) {
             return;
         }
+
+        console.log('this.storeDestinationsData', this.storeDestinationsData);
+        console.log('this.homeDestinationsData', this.homeDestinationsData);
         const dialogRef = this.dialogService.open(ShipmentRecordReturnChargeModalComponent, {
             width: '920px',
             height: 'auto',
@@ -232,107 +229,11 @@ export class ShipmentRecordReturnChargeToggleComponent implements OnInit, OnDest
         });
     }
 
-    // buildPayload(detail: ReturnChargeDetail): CartItemDestinationPayload {
-    //     const destinationType = detail.delivery_type;
-    //     let destinationPayload: CartItemDestinationPayload = {};
-    //     if (destinationType === DELIVERY_TYPE.HOME) {
-    //         destinationPayload = {
-    //             // ubigeo_id: this.destinationData.formValues?.ubigeo?.ubigeo_id,
-    //             // address: this.destinationData.searchAddress?.address,
-    //             // reference: this.destinationData.formValues?.references,
-    //             // polygon: this.destinationData.searchAddress?.polygon,
-    //             // office_id: 0,
-    //             // delivery_type: this.destinationType
-    //         };
-    //     }
-    //     return destinationPayload;
-    // }
-
-    // private applyReturnCharge(detail: ReturnChargeDetail) {
-    //     // this.returnChargeDetail = {
-    //     //     ...detail,
-    //     //     folios: this.getNormalizedFolios()
-    //     // };
-    //
-    //     console.log(detail);
-    //     if (!this.returnChargeControl.value) {
-    //         this.returnChargeControl.setValue(true, { emitEvent: false });
-    //     }
-    //     this.returnChargePayload = {
-    //         ...detail.destination,
-    //         folio: this.getNormalizedFolios()
-    //     };
-    //     this.returnChargeChanged.emit(this.returnChargePayload);
-    //     // this.syncReturnChargePayload();
-    // }
-
-    // private clearReturnCharge() {
-    //     this.returnChargeDetail = null;
-    //     this.foliosControl.setValue(1, { emitEvent: false });
-    //     this.cartSessionService.clearItemReturnCharge(this.itemIndex);
-    //     this.returnChargeChanged.emit({ return_charge: false });
-    // }
-
-    // get hasReturnDestination(): boolean {
-    //     if (!this.returnChargeDetail) {
-    //         return false;
-    //     }
-    //     if (this.returnChargeDetail.delivery_type === DELIVERY_TYPE.HOME) {
-    //         return !!this.returnChargeDetail.store?.destination?.ubigeo_id;
-    //     }
-    //     return !!this.returnChargeDetail.address?.searchAddress?.address;
-    // }
-
-    // get returnChargeAddress(): string {
-    //     if (!this.returnChargeDetail) {
-    //         return '';
-    //     }
-    //     if (this.returnChargeDetail.delivery_type === DELIVERY_TYPE.HOME) {
-    //         return this.formatStoreAddress(this.returnChargeDetail.store);
-    //     }
-    //     return this.formatHomeAddress(this.returnChargeDetail.address);
-    // }
-
-    // get returnChargeReferences(): string | null {
-    //     if (!this.returnChargeDetail) {
-    //         return null;
-    //     }
-    //     if (this.returnChargeDetail.delivery_type === DELIVERY_TYPE.OFFICE) {
-    //         return this.returnChargeDetail.store?.formValues?.additionalInfo?.trim() || null;
-    //     }
-    //     return this.returnChargeDetail.address?.formValues?.references?.trim() || null;
-    // }
-
     ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();
         this.dialogRef?.close();
     }
-
-    // private seedFromStorage(): void {
-    //     // const cartData = this.cartSessionService.getCartData();
-    //     // const item = cartData.items?.[this.itemIndex];
-    //     // if (!item?.return_charge) {
-    //     //     return;
-    //     // }
-    //     // this.returnChargeControl.setValue(true, { emitEvent: false });
-    //     // if (item.return_charge_detail) {
-    //     //     this.returnChargeDetail = item.return_charge_detail;
-    //     //     if (typeof item.return_charge_detail.folios === 'number') {
-    //     //         this.foliosControl.setValue(this.getNormalizedFolios(item.return_charge_detail.folios), { emitEvent: false });
-    //     //     }
-    //     // }
-    // }
-
-    // private syncReturnChargePayload(): void {
-    //     const payload: ReturnChargePayload = {
-    //         return_charge: true,
-    //         return_charge_detail: this.buildReturnChargeDetail()
-    //     };
-    //     // this.cartSessionService.setItemReturnCharge(this.itemIndex, payload);
-    //     console.log(payload);
-    //     this.returnChargeChanged.emit(payload);
-    // }
 
     private getNormalizedFolios(value?: number): number {
         const rawValue = typeof value === 'number' ? value : this.foliosControl.value;
@@ -345,27 +246,6 @@ export class ShipmentRecordReturnChargeToggleComponent implements OnInit, OnDest
         }
         return normalized;
     }
-
-    // private formatHomeAddress(state?: DestinationAddressFormState): string {
-    //     return state?.searchAddress?.address?.trim() || '';
-    // }
-
-    // private formatStoreAddress(state?: DestinationStoreFormState): string {
-    //     const name = state?.destination?.headquarter_name?.trim();
-    //     const address = state?.destination?.headquarter_address?.trim();
-    //     return [name, address].filter(Boolean).join(', ');
-    // }
-
-    // private buildReturnChargeDetail(): ReturnChargeDetail {
-    //     const baseDetail: ReturnChargeDetail = this.returnChargeDetail ?? {
-    //         folios: this.getNormalizedFolios(),
-    //         delivery_type: this.mode
-    //     };
-    //     return {
-    //         ...baseDetail,
-    //         folios: this.getNormalizedFolios()
-    //     };
-    // }
 
     get findStoreById(): DestinationEntityResponse {
         const headquarter_id = this.returnChargePayload.office_id;

@@ -58,8 +58,6 @@ export class ShipmentRecordDestinationStorageFormComponent implements OnInit, On
     tabsEnabled: boolean[] = [true, true, true];
 
     ngOnInit(): void {
-        if (this.currentItem) {
-        }
         this.initForm();
         this.initStoreDestinations();
         this.buildTabsEnabled();
@@ -114,7 +112,7 @@ export class ShipmentRecordDestinationStorageFormComponent implements OnInit, On
                 next: (value) => {
                     if (value) {
                         // this.storeDestinationFiltered = this.filterByUbigeo(value);
-                        this.changeTab(0)
+                        this.changeTab(0);
                     }
                 }
             });
@@ -124,6 +122,10 @@ export class ShipmentRecordDestinationStorageFormComponent implements OnInit, On
                 this.formChanged.emit(this.buildResponse());
             }
         });
+
+        if (this.currentItem) {
+            console.log(this.currentItem);
+        }
     }
 
     filterByUbigeo(value: string) {
@@ -137,7 +139,7 @@ export class ShipmentRecordDestinationStorageFormComponent implements OnInit, On
         this.currentTab = tabId;
         // this.storeDestinationFiltered = [...this.storeDestinationsData];
         const destinationValue = this.storeDestinationForm?.get('destination')?.value ?? '';
-
+        console.log(destinationValue);
         this.storeDestinationFiltered = this.filterByUbigeo(destinationValue);
 
         // if (tabId === 0) {

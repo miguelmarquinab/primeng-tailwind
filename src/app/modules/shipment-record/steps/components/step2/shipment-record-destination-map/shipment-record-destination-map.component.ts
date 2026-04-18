@@ -44,6 +44,7 @@ export class ShipmentRecordDestinationMapComponent implements AfterViewInit, OnC
         }
 
         if (changes['currentSearchAddress'] && this.currentSearchAddress && this.map) {
+            console.log('currentSearchAddress', this.currentSearchAddress);
             const coordinates = this.currentSearchAddress.coordinates;
             if (!coordinates) {
                 console.warn('No coordinates available for the current search address.');

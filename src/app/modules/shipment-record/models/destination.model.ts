@@ -13,6 +13,7 @@ export interface DestinationCollectionQuery {
     mode: DestinationCollectionMode;
     modality?: string;
     ubigeo_code?: string;
+    id_headquarter?: number;
 }
 export interface DestinationCollectionResponse extends ResponseCollection<DestinationEntityResponse[]> {}
 

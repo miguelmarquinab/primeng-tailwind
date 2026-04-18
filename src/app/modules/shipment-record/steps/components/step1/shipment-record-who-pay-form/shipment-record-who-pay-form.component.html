@@ -31,10 +31,11 @@
         }
 
       </div>
-
-      <p-message severity="secondary" icon="pi pi-info-circle" styleClass="mb-2">
-        El destino solicitado sólo puede ser pagado en tienda.
-      </p-message>
+      @if(paymentType === PAYMENT_TYPES_CODES.DESTINATION){
+        <p-message severity="secondary" icon="pi pi-info-circle" styleClass="mb-2">
+          El destinatario pagará el envío al momento de recogerlo en tienda.
+        </p-message>
+      }
 
       <div class="grid w-full">
         <p-button label="Siguiente" severity="primary" styleClass="w-full"

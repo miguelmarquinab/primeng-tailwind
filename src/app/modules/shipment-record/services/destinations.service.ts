@@ -23,4 +23,17 @@ export class DestinationsService {
         const endpoint = `${this.baseUrl}/v1/shipping-records/destinations`;
         return this.http.get<DestinationCollectionResponse>(endpoint, { params });
     }
+
+    getReturnChargeDestinations(query: DestinationCollectionQuery): Observable<DestinationCollectionResponse> {
+        let params = new HttpParams();
+        params = params.append('mode', query.mode);
+        if (query.modality) {
+            params = params.append('modality', query.modality);
+        }
+        if (query.id_headquarter) {
+            params = params.append('id_headquarter', query.id_headquarter);
+        }
+        const endpoint = `${this.baseUrl}/v1/shipping-records/return-charge-destinations`;
+        return this.http.get<DestinationCollectionResponse>(endpoint, { params });
+    }
 }

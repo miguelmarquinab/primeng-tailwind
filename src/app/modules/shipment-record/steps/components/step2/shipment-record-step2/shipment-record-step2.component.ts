@@ -1,6 +1,6 @@
-import { Component,DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Accordion, AccordionContent, AccordionHeader, AccordionPanel } from 'primeng/accordion';
-import { Button } from 'primeng/button';
+
 import { PersonFormComponent } from '@shipment-record/steps/components/step1/shipment-record-who-sender-form/person-form.component';
 import { ACCORDION_SCROLL, SHIPMENT_TYPE, ShipmentRecordStepsConstant } from '@shipment-record/contansts/shipment-record-step.constant';
 import { ShipmentRecordWhatSendComponent } from '@shipment-record/steps/components/step2/shipment-record-what-send/shipment-record-what-send.component';
@@ -22,19 +22,18 @@ import { StandardSizeEntityResponse } from '@shipment-record/models/standard-siz
 import { HeadquartersEntityResponse } from '@shipment-record/models/headquarters.model';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-
 @Component({
     selector: 'app-shipment-record-step2',
-    imports: [Accordion, AccordionContent, AccordionHeader, AccordionPanel, Button, PersonFormComponent, ShipmentRecordWhatSendComponent, ShipmentRecordDestinationComponent, NgClass],
+    imports: [Accordion, AccordionContent, AccordionHeader, AccordionPanel, PersonFormComponent, ShipmentRecordWhatSendComponent, ShipmentRecordDestinationComponent, NgClass],
     templateUrl: './shipment-record-step2.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
     // protected panelsDisabled = signal<boolean[]>([false, true, true]);
-    // protected currentAccordionIndex = signal(0);
+    // currentAccordionIndex = 0;
 
     protected panelsDisabled = signal<boolean[]>([false, false, false]);
-    protected currentAccordionIndex = signal(2);
+    currentAccordionIndex = 1;
 
     articleCategories = signal<ArticleCategoriesEntityResponse[]>([]);
 
@@ -89,39 +88,39 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
         this.cartData = this.cartSessionService.getCartData();
         this.addingNewItemFromStep3.set(this.cartSessionService.isAddingNewItemFromStep3());
 
-        if (!uuid) {
-            this.currentCartItem = undefined as unknown as CartItemEntityResponse;
-            this.recipientFormData = {
-                document_type: '',
-                document_number: '',
-                phone: '',
-                first_names: '',
-                last_name: ''
-            };
-            this.panelsDisabled.set([false, true, true]);
-            this.currentAccordionIndex.set(0);
-            return;
-        }
+        // if (!uuid) {
+        //     this.currentCartItem = undefined as unknown as CartItemEntityResponse;
+        //     this.recipientFormData = {
+        //         document_type: '',
+        //         document_number: '',
+        //         phone: '',
+        //         first_names: '',
+        //         last_name: ''
+        //     };
+        //     this.panelsDisabled.set([false, true, true]);
+        //     this.currentAccordionIndex = 0;
+        //     return;
+        // }
 
-        const item = this.getCurrentCartItemByUuid(uuid);
-        if (!item) {
-            this.currentCartItem = undefined as unknown as CartItemEntityResponse;
-            this.recipientFormData = {
-                document_type: '',
-                document_number: '',
-                phone: '',
-                first_names: '',
-                last_name: ''
-            };
-            this.panelsDisabled.set([false, true, true]);
-            this.currentAccordionIndex.set(0);
-            return;
-        }
-
-        this.currentCartItem = item;
-        this.recipientFormData = this.buildRecipientFormData();
-        this.panelsDisabled.set([false, !item.who_receive, !item.destination]);
-        this.changeCurrentAccordion(0);
+        // const item = this.getCurrentCartItemByUuid(uuid);
+        // if (!item) {
+        //     this.currentCartItem = undefined as unknown as CartItemEntityResponse;
+        //     this.recipientFormData = {
+        //         document_type: '',
+        //         document_number: '',
+        //         phone: '',
+        //         first_names: '',
+        //         last_name: ''
+        //     };
+        //     this.panelsDisabled.set([false, true, true]);
+        //     this.currentAccordionIndex = 0;
+        //     return;
+        // }
+        //
+        // this.currentCartItem = item;
+        // this.recipientFormData = this.buildRecipientFormData();
+        // this.panelsDisabled.set([false, !item.who_receive, !item.destination]);
+        // this.changeCurrentAccordion(0);
     }
 
     buildRecipientFormData(): WhoSenderFormData {
@@ -221,7 +220,7 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
 
     changeCurrentAccordion(accordionIndex: number) {
         console.log(accordionIndex);
-        this.currentAccordionIndex.set(accordionIndex);
+        this.currentAccordionIndex = accordionIndex;
         this.enablePanel(accordionIndex);
         this.scrollAccordionToTop(accordionIndex);
     }
@@ -270,11 +269,6 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
                 sizes.push({
                     value: 'custom_sizes'
                 });
-                // sizes = sizes.concat(sizes);
-                // sizes = sizes.map((size, index: number) => {
-                //     size.value = `${size.value}-${index}`;
-                //     return { ...size };
-                // });
                 this.standardSizes.set(sizes);
                 this.localStorageService.set(standardSizesCacheKey, sizes);
             });
@@ -308,5 +302,10 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
             size_id: event.size_id,
             custom_size: event.custom_size
         };
+    }
+
+    cancelEdit() {
+        this.cartSessionService.setCurrentItemUuid('');
+        this.cartService.setStepNumber(3);
     }
 }

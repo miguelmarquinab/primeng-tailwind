@@ -107,21 +107,6 @@
                     {{ findStoreById.office_name | titlecase }}
                   }
                 </span>
-
-                <!--                <span class="font-semibold">-->
-                  <!--              @if (returnChargePayload?.delivery_type === DELIVERY_TYPE.HOME) {-->
-                  <!--                Domicilio-->
-                  <!--              } @else {-->
-                  <!--                Tienda:-->
-                  <!--              }-->
-                  <!--            </span>-->
-                  <!--                <span class="text-theme-text-800">-->
-                  <!--               @if (returnChargePayload?.delivery_type === DELIVERY_TYPE.HOME) {-->
-                  <!--                 {{ returnChargePayload.address_card?.trim() }}-->
-                  <!--               } @else {-->
-                  <!--                 {{ findStoreById.office_name | titlecase }}-->
-                  <!--               }-->
-                  <!--            </span>-->
                 @if (returnChargePayload?.reference) {
                   <span class="text-theme-text-800">
                 - {{ 'shipmentRecord.returnCharge.referencesLabel' | translate }} {{ returnChargePayload.reference?.trim() }}

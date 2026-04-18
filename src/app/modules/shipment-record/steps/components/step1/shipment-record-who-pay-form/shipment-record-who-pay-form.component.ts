@@ -1,14 +1,4 @@
-import {
-    Component,
-    EventEmitter,
-    inject,
-    Input,
-    OnChanges,
-    OnDestroy,
-    OnInit,
-    Output,
-    SimpleChanges
-} from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Button } from 'primeng/button';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Message } from 'primeng/message';
@@ -16,7 +6,7 @@ import { RadioButton } from 'primeng/radiobutton';
 import { CartSessionStorageService } from '@shipment-record/services/cart-session-storage.service';
 import { CartService } from '@shipment-record/services/cart.service';
 import { Subject } from 'rxjs';
-import { ShipmentRecordStepsConstant } from '@shipment-record/contansts/shipment-record-step.constant';
+import { PAYMENT_TYPES_CODES, ShipmentRecordStepsConstant } from '@shipment-record/contansts/shipment-record-step.constant';
 import { NgClass } from '@angular/common';
 import { HeadquartersEntityResponse, PaymentModalities } from '@shipment-record/models/headquarters.model';
 
@@ -47,7 +37,9 @@ export class ShipmentRecordWhoPayFormComponent implements OnInit, OnChanges, OnD
             paymentType: ['ONLINE']
         });
     }
-
+    get paymentType(): string {
+        return this.whoPayForm?.get('paymentType')?.value ?? '';
+    }
     ngOnChanges(changes: SimpleChanges) {
         console.log(changes['currentHeadquarter']);
         if (changes['currentHeadquarter'] && changes['currentHeadquarter'].currentValue) {
@@ -97,7 +89,6 @@ export class ShipmentRecordWhoPayFormComponent implements OnInit, OnChanges, OnD
             //     }
             // });
 
-
             this.submitWhoPayForm.emit({
                 whoPay: this.whoPayForm.value,
                 detail: this.currentHeadquarter
@@ -109,4 +100,7 @@ export class ShipmentRecordWhoPayFormComponent implements OnInit, OnChanges, OnD
         this.destroy$.next();
         this.destroy$.complete();
     }
+
+    protected readonly ShipmentRecordStepsConstant = ShipmentRecordStepsConstant;
+    protected readonly PAYMENT_TYPES_CODES = PAYMENT_TYPES_CODES;
 }

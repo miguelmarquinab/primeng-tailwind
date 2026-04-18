@@ -26,6 +26,8 @@ export class ShipmentRecordDestinationComponent implements OnInit {
     currentTab = 0;
     storeDestinationsData: DestinationEntityResponse[] = [];
     homeDestinationsData: DestinationEntityResponse[] = [];
+    returnChargeHomeDestinationsData: DestinationEntityResponse[] = [];
+    returnChargeStoreDestinationsData: DestinationEntityResponse[] = [];
     @Output() submitDestination = new EventEmitter<any>();
     @Output() returnChargeChanged = new EventEmitter<CartItemReturnChargePayload | undefined | null>();
     private readonly destinationsService: DestinationsService = inject(DestinationsService);
@@ -86,16 +88,21 @@ export class ShipmentRecordDestinationComponent implements OnInit {
     loadDestinations() {
         console.log('loadDestinations');
 
-        const ubigeoCode = this.cartData.header.whoPayDetail.ubigeo_code;
+        const ubigeoCode = this.cartData.header?.whoPayDetail?.ubigeo_code;
+        const headquarterId = this.cartData.header?.whoPayDetail?.headquarter_id ?? '';
         const cacheStoreDestinationsKey = 'storeDestinations_' + ubigeoCode;
         const cacheHomeDestinationsKey = 'homeDestinations_' + ubigeoCode;
+        const cacheStoreReturnDestinationsKey = 'storeReturnDestinations_' + headquarterId;
+        const cacheHomeReturnDestinationsKey = 'homeReturnDestinations_' + headquarterId;
         const storeDestinations = this.localStorageService.get(cacheStoreDestinationsKey);
         const homeDestinations = this.localStorageService.get(cacheHomeDestinationsKey);
-        if (storeDestinations && homeDestinations) {
+        const returnChargeStoreDestinations = this.localStorageService.get(cacheStoreReturnDestinationsKey);
+        const returnChargeHomeDestinations = this.localStorageService.get(cacheHomeReturnDestinationsKey);
+        if (storeDestinations && homeDestinations && returnChargeStoreDestinations && returnChargeHomeDestinations) {
             this.storeDestinationsData = storeDestinations;
             this.homeDestinationsData = homeDestinations;
-
-            // this.destinationData.cargo_flag = this.getHomeDestinationById(this.currentItem.destination?.ubigeo_id as string).cargo_flag;
+            this.returnChargeHomeDestinationsData = returnChargeHomeDestinations;
+            this.returnChargeStoreDestinationsData = returnChargeStoreDestinations;
             return;
         }
 
@@ -110,12 +117,34 @@ export class ShipmentRecordDestinationComponent implements OnInit {
             ubigeo_code: ubigeoCode,
             modality: this.cartData.header.whoPay ?? ''
         };
-        forkJoin([this.destinationsService.getAll(storeQuery), this.destinationsService.getAll(homeQuery)]).subscribe({
-            next: ([storeDestinationsData, homeDestinationsData]) => {
+
+        const returnChargeHomeQuery: DestinationCollectionQuery = {
+            mode: DestinationCollectionMode.HOME,
+            id_headquarter: parseInt(headquarterId),
+            modality: this.cartData.header.whoPay ?? ''
+        };
+
+        const returnChargeStoreQuery: DestinationCollectionQuery = {
+            mode: DestinationCollectionMode.STORE,
+            id_headquarter: parseInt(headquarterId),
+            modality: this.cartData.header.whoPay ?? ''
+        };
+
+        forkJoin([
+            this.destinationsService.getAll(storeQuery),
+            this.destinationsService.getAll(homeQuery),
+            this.destinationsService.getReturnChargeDestinations(returnChargeStoreQuery),
+            this.destinationsService.getReturnChargeDestinations(returnChargeHomeQuery)
+        ]).subscribe({
+            next: ([storeDestinationsData, homeDestinationsData, returnChargeStoreDestinationsData, returnChargeHomeDestinationsData]) => {
                 this.storeDestinationsData = storeDestinationsData.data ?? [];
-                this.localStorageService.set(cacheStoreDestinationsKey, this.storeDestinationsData);
                 this.homeDestinationsData = homeDestinationsData.data ?? [];
+                this.returnChargeStoreDestinationsData = returnChargeStoreDestinationsData.data ?? [];
+                this.returnChargeHomeDestinationsData = returnChargeHomeDestinationsData.data ?? [];
+                this.localStorageService.set(cacheStoreDestinationsKey, this.storeDestinationsData);
                 this.localStorageService.set(cacheHomeDestinationsKey, this.homeDestinationsData);
+                this.localStorageService.set(cacheStoreReturnDestinationsKey, this.returnChargeStoreDestinationsData);
+                this.localStorageService.set(cacheHomeReturnDestinationsKey, this.returnChargeHomeDestinationsData);
 
                 // this.destinationData.cargo_flag = this.getHomeDestinationById(this.currentItem.destination?.ubigeo_id as string).cargo_flag;
             }
@@ -223,16 +252,15 @@ export class ShipmentRecordDestinationComponent implements OnInit {
         }
 
         // console.log(this.destinationData);
-        const reference = this.destinationData?.reference ??'';
+        const reference = this.destinationData?.reference ?? '';
         if (this.currentTab === 0) {
-            return !!this.destinationData?.ubigeo_id && this.destinationData?.reference?.trim() === reference && reference.length>0;
+            return !!this.destinationData?.ubigeo_id && this.destinationData?.reference?.trim() === reference && reference.length > 0;
         }
         if (this.currentTab === 1) {
             return !!this.destinationData?.office_id;
         }
         return valid;
     }
-
 
     protected readonly DELIVERY_TYPE = DELIVERY_TYPE;
 }

@@ -51,6 +51,15 @@ export class CartSessionStorageService {
         this.setCartData(cartData);
     }
 
+    getWhoPay() {
+        const cartData = this.getCartData();
+        return {
+            whoPay: cartData.header.whoPay,
+            whoPayDetail: cartData.header.whoPayDetail
+        };
+    }
+
+
     setCurrentItemUuid(currentItemUuid: string) {
         const cartData = this.getCartData();
         cartData.header.currentItemUuid = currentItemUuid;

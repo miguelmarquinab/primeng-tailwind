@@ -1,11 +1,12 @@
 import { CartPricingEntityResponse, OriginPayload, PersonPayload } from '@shipment-record/models/cart.model';
 import { CartItemEntityResponse } from '@shipment-record/models/cart-item.model';
+import { HeadquartersEntityResponse } from '@shipment-record/models/headquarters.model';
 
 export interface CartSessionStorageHeader {
     person: PersonPayload | null;
     origin: OriginPayload | null;
     whoPay?: string | null;
-    whoPayDetail?: any | null;
+    whoPayDetail?: HeadquartersEntityResponse | null;
     currentItemUuid?: string | null;
     addingNewItemFromStep3?: boolean;
 }

@@ -5,12 +5,8 @@ import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
 import { TranslateModule } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { DestinationEntityResponse } from '@shipment-record/models/destination.model';
-import {
-    ShipmentRecordDestinationAddressFormComponent
-} from '@shipment-record/steps/components/step2/shipment-record-destination-address-form/shipment-record-destination-address-form.component';
-import {
-    ShipmentRecordDestinationStorageFormComponent
-} from '@shipment-record/steps/components/step2/shipment-record-destination-storage-form/shipment-record-destination-storage-form.component';
+import { ShipmentRecordDestinationAddressFormComponent } from '@shipment-record/steps/components/step2/shipment-record-destination-address-form/shipment-record-destination-address-form.component';
+import { ShipmentRecordDestinationStorageFormComponent } from '@shipment-record/steps/components/step2/shipment-record-destination-storage-form/shipment-record-destination-storage-form.component';
 import { ReturnChargeDetail, ReturnChargeMode } from '@shipment-record/models/return-charge.model';
 import { DELIVERY_TYPE } from '@shipment-record/contansts/shipment-record-step.constant';
 import { CartItemDestinationFormState, CartItemEntityResponse } from '@shipment-record/models/cart-item.model';
@@ -44,7 +40,7 @@ export class ShipmentRecordReturnChargeModalComponent implements OnInit, OnDestr
     private readonly dynamicDialogRef = inject(DynamicDialogRef);
     private readonly dynamicDialogConfig = inject(DynamicDialogConfig);
 
-    destinationData!: CartItemDestinationFormState;
+    destinationData!: CartItemDestinationFormState | undefined;
     // currentDestinationReturnCharge?: CartItemDestinationReturnChargeEntityResponse;
     currentItem!: CartItemEntityResponse;
 
@@ -53,11 +49,19 @@ export class ShipmentRecordReturnChargeModalComponent implements OnInit, OnDestr
     }
 
     get isReturnDestinationReady(): boolean {
-        console.log(this.currentTab);
-        if (this.currentTab === 1) {
-            return !!this.destinationData?.office_id;
+        if (this.destinationData?.dangerous) {
+            return false;
         }
-        return !!this.destinationData?.ubigeo_id;
+        if (this.currentTab === 0) {
+            if (!this.destinationData?.reference) {
+                return false;
+            }
+        }
+        if (this.currentTab === 1) {
+            return !!this.destinationData?.office_id || !!this.destinationData?.reference;
+        }
+
+        return !!this.destinationData?.ubigeo_id || !!this.destinationData?.reference;
     }
 
     ngOnInit(): void {
@@ -95,6 +99,7 @@ export class ShipmentRecordReturnChargeModalComponent implements OnInit, OnDestr
 
     changeTab(tabId: number) {
         this.currentTab = tabId;
+        delete this.destinationData;
     }
 
     onHomeAddressChanged(event: CartItemDestinationFormState) {

@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnInit, output } from '@angular/core';
+import { Component, inject, Input, OnInit, output, signal } from '@angular/core';
 import { Button } from 'primeng/button';
 import { Select } from 'primeng/select';
 import { AppConstant } from '@shared/contants/app.constant';
@@ -18,6 +18,8 @@ export class ShipmentRecordOriginFormComponent implements OnInit {
     originForm!: FormGroup;
 
     @Input() headquarters: HeadquartersEntityResponse[] = [];
+
+    // headquarters = signal<HeadquartersEntityResponse[]>([]);
     protected readonly AppConstant = AppConstant;
     private readonly formBuilder = inject(FormBuilder);
 

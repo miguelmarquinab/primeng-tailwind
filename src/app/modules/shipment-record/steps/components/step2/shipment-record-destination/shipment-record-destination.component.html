@@ -37,8 +37,8 @@
                 <div returnChargeToggle class="flex flex-col gap-1">
                   <app-shipment-record-return-charge-toggle
                     [mode]="DELIVERY_TYPE.HOME"
-                    [storeDestinationsData]="storeDestinationsData"
-                    [homeDestinationsData]="homeDestinationsData"
+                    [storeDestinationsData]="returnChargeHomeDestinationsData"
+                    [homeDestinationsData]="returnChargeHomeDestinationsData"
                     (returnChargeChanged)="onReturnChargeChanged($event)"
                     [currentItem]="currentItem"
                   ></app-shipment-record-return-charge-toggle>
@@ -62,8 +62,8 @@
                 @if (destinationData?.cargo_flag?.trim() === '1') {
                   <app-shipment-record-return-charge-toggle
                     [mode]="DELIVERY_TYPE.OFFICE"
-                    [storeDestinationsData]="storeDestinationsData"
-                    [homeDestinationsData]="homeDestinationsData"
+                    [storeDestinationsData]="returnChargeStoreDestinationsData"
+                    [homeDestinationsData]="returnChargeHomeDestinationsData"
                     (returnChargeChanged)="onReturnChargeChanged($event)"
                     [currentItem]="currentItem"
                   ></app-shipment-record-return-charge-toggle>

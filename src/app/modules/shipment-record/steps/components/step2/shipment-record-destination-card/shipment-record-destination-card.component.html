@@ -7,18 +7,18 @@
   <div class="flex justify-between">
     <div class="flex gap-2">
       <img src="shared/images/store-black.svg" alt="" class="w-5"/>
-      <span class="font-medium text-sm">{{ destination.office_name | titlecase}}</span>
+      <span class="font-medium text-sm">{{ destination?.office_name | titlecase}}</span>
     </div>
     <div class="flex gap-2">
       <div class="bg-theme-surface-600 text-white rounded-sm text-[10px] flex items-center px-2.5  h-5">
-        @if (!destination.is_agent) {
+        @if (!destination?.is_agent) {
           <ng-container>Tienda</ng-container>
         }
-        @if (destination.is_agent) {
+        @if (destination?.is_agent) {
           <ng-container>Agente</ng-container>
         }
       </div>
-      @if (!destination.is_open) {
+      @if (!destination?.is_open) {
         <div class="bg-theme-surface-600 text-white rounded-sm text-[10px] flex items-center gap-1 px-2.5 h-5">
           <span class="bg-theme-green-400 rounded-full w-1.5 h-1.5"> </span>
           <ng-container>Abierto</ng-container>
@@ -29,7 +29,7 @@
   <div class="flex justify-between">
     <div class="flex gap-2">
       <img src="shared/images/marker.svg" alt="" class="w-6"/>
-      <span class="font-medium text-theme-text-800 text-sm">{{ destination.office_address | titlecase }}</span>
+      <span class="font-medium text-theme-text-800 text-sm">{{ destination?.office_address | titlecase }}</span>
     </div>
   </div>
 

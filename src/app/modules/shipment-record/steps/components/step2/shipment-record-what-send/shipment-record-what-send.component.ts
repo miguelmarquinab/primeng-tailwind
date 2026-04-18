@@ -18,12 +18,14 @@ import { Subject, takeUntil } from 'rxjs';
 import { CartItemWhatSendEntityResponse, CartItemWhatSendPayload } from '@shipment-record/models/cart-item.model';
 import { HeadquartersEntityResponse } from '@shipment-record/models/headquarters.model';
 import { Carousel } from 'primeng/carousel';
+import { RadioButtonModule } from 'primeng/radiobutton';
 
 @Component({
     selector: 'app-shipment-record-what-send',
-    imports: [Tabs, TabList, Tab, TabPanels, TabPanel, ReactiveFormsModule, Select, NgClass, InputErrorMessageComponent, InputNumber, Message, Button, NgTemplateOutlet, Tooltip, ValidationDirective, Carousel],
+    imports: [Tabs, TabList, Tab, TabPanels, TabPanel, RadioButtonModule, ReactiveFormsModule, Select, NgClass, InputErrorMessageComponent, InputNumber, Message, Button, NgTemplateOutlet, Tooltip, ValidationDirective, Carousel],
     templateUrl: './shipment-record-what-send.component.html',
     styleUrl: './shipment-record-what-send.component.scss',
+    standalone: true,
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None
 })
@@ -50,32 +52,11 @@ export class ShipmentRecordWhatSendComponent implements OnInit, OnDestroy {
 
     private destroy$ = new Subject<void>();
 
-    // Carrousel
-
-    startIndex = 0;
-    visibleCount = 5;
-
-    get visibleItems() {
-        return this.standardSizes().slice(this.startIndex, this.startIndex + this.visibleCount);
-    }
-
-    nextPage() {
-        if (this.startIndex + this.visibleCount < this.standardSizes().length) {
-            this.startIndex++;
-        }
-    }
-
-    prev() {
-        if (this.startIndex > 0) {
-            this.startIndex--;
-        }
-    }
-    // Carrousel End
     ngOnInit() {
         this.initForm();
         this.setupFormListeners();
-        this.changeTab(WhatsSendTabIndex.STANDARD);
-        // this.changeTab(this.getFirstTab());
+        // this.changeTab(WhatsSendTabIndex.STANDARD);
+        this.changeTab(this.getFirstTab());
         this.setData();
         this.tabStandardDisabled = !this.isOriginLima();
     }
@@ -143,6 +124,9 @@ export class ShipmentRecordWhatSendComponent implements OnInit, OnDestroy {
             this.currentSize = null;
             this.currentSizeModal = null;
             this.whatSendForm.reset(this.getDefaultFormValues());
+            this.whatSendForm.get('category')?.enable({
+                emitEvent: false
+            });
             const ctrl = this.whatSendForm.get('standardSize');
 
             ctrl?.clearValidators();
@@ -158,9 +142,9 @@ export class ShipmentRecordWhatSendComponent implements OnInit, OnDestroy {
         return {
             category: [VALIDATION_LIMITS.DEFAULT_CATEGORY_ID, [Validators.required, Validators.min(VALIDATION_LIMITS.MIN_CATEGORY_ID)]],
             articleValue: [null, [Validators.required, Validators.min(VALIDATION_LIMITS.MIN_ARTICLE_VALUE), Validators.max(articleValue)]],
-            large: [null, [Validators.min(VALIDATION_LIMITS.MIN_DIMENSION), Validators.max(VALIDATION_LIMITS.MAX_DIMENSION)]],
-            width: [null, [Validators.min(VALIDATION_LIMITS.MIN_DIMENSION), Validators.max(VALIDATION_LIMITS.MAX_DIMENSION)]],
-            height: [null, [Validators.min(VALIDATION_LIMITS.MIN_DIMENSION), Validators.max(VALIDATION_LIMITS.MAX_DIMENSION)]],
+            large: [null, [Validators.min(VALIDATION_LIMITS.LARGE_MIN_DIMENSION), Validators.max(VALIDATION_LIMITS.MAX_DIMENSION)]],
+            width: [null, [Validators.min(VALIDATION_LIMITS.WIDTH_MIN_DIMENSION), Validators.max(VALIDATION_LIMITS.MAX_DIMENSION)]],
+            height: [null, [Validators.min(VALIDATION_LIMITS.HEIGHT_MIN_DIMENSION), Validators.max(VALIDATION_LIMITS.MAX_DIMENSION)]],
             weight: [null, [Validators.min(VALIDATION_LIMITS.MIN_WEIGHT), Validators.max(VALIDATION_LIMITS.MAX_WEIGHT)]],
             standardSize: [null, [Validators.required]]
         };
@@ -183,11 +167,11 @@ export class ShipmentRecordWhatSendComponent implements OnInit, OnDestroy {
             weightCtrl?.updateValueAndValidity();
         }
         if (this.currentTab === WhatsSendTabIndex.CUSTOM) {
-            largeCtrl?.setValidators([Validators.required, Validators.min(VALIDATION_LIMITS.MIN_DIMENSION), Validators.max(VALIDATION_LIMITS.MAX_DIMENSION)]);
+            largeCtrl?.setValidators([Validators.required, Validators.min(VALIDATION_LIMITS.LARGE_MIN_DIMENSION), Validators.max(VALIDATION_LIMITS.MAX_DIMENSION)]);
             largeCtrl?.updateValueAndValidity();
-            widthCtrl?.setValidators([Validators.required, Validators.min(VALIDATION_LIMITS.MIN_DIMENSION), Validators.max(VALIDATION_LIMITS.MAX_DIMENSION)]);
+            widthCtrl?.setValidators([Validators.required, Validators.min(VALIDATION_LIMITS.WIDTH_MIN_DIMENSION), Validators.max(VALIDATION_LIMITS.MAX_DIMENSION)]);
             widthCtrl?.updateValueAndValidity();
-            heightCtrl?.setValidators([Validators.required, Validators.min(VALIDATION_LIMITS.MIN_DIMENSION), Validators.max(VALIDATION_LIMITS.MAX_DIMENSION)]);
+            heightCtrl?.setValidators([Validators.required, Validators.min(VALIDATION_LIMITS.HEIGHT_MIN_DIMENSION), Validators.max(VALIDATION_LIMITS.MAX_DIMENSION)]);
             heightCtrl?.updateValueAndValidity();
             weightCtrl?.setValidators([Validators.required, Validators.min(VALIDATION_LIMITS.MIN_WEIGHT), Validators.max(VALIDATION_LIMITS.MAX_WEIGHT)]);
             weightCtrl?.updateValueAndValidity();
@@ -205,6 +189,21 @@ export class ShipmentRecordWhatSendComponent implements OnInit, OnDestroy {
             ?.valueChanges.pipe(takeUntil(this.destroy$))
             .subscribe((size) => {
                 this.currentSizeModal = this.getCurrentSizeModal(size);
+                console.log(size);
+                console.log(this.currentSizeModal);
+                const categoryControl = this.whatSendForm.get('category');
+                if (size === 'letter') {
+                    categoryControl?.patchValue(396, {
+                        emitEvent: false
+                    });
+                    categoryControl?.disable({
+                        emitEvent: false
+                    });
+                } else {
+                    categoryControl?.enable({
+                        emitEvent: false
+                    });
+                }
             });
     }
 
@@ -214,6 +213,11 @@ export class ShipmentRecordWhatSendComponent implements OnInit, OnDestroy {
         if (this.cartData().header.whoPay === PAYMENT_TYPES_CODES.DESTINATION) {
             articleValueMessage = 'Tu envío está en el límite permitido.\n' + 'Verifica que no supere S/ 1500.00';
             articleValue = VALIDATION_LIMITS.ARTICLE_VALUE_DESTINATION;
+        }
+
+        if (this.cartData().header.whoPay === PAYMENT_TYPES_CODES.STORE) {
+            articleValueMessage = 'Tu envío está en el límite permitido.\n' + 'Verifica que no supere S/ 10000.00';
+            articleValue = VALIDATION_LIMITS.ARTICLE_VALUE_STORE;
         }
 
         return {
@@ -269,7 +273,7 @@ export class ShipmentRecordWhatSendComponent implements OnInit, OnDestroy {
         const large = this.currentTab === WhatsSendTabIndex.STANDARD ? this.currentSizeModal?.large : this.whatSendForm.value.large;
         const weight = this.currentTab === WhatsSendTabIndex.STANDARD ? this.currentSizeModal?.weight : this.whatSendForm.value.weight;
         let articleId = this.whatSendForm.get('category')?.value;
-        if(this.currentSize === 'letter') {
+        if (this.currentSize === 'letter') {
             articleId = 396;
         }
         return {

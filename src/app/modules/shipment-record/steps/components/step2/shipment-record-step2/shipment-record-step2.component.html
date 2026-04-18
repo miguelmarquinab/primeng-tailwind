@@ -1,12 +1,12 @@
 <div class="flex flex-col gap-3">
-  @if (addingNewItemFromStep3()) {
-    <div class="flex flex-col gap-3 rounded-xl border border-surface-200 bg-surface-50 px-3 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 md:px-4">
-      <p class="text-center text-xs text-surface-600 sm:text-left sm:text-sm">Estás agregando un envío adicional. Puedes volver al resumen sin guardar este borrador.</p>
-      <p-button type="button" label="Volver al resumen" icon="pi pi-arrow-left" severity="secondary" outlined styleClass="w-full sm:w-auto shrink-0" (onClick)="returnToStep3Summary()" />
-    </div>
-  }
+<!--  @if (addingNewItemFromStep3()) {-->
+<!--    <div class="flex flex-col gap-3 rounded-xl border border-surface-200 bg-surface-50 px-3 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 md:px-4">-->
+<!--      <p class="text-center text-xs text-surface-600 sm:text-left sm:text-sm">Estás agregando un envío adicional. Puedes volver al resumen sin guardar este borrador.</p>-->
+<!--      <p-button type="button" label="Volver al resumen" icon="pi pi-arrow-left" severity="secondary" outlined styleClass="w-full sm:w-auto shrink-0" (onClick)="returnToStep3Summary()" />-->
+<!--    </div>-->
+<!--  }-->
     <div class="flex flex-col gap-4 md:overflow-y-auto h-full md:h-153" #accordionScrollContainer>
-        <p-accordion [value]="currentAccordionIndex()" (onOpen)="onAccordionChange($event)">
+        <p-accordion [(value)]="currentAccordionIndex" (onOpen)="onAccordionChange($event)">
             <p-accordion-panel [value]="0">
                 <p-accordion-header>
                     <div class="flex gap-3 items-center">
@@ -17,7 +17,6 @@
                     </div>
                 </p-accordion-header>
                 <p-accordion-content>
-                  @for (formKey of [step2FormInstanceKey()]; track formKey) {
                     <app-person-form
                         [documentTypes]="AppConstant.DOCUMENT_TYPES_WITHOUT_INVOICE_TYPES"
                         [enableEmailField]="false"
@@ -28,7 +27,7 @@
                         (submitPersonForm)="submitRecipientForm($event)"
                         [personData]="recipientFormData"
                     ></app-person-form>
-                  }
+
                 </p-accordion-content>
             </p-accordion-panel>
             <p-accordion-panel [value]="1" [disabled]="panelsDisabled()[1]">
@@ -41,9 +40,12 @@
                     </div>
                 </p-accordion-header>
                 <p-accordion-content [ngClass]="'accordioncontent-without-padding'">
-                  @for (formKey of [step2FormInstanceKey()]; track formKey) {
-                    <app-shipment-record-destination (returnChargeChanged)="onReturnChargeChanged($event)" (submitDestination)="submitDestinationForm($event)" [currentItem]="currentCartItem"></app-shipment-record-destination>
-                  }
+                    <app-shipment-record-destination
+                      (returnChargeChanged)="onReturnChargeChanged($event)"
+                      (submitDestination)="submitDestinationForm($event)"
+                      [currentItem]="currentCartItem">
+
+                    </app-shipment-record-destination>
                 </p-accordion-content>
             </p-accordion-panel>
             <p-accordion-panel [value]="2" [disabled]="panelsDisabled()[2]">
@@ -57,7 +59,7 @@
                 </p-accordion-header>
                 <p-accordion-content [ngClass]="'accordioncontent-without-padding'">
                     @if (standardSizes().length > 0) {
-                      @for (formKey of [step2FormInstanceKey()]; track formKey) {
+<!--                      @for (formKey of [step2FormInstanceKey()]; track formKey) {-->
                         <app-shipment-record-what-send
                           [articleCategories]="articleCategories()"
                           [standardSizes]="standardSizes()"
@@ -66,10 +68,17 @@
                           [cartItemWhatSendEntityResponse]="currentCartItem?.what_send"
                           [currentOrigin]="currentOrigin()"
                         ></app-shipment-record-what-send>
-                      }
+<!--                      }-->
                     }
                 </p-accordion-content>
             </p-accordion-panel>
         </p-accordion>
+
+
+<!--      <div class="w-full">-->
+<!--        <p-button class="w-full" styleClass="w-full" outlined severity="secondary" (click)="cancelEdit()">-->
+<!--          Regresar al resumen del envío-->
+<!--        </p-button>-->
+<!--      </div>-->
     </div>
 </div>
