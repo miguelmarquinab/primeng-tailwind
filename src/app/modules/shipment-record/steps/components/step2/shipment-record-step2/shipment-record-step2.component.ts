@@ -1,11 +1,11 @@
 import { Component,DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Accordion, AccordionContent, AccordionHeader, AccordionPanel } from 'primeng/accordion';
-import { Button } from 'primeng/button';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { PersonFormComponent } from '@shipment-record/steps/components/step1/shipment-record-who-sender-form/person-form.component';
 import { ACCORDION_SCROLL, SHIPMENT_TYPE, ShipmentRecordStepsConstant } from '@shipment-record/contansts/shipment-record-step.constant';
 import { ShipmentRecordWhatSendComponent } from '@shipment-record/steps/components/step2/shipment-record-what-send/shipment-record-what-send.component';
 import { ArticleCategoriesService } from '@shipment-record/services/article-categories.service';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, take, takeUntil } from 'rxjs';
 import { ArticleCategoriesEntityResponse } from '@shipment-record/models/article-categories.model';
 import { ShipmentRecordDestinationComponent } from '@shipment-record/steps/components/step2/shipment-record-destination/shipment-record-destination.component';
 import { AppConstant } from '@shared/contants/app.constant';
@@ -21,13 +21,18 @@ import { StandardSizeService } from '@shipment-record/services/standard-size.ser
 import { StandardSizeEntityResponse } from '@shipment-record/models/standard-size.model';
 import { HeadquartersEntityResponse } from '@shipment-record/models/headquarters.model';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {
+    ReturnToSummaryModalCloseValue,
+    ShipmentRecordReturnToSummaryModalComponent
+} from '@shipment-record/steps/components/step2/shipment-record-return-to-summary-modal/shipment-record-return-to-summary-modal.component';
 
 
 @Component({
     selector: 'app-shipment-record-step2',
-    imports: [Accordion, AccordionContent, AccordionHeader, AccordionPanel, Button, PersonFormComponent, ShipmentRecordWhatSendComponent, ShipmentRecordDestinationComponent, NgClass],
+    imports: [Accordion, AccordionContent, AccordionHeader, AccordionPanel, PersonFormComponent, ShipmentRecordWhatSendComponent, ShipmentRecordDestinationComponent, NgClass],
     templateUrl: './shipment-record-step2.component.html',
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
+    providers: [DialogService]
 })
 export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
     // protected panelsDisabled = signal<boolean[]>([false, true, true]);
@@ -48,6 +53,8 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
     private readonly standardSizeService = inject(StandardSizeService);
     private readonly destroyRef = inject(DestroyRef);
     private readonly destroy$ = new Subject<void>();
+    private readonly dialogService = inject(DialogService);
+    private returnToSummaryDialogRef: DynamicDialogRef | null = null;
     @ViewChild('accordionScrollContainer', { static: false }) accordionScrollContainer?: ElementRef<HTMLElement>;
 
     cartData!: CartSessionStorage;
@@ -219,6 +226,34 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
         this.cartService.setStepNumber(3);
     }
 
+    openReturnToSummaryModal(): void {
+        this.returnToSummaryDialogRef?.close();
+        this.returnToSummaryDialogRef = this.dialogService.open(ShipmentRecordReturnToSummaryModalComponent, {
+            showHeader: false,
+            closable: false,
+            width: '520px',
+            modal: true,
+            dismissableMask: true,
+            styleClass: '!rounded-3xl !border-0 !shadow-xl overflow-hidden',
+            breakpoints: {
+                '960px': '90vw',
+                '640px': '95vw'
+            },
+            contentStyle: {
+                padding: '0',
+                'max-height': '90vh',
+                overflow: 'auto'
+            }
+        });
+
+        this.returnToSummaryDialogRef?.onClose.pipe(take(1)).subscribe((result: ReturnToSummaryModalCloseValue) => {
+            this.returnToSummaryDialogRef = null;
+            if (result === 'discard') {
+                this.returnToStep3Summary();
+            }
+        });
+    }
+
     changeCurrentAccordion(accordionIndex: number) {
         console.log(accordionIndex);
         this.currentAccordionIndex.set(accordionIndex);
@@ -281,6 +316,8 @@ export class ShipmentRecordStep2Component implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
+        this.returnToSummaryDialogRef?.close();
+        this.returnToSummaryDialogRef = null;
         this.destroy$.next();
         this.destroy$.complete();
     }
